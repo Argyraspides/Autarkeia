@@ -1,0 +1,21 @@
+BasedOnStyle: Microsoft
+PointerAlignment: Left
+PackConstructorInitializers: Never
+BinPackParameters: false
+
+# Spaces in parentheses and after commas
+SpacesInParentheses: true
+SpaceAfterCStyleCast: true
+SpacesInCStyleCastParentheses: true
+SpaceBeforeParens: ControlStatements
+
+# Spaces in angle brackets (templates)
+SpacesInAngles: Always
+
+# Spaces around operators
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeRangeBasedForLoopColon: true
+
+# Additional spacing options you might want
+SpacesInSquareBrackets: true  # If you want [ 0 ] instead of [0]
+SpaceAfterTemplateKeyword: true
