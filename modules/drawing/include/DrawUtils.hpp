@@ -13,13 +13,16 @@
 namespace DrawUtils
 {
 
-inline void DrawLine( const Vec2I& p1,
-                      const Vec2I& p2,
+inline void DrawLine( const Vec2I& p1, // Starting point
+                      const Vec2I& p2, // Ending point
                       std::vector< std::vector< char > >& frameBuf,
                       const char& drawChar )
 {
     int dx = p2.x - p1.x;
     int dy = p2.y - p1.y;
+    // dx*y - dx*b - dy*x = 0
+    // or f(x,y) = dx*y - dx*b - dy*x
+    // let c = dx*b (constant)
     int c = ( dx * p1.y ) - ( dy * p1.x );
 
     const int dirX = dx > 0 ? 1 : (dx == 0 ? 0 : -1);
@@ -29,41 +32,39 @@ inline void DrawLine( const Vec2I& p1,
 
     Vec2I currPoint = p1;
 
-    if ( dx > dy )
+    int it = (dx > dy) ? abs(dx) : abs(dy);
+    for ( int i = 0; i <= it; i++ )
     {
-        for ( int i = 0; i < abs(dx); i++ )
+        if ( currPoint.y < 0 || currPoint.y >= frameBuf.size() || currPoint.x < 0 || currPoint.x >= frameBuf[ 0 ].size() )
         {
-            if ( currPoint.y < 0 || currPoint.y > frameBuf.size() || currPoint.x < 0 ||
-                 currPoint.x > frameBuf[ 0 ].size() )
-            {
-                continue;
-            }
-            frameBuf[ currPoint.y ][ currPoint.x ] = drawChar;
+            break;
+        }
+
+        frameBuf[ currPoint.y ][ currPoint.x ] = drawChar;
+
+
+        Vec2I nextPoint{};
+        // Move in direction with larger delta
+        if (it == abs(dx))
+        {
             currPoint.x += dirX;
-
-            int currYDist = fxy( currPoint );
-            int nextYDist = fxy( { currPoint.x, currPoint.y + dirY } );
-
-            currPoint.y += ( nextYDist < currYDist ) ? dirY : 0;
+            nextPoint = { currPoint.x, currPoint.y + dirY };
         }
-    }
-    else
-    {
-        for ( int i = 0; i < abs(dy); i++ )
+        else
         {
-            if ( currPoint.y < 0 || currPoint.y > frameBuf.size() || currPoint.x < 0 ||
-                 currPoint.x > frameBuf[ 0 ].size() )
-            {
-                continue;
-            }
-            frameBuf[ currPoint.y ][ currPoint.x ] = drawChar;
             currPoint.y += dirY;
-
-            int currXDist = fxy( currPoint );
-            int nextXDist = fxy( { currPoint.x + dirX, currPoint.y } );
-
-            currPoint.x += ( nextXDist < currXDist ) ? dirX : 0;
+            nextPoint = { currPoint.x + dirX, currPoint.y };
         }
+
+        int currDist = abs(fxy( currPoint ));
+        int nextDist = abs(fxy( nextPoint ));
+
+        // nextPoint is closer to line
+        if (nextDist < currDist)
+        {
+            currPoint = nextPoint;
+        }
+
     }
 }
 
