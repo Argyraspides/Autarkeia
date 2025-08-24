@@ -1,7 +1,4 @@
-#include "DrawUtils.hpp"
-#include <array>
-#include <cmath>
-#include <iostream>
+#include "modules/drawing/include/DrawUtils.hpp"
 #include <vector>
 
 constexpr size_t width = 100;
