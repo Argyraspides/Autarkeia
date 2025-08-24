@@ -68,6 +68,7 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     }
 }
 
+// TODO::GAUGAMELA() { Maybe there's a more efficient way to draw specifically a triangle? }
 inline void DrawTriangle( const Vec2I& p1,
                       const Vec2I& p2,
                       const Vec2I& p3,
