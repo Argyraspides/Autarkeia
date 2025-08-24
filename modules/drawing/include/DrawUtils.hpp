@@ -68,6 +68,17 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     }
 }
 
+inline void DrawTriangle( const Vec2I& p1,
+                      const Vec2I& p2,
+                      const Vec2I& p3,
+                      std::vector< std::vector< char > >& frameBuf,
+                      const char& drawChar )
+{
+    DrawLine(p1, p2, frameBuf, drawChar);
+    DrawLine(p2, p3, frameBuf, drawChar);
+    DrawLine(p3, p1, frameBuf, drawChar);
+}
+
 inline void Clear( std::vector< std::vector< char > >& frameBuf, const char& clearChar )
 {
     for ( int i = 0; i < frameBuf.size(); i++ )
