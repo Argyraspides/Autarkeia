@@ -19,6 +19,11 @@ inline void DrawLine( const Vec2I& p1, // Starting point
                       std::vector< std::vector< char > >& frameBuf,
                       const char& drawChar )
 {
+    if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
+    {
+        return;
+    }
+
     int dx = p2.x - p1.x;
     int dy = p2.y - p1.y;
     // dx*y - dx*b - dy*x = 0
@@ -70,14 +75,29 @@ inline void DrawLine( const Vec2I& p1, // Starting point
 
 // TODO::GAUGAMELA() { Maybe there's a more efficient way to draw specifically a triangle? }
 inline void DrawTriangle( const Vec2I& p1,
-                      const Vec2I& p2,
-                      const Vec2I& p3,
-                      std::vector< std::vector< char > >& frameBuf,
-                      const char& drawChar )
+                          const Vec2I& p2,
+                          const Vec2I& p3,
+                          std::vector< std::vector< char > >& frameBuf,
+                          const char& drawChar )
 {
-    DrawLine(p1, p2, frameBuf, drawChar);
-    DrawLine(p2, p3, frameBuf, drawChar);
-    DrawLine(p3, p1, frameBuf, drawChar);
+    DrawLine( p1, p2, frameBuf, drawChar );
+    DrawLine( p2, p3, frameBuf, drawChar );
+    DrawLine( p3, p1, frameBuf, drawChar );
+}
+
+inline void DrawPixel( const Vec2I& p, std::vector< std::vector< char > >& frameBuf, const char& drawChar )
+{
+    if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
+    {
+        return;
+    }
+
+    if ( p.x < 0 || p.x >= frameBuf[0].size() || p.y < 0 || p.y >= frameBuf.size() )
+    {
+        return;
+    }
+
+    frameBuf[ p.y ][ p.x ] = drawChar;
 }
 
 inline void Clear( std::vector< std::vector< char > >& frameBuf, const char& clearChar )
