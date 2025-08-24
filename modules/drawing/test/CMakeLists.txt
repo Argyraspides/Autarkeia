@@ -4,12 +4,7 @@ project( DrawingTests )
 
 set( CMAKE_CXX_STANDARD 17 )
 
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../catch2
-        ${CMAKE_CURRENT_BINARY_DIR}/catch2)
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../drawing
-        ${CMAKE_CURRENT_BINARY_DIR}/drawing)
+message( "Adding DrawingTests ..." )
 
 set( DRAWING_TEST_SOURCE_CODE
     DrawUtilsTest.cpp
