@@ -13,6 +13,7 @@
 namespace DrawUtils
 {
 
+// TODO::GAUGAMELA() { Optimize later by tracking error accumulation }
 inline void DrawLine( const Vec2I& p1, // Starting point
                       const Vec2I& p2, // Ending point
                       std::vector< std::vector< char > >& frameBuf,
@@ -25,27 +26,27 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     // let c = dx*b (constant)
     int c = ( dx * p1.y ) - ( dy * p1.x );
 
-    const int dirX = dx > 0 ? 1 : (dx == 0 ? 0 : -1);
-    const int dirY = dy > 0 ? 1 : (dy == 0 ? 0 : -1);
+    const int dirX = dx > 0 ? 1 : ( dx == 0 ? 0 : -1 );
+    const int dirY = dy > 0 ? 1 : ( dy == 0 ? 0 : -1 );
 
     const auto fxy = [ dx, dy, c ]( const Vec2I& p ) -> int { return ( dx * p.y ) - c - ( dy * p.x ); };
 
     Vec2I currPoint = p1;
 
-    int it = (dx > dy) ? abs(dx) : abs(dy);
+    int it = ( dx > dy ) ? abs( dx ) : abs( dy );
     for ( int i = 0; i <= it; i++ )
     {
-        if ( currPoint.y < 0 || currPoint.y >= frameBuf.size() || currPoint.x < 0 || currPoint.x >= frameBuf[ 0 ].size() )
+        if ( currPoint.y < 0 || currPoint.y >= frameBuf.size() || currPoint.x < 0 ||
+             currPoint.x >= frameBuf[ 0 ].size() )
         {
             break;
         }
 
         frameBuf[ currPoint.y ][ currPoint.x ] = drawChar;
 
-
         Vec2I nextPoint{};
         // Move in direction with larger delta
-        if (it == abs(dx))
+        if ( it == abs( dx ) )
         {
             currPoint.x += dirX;
             nextPoint = { currPoint.x, currPoint.y + dirY };
@@ -56,15 +57,14 @@ inline void DrawLine( const Vec2I& p1, // Starting point
             nextPoint = { currPoint.x + dirX, currPoint.y };
         }
 
-        int currDist = abs(fxy( currPoint ));
-        int nextDist = abs(fxy( nextPoint ));
+        int currDist = abs( fxy( currPoint ) );
+        int nextDist = abs( fxy( nextPoint ) );
 
         // nextPoint is closer to line
-        if (nextDist < currDist)
+        if ( nextDist < currDist )
         {
             currPoint = nextPoint;
         }
-
     }
 }
 
