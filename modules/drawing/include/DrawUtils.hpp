@@ -89,20 +89,20 @@ inline void DrawLineV2( const Vec2I& p1,    // Starting point
     const int dx = p2.x - p1.x;
     const int dy = p2.y - p1.y;
 
-    Vec2I currentPoint = p1;
+    Vec2I currPt = p1;
     int err = (2 * dy) - (2 * dx * p1.y) + dy;
 
     for (int i = p1.x; i <= p2.x; i++)
     {
-        frameBuf[currentPoint.y][currentPoint.x] = drawChar;
+        frameBuf[currPt.y][currPt.x] = drawChar;
 
         if ( err > 0 )
         {
-            ++currentPoint.y;
+            ++currPt.y;
             err += -dx;
         }
 
-        ++currentPoint.x;
+        ++currPt.x;
         err += dy;
     }
 
