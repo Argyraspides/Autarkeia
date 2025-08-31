@@ -40,11 +40,8 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     int it = ( dx > dy ) ? abs( dx ) : abs( dy );
     for ( int i = 0; i <= it; i++ )
     {
-        if  (   currPoint.y < 0                     ||
-                currPoint.y >= frameBuf.size()      ||
-                currPoint.x < 0                     ||
-                currPoint.x >= frameBuf[ 0 ].size()
-            )
+        if ( currPoint.y < 0 || currPoint.y >= frameBuf.size() || currPoint.x < 0 ||
+             currPoint.x >= frameBuf[ 0 ].size() )
         {
             break;
         }
@@ -75,11 +72,12 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     }
 }
 
-// TODO::GAUGEMALA() { Only works in +ve x and y direction, though way more efficient than DrawLine. Add all cases later }
-inline void DrawLineV2( const Vec2I& p1,    // Starting point
-                      const Vec2I& p2,      // Ending point
-                      std::vector< std::vector< char > >& frameBuf,
-                      const char& drawChar )
+// TODO::GAUGEMALA() { Only works in +ve x and y direction, though way more efficient than DrawLine. Add all cases later
+// }
+inline void DrawLineV2( const Vec2I& p1, // Starting point
+                        const Vec2I& p2, // Ending point
+                        std::vector< std::vector< char > >& frameBuf,
+                        const char& drawChar )
 {
     if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
     {
@@ -90,11 +88,11 @@ inline void DrawLineV2( const Vec2I& p1,    // Starting point
     const int dy = p2.y - p1.y;
 
     Vec2I currPt = p1;
-    int err = (2 * dy) - (2 * dx * p1.y) + dy;
+    int err = ( 2 * dy ) - ( 2 * dx * p1.y ) + dy;
 
-    for (int i = p1.x; i <= p2.x; i++)
+    for ( int i = p1.x; i <= p2.x; i++ )
     {
-        frameBuf[currPt.y][currPt.x] = drawChar;
+        frameBuf[ currPt.y ][ currPt.x ] = drawChar;
 
         if ( err > 0 )
         {
@@ -105,7 +103,6 @@ inline void DrawLineV2( const Vec2I& p1,    // Starting point
         ++currPt.x;
         err += dy;
     }
-
 }
 
 // TODO::GAUGAMELA() { Maybe there's a more efficient way to draw specifically a triangle? }
@@ -127,7 +124,7 @@ inline void DrawPixel( const Vec2I& p, std::vector< std::vector< char > >& frame
         return;
     }
 
-    if ( p.x < 0 || p.x >= frameBuf[0].size() || p.y < 0 || p.y >= frameBuf.size() )
+    if ( p.x < 0 || p.x >= frameBuf[ 0 ].size() || p.y < 0 || p.y >= frameBuf.size() )
     {
         return;
     }
