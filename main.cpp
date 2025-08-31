@@ -17,6 +17,7 @@ int main()
     DrawUtils::DrawLine({width-1,0}, {width-1, height-1}, frameBuf, 'X');
 
     DrawUtils::DrawLine({0,0}, {width-1, height-1}, frameBuf, 'X');
+    DrawUtils::DrawLine({0,0}, {width-1, height-1}, frameBuf, 'X');
     DrawUtils::DrawLine({0,height-1}, {width-1, 0}, frameBuf, 'X');
 
     DrawUtils::DrawTriangle(
@@ -26,7 +27,6 @@ int main()
         frameBuf,
         'X'
     );
-
     DrawUtils::DrawTriangle(
         {0, 0},
         {width-1, 0},

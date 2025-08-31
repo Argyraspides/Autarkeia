@@ -13,7 +13,7 @@
 namespace DrawUtils
 {
 
-// TODO::GAUGAMELA() { Optimize later by tracking error accumulation }
+// TODO::GAUGAMELA() { Optimize later }
 inline void DrawLine( const Vec2I& p1, // Starting point
                       const Vec2I& p2, // Ending point
                       std::vector< std::vector< char > >& frameBuf,
@@ -41,8 +41,11 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     int it = ( dx > dy ) ? abs( dx ) : abs( dy );
     for ( int i = 0; i <= it; i++ )
     {
-        if ( currPoint.y < 0 || currPoint.y >= frameBuf.size() || currPoint.x < 0 ||
-             currPoint.x >= frameBuf[ 0 ].size() )
+        if  (   currPoint.y < 0                     ||
+                currPoint.y >= frameBuf.size()      ||
+                currPoint.x < 0                     ||
+                currPoint.x >= frameBuf[ 0 ].size()
+            )
         {
             break;
         }
@@ -66,7 +69,7 @@ inline void DrawLine( const Vec2I& p1, // Starting point
         int nextDist = abs( fxy( nextPoint ) );
 
         // nextPoint is closer to line
-        if ( nextDist < currDist )
+        if ( nextDist - currDist < 0 )
         {
             currPoint = nextPoint;
         }

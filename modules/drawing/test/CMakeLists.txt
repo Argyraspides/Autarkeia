@@ -7,7 +7,10 @@ set( CMAKE_CXX_STANDARD 17 )
 message( "Adding DrawingTests ..." )
 
 set( DRAWING_TEST_SOURCE_CODE
-    DrawUtilsTest.cpp
+    CatchConfig.cpp
+    DrawUtilsConvenienceFunctions.hpp
+    DrawUtilsPixelTests.cpp
+    DrawUtilsClearTests.cpp
 )
 
 add_executable( DrawingTests
