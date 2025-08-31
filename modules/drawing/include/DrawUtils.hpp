@@ -13,7 +13,6 @@
 namespace DrawUtils
 {
 
-// TODO::GAUGAMELA() { Optimize later }
 inline void DrawLine( const Vec2I& p1, // Starting point
                       const Vec2I& p2, // Ending point
                       std::vector< std::vector< char > >& frameBuf,
@@ -74,6 +73,39 @@ inline void DrawLine( const Vec2I& p1, // Starting point
             currPoint = nextPoint;
         }
     }
+}
+
+// TODO::GAUGEMALA() { Only works in +ve x and y direction, though way more efficient than DrawLine. Add all cases later }
+inline void DrawLineV2( const Vec2I& p1,    // Starting point
+                      const Vec2I& p2,      // Ending point
+                      std::vector< std::vector< char > >& frameBuf,
+                      const char& drawChar )
+{
+    if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
+    {
+        return;
+    }
+
+    const int dx = p2.x - p1.x;
+    const int dy = p2.y - p1.y;
+
+    Vec2I currentPoint = p1;
+    int err = (2 * dy) - (2 * dx * p1.y) + dy;
+
+    for (int i = p1.x; i <= p2.x; i++)
+    {
+        frameBuf[currentPoint.y][currentPoint.x] = drawChar;
+
+        if ( err > 0 )
+        {
+            ++currentPoint.y;
+            err += -dx;
+        }
+
+        ++currentPoint.x;
+        err += dy;
+    }
+
 }
 
 // TODO::GAUGAMELA() { Maybe there's a more efficient way to draw specifically a triangle? }

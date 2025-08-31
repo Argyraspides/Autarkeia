@@ -11,6 +11,7 @@ set( DRAWING_TEST_SOURCE_CODE
     DrawUtilsConvenienceFunctions.hpp
     DrawUtilsPixelTests.cpp
     DrawUtilsClearTests.cpp
+    DrawUtilsDrawLineTests.cpp
 )
 
 add_executable( DrawingTests
