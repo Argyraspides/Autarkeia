@@ -19,7 +19,8 @@ int main()
     // DrawUtils::DrawLineV2({0,0}, {width-1, height-1}, frameBuf, 'X');
     // DrawUtils::DrawLineV2({0,height-1}, {width-1, 0}, frameBuf, 'X');
 
-    DrawUtils::DrawLineV2({0,0}, {width / 2, height / 8}, frameBuf, 'X');
+    // DrawUtils::DrawLineV2({0,0}, {width / 2, height / 8}, frameBuf, 'X');
+    DrawUtils::DrawLineV2({0,height/2}, {width/2, height/2 + 15}, frameBuf, 'X');
     // DrawUtils::DrawLineV3({0,0}, {width / 2, height / 8}, frameBuf, 'X');
 
 

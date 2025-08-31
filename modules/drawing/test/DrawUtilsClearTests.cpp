@@ -6,7 +6,7 @@
 #include "DrawUtilsConvenienceFunctions.hpp"
 #include "catch_amalgamated.hpp"
 
-TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x n", "[DrawUtils]" )
+TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x n", "[DrawUtilsClearTests]" )
 {
 
     std::vector< std::vector< char > > grid( 10, std::vector< char >( 10, '.' ) );
@@ -18,7 +18,7 @@ TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x n", "[DrawUt
     }
 }
 
-TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x m, n > m", "[DrawUtils]" )
+TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x m, n > m", "[DrawUtilsClearTests]" )
 {
 
     std::vector< std::vector< char > > grid( 10, std::vector< char >( 5, '.' ) );
@@ -30,7 +30,7 @@ TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x m, n > m", "
     }
 }
 
-TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x m, m > n", "[DrawUtils]" )
+TEST_CASE( "DrawUtils::Clear fills grid with every character -- n x m, m > n", "[DrawUtilsClearTests]" )
 {
 
     std::vector< std::vector< char > > grid( 5, std::vector< char >( 10, '.' ) );

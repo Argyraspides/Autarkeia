@@ -21,4 +21,7 @@
         }                                                                                                              \
     }
 
+#define INITIALIZE_FRAMEBUF( gridSize )                                                                                 \
+    std::vector< std::vector< char > > grid( gridSize.y, std::vector< char >( gridSize.x, '.' ) );
+
 #endif // DRAWUTILSCONVENIENCEFUNCTIONS_HPP

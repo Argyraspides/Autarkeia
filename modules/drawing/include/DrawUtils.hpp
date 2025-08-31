@@ -92,6 +92,10 @@ inline void DrawLineV2( const Vec2I& p1, // Starting point
 
     for ( int i = p1.x; i <= p2.x; i++ )
     {
+        if ( currPt.y < 0 || currPt.y >= frameBuf.size() || currPt.x < 0 || currPt.x >= frameBuf[ 0 ].size() )
+        {
+            break;
+        }
         frameBuf[ currPt.y ][ currPt.x ] = drawChar;
 
         if ( err > 0 )
