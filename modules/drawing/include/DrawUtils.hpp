@@ -72,8 +72,50 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     }
 }
 
-// TODO::GAUGEMALA() { Only works in +ve x and y direction, though way more efficient than DrawLine. Add all cases later
-// }
+inline void DrawLineVertical(
+                int y1,
+                int y2,
+                const int x,
+                std::vector< std::vector< char > >& frameBuf,
+                const char& drawChar
+)
+{
+    if (y1 > y2)
+    {
+        std::swap(y1, y2);
+    }
+    for (int i = y1; i < y2; i++)
+    {
+        if (i < 0 || i >= frameBuf.size())
+        {
+            break;
+        }
+        frameBuf[i][x] = drawChar;
+    }
+}
+
+inline void DrawLineHorizontal(
+                int x1,
+                int x2,
+                const int y,
+                std::vector< std::vector< char > >& frameBuf,
+                const char& drawChar
+)
+{
+    if (x1 > x2)
+    {
+        std::swap(x1, x2);
+    }
+    for (int i = x1; i < x2; i++)
+    {
+        if (i < 0 || i > frameBuf.size())
+        {
+            break;
+        }
+        frameBuf[y][i] = drawChar;
+    }
+}
+
 inline void DrawLineV2( const Vec2I& p1, // Starting point
                         const Vec2I& p2, // Ending point
                         std::vector< std::vector< char > >& frameBuf,
@@ -84,27 +126,40 @@ inline void DrawLineV2( const Vec2I& p1, // Starting point
         return;
     }
 
+    if (p1.x == p2.x)
+    {
+        DrawLineVertical(p1.y, p2.y, p1.x, frameBuf, drawChar);
+        return;
+    }
+
+    if (p1.y == p2.y)
+    {
+        DrawLineVertical(p1.x, p2.x, p1.x, frameBuf, drawChar);
+    }
+
     const int dx = p2.x - p1.x;
     const int dy = p2.y - p1.y;
 
     Vec2I currPt = p1;
     int err = ( 2 * dy ) - ( 2 * dx * p1.y ) + dy;
-
+    int dirX = p1.x < p2.x ? 1 : -1;
+    int dirY = p1.y < p2.y ? 1 : -1;
     for ( int i = p1.x; i <= p2.x; i++ )
     {
         if ( currPt.y < 0 || currPt.y >= frameBuf.size() || currPt.x < 0 || currPt.x >= frameBuf[ 0 ].size() )
         {
             break;
         }
+
         frameBuf[ currPt.y ][ currPt.x ] = drawChar;
 
         if ( err > 0 )
         {
-            ++currPt.y;
+            currPt.y += dirY;
             err += -dx;
         }
 
-        ++currPt.x;
+        currPt.x += dirX;
         err += dy;
     }
 }
