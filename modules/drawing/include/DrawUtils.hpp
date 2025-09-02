@@ -135,6 +135,7 @@ inline void DrawLineV2( const Vec2I& p1, // Starting point
     if (p1.y == p2.y)
     {
         DrawLineVertical(p1.x, p2.x, p1.x, frameBuf, drawChar);
+        return;
     }
 
     const int dx = p2.x - p1.x;
