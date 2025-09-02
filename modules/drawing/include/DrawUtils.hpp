@@ -80,17 +80,18 @@ inline void DrawLineVertical(
                 const char& drawChar
 )
 {
+    if (frameBuf.empty() || x >= frameBuf[0].size())
+    {
+        return;
+    }
     if (y1 > y2)
     {
         std::swap(y1, y2);
     }
-    for (int i = y1; i < y2; i++)
+
+    while (y1 <= y2 && y1 >= 0 && y1 < frameBuf.size())
     {
-        if (i < 0 || i >= frameBuf.size())
-        {
-            break;
-        }
-        frameBuf[i][x] = drawChar;
+        frameBuf[y1++][x] = drawChar;
     }
 }
 
@@ -102,21 +103,23 @@ inline void DrawLineHorizontal(
                 const char& drawChar
 )
 {
+    if (frameBuf.empty() || y >= frameBuf.size())
+    {
+        return;
+    }
     if (x1 > x2)
     {
         std::swap(x1, x2);
     }
-    for (int i = x1; i < x2; i++)
+
+    while (x1 <= x2 && x1 >= 0 && x1 < frameBuf[0].size())
     {
-        if (i < 0 || i > frameBuf.size())
-        {
-            break;
-        }
-        frameBuf[y][i] = drawChar;
+        frameBuf[y][x1++] = drawChar;
     }
 }
 
-inline void DrawLineV2( const Vec2I& p1, // Starting point
+inline void QuickDrawLine(
+                        const Vec2I& p1, // Starting point
                         const Vec2I& p2, // Ending point
                         std::vector< std::vector< char > >& frameBuf,
                         const char& drawChar )
@@ -134,18 +137,30 @@ inline void DrawLineV2( const Vec2I& p1, // Starting point
 
     if (p1.y == p2.y)
     {
-        DrawLineVertical(p1.x, p2.x, p1.x, frameBuf, drawChar);
+        DrawLineHorizontal(p1.x, p2.x, p1.y, frameBuf, drawChar);
         return;
     }
 
-    const int dx = p2.x - p1.x;
-    const int dy = p2.y - p1.y;
-
-    Vec2I currPt = p1;
+    int dx = p2.x - p1.x;
+    int dy = p2.y - p1.y;
     int err = ( 2 * dy ) - ( 2 * dx * p1.y ) + dy;
-    int dirX = p1.x < p2.x ? 1 : -1;
-    int dirY = p1.y < p2.y ? 1 : -1;
-    for ( int i = p1.x; i <= p2.x; i++ )
+    int dirX = 1, dirY = 1;
+
+    if (p1.x > p2.x)
+    {
+        dy *= -1;
+        dirX = -1;
+    }
+
+    if (p1.y > p2.y)
+    {
+        dx *= -1;
+        dirY = -1;
+    }
+
+    int it = abs(p1.x - p2.x);
+    Vec2I currPt = p1;
+    for ( int i = 0; i <= it; i++ )
     {
         if ( currPt.y < 0 || currPt.y >= frameBuf.size() || currPt.x < 0 || currPt.x >= frameBuf[ 0 ].size() )
         {
