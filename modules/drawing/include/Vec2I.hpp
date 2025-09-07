@@ -1,5 +1,5 @@
 //
-// Created by gaugamela on 8/23/25.
+// Created by Argyraspides on 8/23/25.
 //
 
 #ifndef VEC2I_HPP
