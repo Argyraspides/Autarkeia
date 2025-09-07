@@ -206,7 +206,6 @@ inline void QuickDrawLine(
 
 }
 
-// TODO::GAUGAMELA() { Maybe there's a more efficient way to draw specifically a triangle? }
 inline void DrawTriangle( const Vec2I& p1,
                           const Vec2I& p2,
                           const Vec2I& p3,
@@ -216,6 +215,17 @@ inline void DrawTriangle( const Vec2I& p1,
     DrawLine( p1, p2, frameBuf, drawChar );
     DrawLine( p2, p3, frameBuf, drawChar );
     DrawLine( p3, p1, frameBuf, drawChar );
+}
+
+inline void QuickDrawTriangle( const Vec2I& p1,
+                          const Vec2I& p2,
+                          const Vec2I& p3,
+                          std::vector< std::vector< char > >& frameBuf,
+                          const char& drawChar )
+{
+    QuickDrawLine( p1, p2, frameBuf, drawChar );
+    QuickDrawLine( p2, p3, frameBuf, drawChar );
+    QuickDrawLine( p3, p1, frameBuf, drawChar );
 }
 
 inline void DrawPixel( const Vec2I& p, std::vector< std::vector< char > >& frameBuf, const char& drawChar )
