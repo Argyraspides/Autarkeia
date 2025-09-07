@@ -149,29 +149,35 @@ inline void QuickDrawLine(
 
     int dist = 0;
 
-    int it = abs(p1.x - p2.x);
-    Vec2I currPt = p1;
-    for ( int i = 0; i <= it; i++ )
+
+    if (abs(dx) >= abs(dy))
     {
-
-        if ( dist < 0 )
+        int it = abs(dx);
+        Vec2I currPt = p1;
+        for ( int i = 0; i <= it; i++ )
         {
-            currPt.y += dyPolarity;
-            dist += dx * dxPolarity;
-        }
 
-        if ( currPt.y >= 0 && currPt.y < frameBuf.size() && currPt.x >= 0 && currPt.x < frameBuf[ 0 ].size() )
-        {
-            frameBuf[ currPt.y ][ currPt.x ] = drawChar;
-        }
-        else
-        {
-            break;
-        }
+            if ( dist < 0 )
+            {
+                currPt.y += dyPolarity;
+                dist += dx * dxPolarity;
+            }
 
-        currPt.x += dxPolarity;
-        dist += -dy * dyPolarity;
+            if ( currPt.y >= 0 && currPt.y < frameBuf.size() && currPt.x >= 0 && currPt.x < frameBuf[ 0 ].size() )
+            {
+                frameBuf[ currPt.y ][ currPt.x ] = drawChar;
+            }
+            else
+            {
+                break;
+            }
+
+            currPt.x += dxPolarity;
+            dist += -dy * dyPolarity;
+        }
     }
+
+
 }
 
 // TODO::GAUGAMELA() { Maybe there's a more efficient way to draw specifically a triangle? }
