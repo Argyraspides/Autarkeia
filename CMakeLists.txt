@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.31)
 project( Autarkeia )
 
 option( BUILD_TESTS "Builds Autarkeia tests" ON )
-option( BUILD_EXAMPLE_DVD "Builds bouncing DVD thingy example" OFF )
+option( BUILD_EXAMPLE_DVD "Builds bouncing DVD thingy example" ON )
 
 set( CMAKE_CXX_STANDARD 17 )
 

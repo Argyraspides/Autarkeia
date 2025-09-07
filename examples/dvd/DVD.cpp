@@ -15,31 +15,30 @@ void DrawBorder(Frame& f)
 
 int main()
 {
-    Vec2I b = { width / 2, height / 2 };
-    Vec2I bTraj = { width / 5, height / 10 };
+    Vec2I dvd = { 15, 13 };
+    Vec2I dvdTrajectory = { 1, -1 };
 
-    Frame f( width, height );
+    Frame frame( width, height );
 
     while ( true )
     {
         DrawUtils::ClearScreen();
-        DrawUtils::Clear( f, ' ' );
+        DrawUtils::Clear( frame, ' ' );
 
-        DrawBorder( f );
+        DrawBorder( frame );
 
-        DrawUtils::DrawPixel( b, f, '.' );
+        DrawUtils::DrawPixel( dvd, frame, 'D' );
 
-        Vec2I nextB = b + bTraj;
+        Vec2I nextDvdPos = dvd + dvdTrajectory;
+        if ( nextDvdPos.x >= frame.Width() - 1 || nextDvdPos.x <= 0 )
+            dvdTrajectory.x *= -1;
+        if ( nextDvdPos.y >= frame.Height() - 1 || nextDvdPos.y <= 0 )
+            dvdTrajectory.y *= -1;
 
-        if ( nextB.x >= f.Width() || nextB.x < 0 )
-            bTraj.x *= -1;
+        dvd = dvd + dvdTrajectory;
 
-        if ( nextB.y >= f.Height() || nextB.y < 0 )
-            bTraj.y *= -1;
+        DrawUtils::Draw( frame );
 
-        b = b + bTraj;
-
-        DrawUtils::Draw( f );
         std::this_thread::sleep_for( std::chrono::milliseconds( 150 ) );
     }
 }
