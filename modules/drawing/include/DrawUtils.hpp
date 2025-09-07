@@ -21,9 +21,7 @@ inline void DrawLine( const Vec2I& p1, // Starting point
                       const char& drawChar )
 {
     if ( frameBuffer.Empty() )
-    {
         return;
-    }
 
     int dx = p2.x - p1.x;
     int dy = p2.y - p1.y;
@@ -44,9 +42,7 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     {
 
         if ( !frameBuffer.Write( currPoint.x, currPoint.y, drawChar ) )
-        {
             break;
-        }
 
         Vec2I nextPoint{};
         // Move in direction with larger delta
@@ -66,9 +62,7 @@ inline void DrawLine( const Vec2I& p1, // Starting point
 
         // nextPoint is closer to line
         if ( nextDist - currDist < 0 )
-        {
             currPoint = nextPoint;
-        }
     }
 }
 
@@ -76,9 +70,7 @@ inline void DrawLineVertical(
     int y1, int y2, const int x, Frame& frame, const char& drawChar )
 {
     if ( y1 > y2 )
-    {
         std::swap( y1, y2 );
-    }
 
     while ( y1 <= y2 && frame.Write(x, y1++, drawChar) );
 }
@@ -88,9 +80,7 @@ inline void DrawLineHorizontal(
 {
 
     if ( x1 > x2 )
-    {
         std::swap( x1, x2 );
-    }
 
     while ( x1 <= x2 && frame.Write(x1++, y, drawChar) );
 }
@@ -134,9 +124,7 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
             }
 
             if (!frame.Write(currPt.x, currPt.y, drawChar))
-            {
                 break;
-            }
 
             currPt.x += dxPolarity;
             dist += -dy * dyPolarity;
@@ -155,9 +143,7 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
             }
 
             if (!frame.Write(currPt.x, currPt.y, drawChar))
-            {
                 break;
-            }
 
             currPt.y += dyPolarity;
             dist += dx * dxPolarity;
