@@ -176,6 +176,32 @@ inline void QuickDrawLine(
             dist += -dy * dyPolarity;
         }
     }
+    else
+    {
+        int it = abs(dy);
+        Vec2I currPt = p1;
+        for ( int i = 0; i <= it; i++ )
+        {
+
+            if ( dist > 0 )
+            {
+                currPt.x += dxPolarity;
+                dist += -dy * dyPolarity;
+            }
+
+            if ( currPt.y >= 0 && currPt.y < frameBuf.size() && currPt.x >= 0 && currPt.x < frameBuf[ 0 ].size() )
+            {
+                frameBuf[ currPt.y ][ currPt.x ] = drawChar;
+            }
+            else
+            {
+                break;
+            }
+
+            currPt.y += dyPolarity;
+            dist += dx * dxPolarity;
+        }
+    }
 
 
 }
