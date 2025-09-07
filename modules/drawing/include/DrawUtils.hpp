@@ -201,6 +201,8 @@ inline void Clear( Frame& frame, const char& clearChar )
 
 inline void ClearScreen()
 {
+    // Run 'strace clear > /dev/null' to find out how this works.
+    // Check the write() syscall at the end
     write(STDOUT_FILENO, "\33[H\33[2J\33[3J", 11);
 }
 
