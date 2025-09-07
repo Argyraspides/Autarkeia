@@ -5,20 +5,21 @@
 #ifndef DRAWUTILS_HPP
 #define DRAWUTILS_HPP
 
+#include "Frame.hpp"
 #include "Vec2I.hpp"
 #include <cmath>
+#include <cstring>
 #include <iostream>
-#include <vector>
 
 namespace DrawUtils
 {
 
 inline void DrawLine( const Vec2I& p1, // Starting point
                       const Vec2I& p2, // Ending point
-                      std::vector< std::vector< char > >& frameBuf,
+                      Frame& frameBuffer,
                       const char& drawChar )
 {
-    if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
+    if ( frameBuffer.Empty() )
     {
         return;
     }
@@ -40,13 +41,11 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     int it = ( dx > dy ) ? abs( dx ) : abs( dy );
     for ( int i = 0; i <= it; i++ )
     {
-        if ( currPoint.y < 0 || currPoint.y >= frameBuf.size() || currPoint.x < 0 ||
-             currPoint.x >= frameBuf[ 0 ].size() )
+
+        if ( !frameBuffer.Write( currPoint.x, currPoint.y, drawChar ) )
         {
             break;
         }
-
-        frameBuf[ currPoint.y ][ currPoint.x ] = drawChar;
 
         Vec2I nextPoint{};
         // Move in direction with larger delta
@@ -73,71 +72,43 @@ inline void DrawLine( const Vec2I& p1, // Starting point
 }
 
 inline void DrawLineVertical(
-                int y1,
-                int y2,
-                const int x,
-                std::vector< std::vector< char > >& frameBuf,
-                const char& drawChar
-)
+    int y1, int y2, const int x, Frame& frame, const char& drawChar )
 {
-    if (frameBuf.empty() || x >= frameBuf[0].size())
+    if ( y1 > y2 )
     {
-        return;
-    }
-    if (y1 > y2)
-    {
-        std::swap(y1, y2);
+        std::swap( y1, y2 );
     }
 
-    while (y1 <= y2 && y1 >= 0 && y1 < frameBuf.size())
-    {
-        frameBuf[y1++][x] = drawChar;
-    }
+    while ( y1 <= y2 && frame.Write(x, y1++, drawChar) );
 }
 
 inline void DrawLineHorizontal(
-                int x1,
-                int x2,
-                const int y,
-                std::vector< std::vector< char > >& frameBuf,
-                const char& drawChar
-)
+    int x1, int x2, const int y, Frame& frame, const char& drawChar )
 {
-    if (frameBuf.empty() || y >= frameBuf.size())
+
+    if ( x1 > x2 )
     {
-        return;
-    }
-    if (x1 > x2)
-    {
-        std::swap(x1, x2);
+        std::swap( x1, x2 );
     }
 
-    while (x1 <= x2 && x1 >= 0 && x1 < frameBuf[0].size())
-    {
-        frameBuf[y][x1++] = drawChar;
-    }
+    while ( x1 <= x2 && frame.Write(x1++, y, drawChar) );
 }
 
-inline void QuickDrawLine(
-                        const Vec2I& p1, // Starting point
-                        const Vec2I& p2, // Ending point
-                        std::vector< std::vector< char > >& frameBuf,
-                        const char& drawChar )
+inline void QuickDrawLine( const Vec2I& p1, // Starting point
+                           const Vec2I& p2, // Ending point
+                           Frame& frame,
+                           const char& drawChar )
 {
-    if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
+
+    if ( p1.x == p2.x )
     {
+        DrawLineVertical( p1.y, p2.y, p1.x, frame, drawChar );
         return;
     }
 
-    if (p1.x == p2.x)
+    if ( p1.y == p2.y )
     {
-        DrawLineVertical(p1.y, p2.y, p1.x, frameBuf, drawChar);
-        return;
-    }
-
-    if (p1.y == p2.y)
-    {
-        DrawLineHorizontal(p1.x, p2.x, p1.y, frameBuf, drawChar);
+        DrawLineHorizontal( p1.x, p2.x, p1.y, frame, drawChar );
         return;
     }
 
@@ -149,10 +120,9 @@ inline void QuickDrawLine(
 
     int dist = 0;
 
-
-    if (abs(dx) >= abs(dy))
+    if ( abs( dx ) >= abs( dy ) )
     {
-        int it = abs(dx);
+        int it = abs( dx );
         Vec2I currPt = p1;
         for ( int i = 0; i <= it; i++ )
         {
@@ -163,11 +133,7 @@ inline void QuickDrawLine(
                 dist += dx * dxPolarity;
             }
 
-            if ( currPt.y >= 0 && currPt.y < frameBuf.size() && currPt.x >= 0 && currPt.x < frameBuf[ 0 ].size() )
-            {
-                frameBuf[ currPt.y ][ currPt.x ] = drawChar;
-            }
-            else
+            if (!frame.Write(currPt.x, currPt.y, drawChar))
             {
                 break;
             }
@@ -178,7 +144,7 @@ inline void QuickDrawLine(
     }
     else
     {
-        int it = abs(dy);
+        int it = abs( dy );
         Vec2I currPt = p1;
         for ( int i = 0; i <= it; i++ )
         {
@@ -189,11 +155,7 @@ inline void QuickDrawLine(
                 dist += -dy * dyPolarity;
             }
 
-            if ( currPt.y >= 0 && currPt.y < frameBuf.size() && currPt.x >= 0 && currPt.x < frameBuf[ 0 ].size() )
-            {
-                frameBuf[ currPt.y ][ currPt.x ] = drawChar;
-            }
-            else
+            if (!frame.Write(currPt.x, currPt.y, drawChar))
             {
                 break;
             }
@@ -202,68 +164,49 @@ inline void QuickDrawLine(
             dist += dx * dxPolarity;
         }
     }
-
-
 }
 
 inline void DrawTriangle( const Vec2I& p1,
                           const Vec2I& p2,
                           const Vec2I& p3,
-                          std::vector< std::vector< char > >& frameBuf,
+                          Frame& frame,
                           const char& drawChar )
 {
-    DrawLine( p1, p2, frameBuf, drawChar );
-    DrawLine( p2, p3, frameBuf, drawChar );
-    DrawLine( p3, p1, frameBuf, drawChar );
+    DrawLine( p1, p2, frame, drawChar );
+    DrawLine( p2, p3, frame, drawChar );
+    DrawLine( p3, p1, frame, drawChar );
 }
 
 inline void QuickDrawTriangle( const Vec2I& p1,
-                          const Vec2I& p2,
-                          const Vec2I& p3,
-                          std::vector< std::vector< char > >& frameBuf,
-                          const char& drawChar )
+                               const Vec2I& p2,
+                               const Vec2I& p3,
+                               Frame& frame,
+                               const char& drawChar )
 {
-    QuickDrawLine( p1, p2, frameBuf, drawChar );
-    QuickDrawLine( p2, p3, frameBuf, drawChar );
-    QuickDrawLine( p3, p1, frameBuf, drawChar );
+    QuickDrawLine( p1, p2, frame, drawChar );
+    QuickDrawLine( p2, p3, frame, drawChar );
+    QuickDrawLine( p3, p1, frame, drawChar );
 }
 
-inline void DrawPixel( const Vec2I& p, std::vector< std::vector< char > >& frameBuf, const char& drawChar )
+inline void DrawPixel( const Vec2I& p, Frame& frame, const char& drawChar )
 {
-    if ( frameBuf.empty() || frameBuf[ 0 ].empty() )
+    if ( frame.Empty() )
     {
         return;
     }
-
-    if ( p.x < 0 || p.x >= frameBuf[ 0 ].size() || p.y < 0 || p.y >= frameBuf.size() )
-    {
-        return;
-    }
-
-    frameBuf[ p.y ][ p.x ] = drawChar;
+    frame.Write(p.x, p.y, drawChar);
 }
 
-inline void Clear( std::vector< std::vector< char > >& frameBuf, const char& clearChar )
+inline void Clear( Frame& frame, const char& clearChar )
 {
-    for ( int i = 0; i < frameBuf.size(); i++ )
-    {
-        for ( int j = 0; j < frameBuf[ 0 ].size(); j++ )
-        {
-            frameBuf[ i ][ j ] = clearChar;
-        }
-    }
+    for (int y = 0; y < frame.Height(); y++)
+        for (int x = 0; x < frame.Width(); x++)
+            frame.Write(x, y, clearChar);
 }
 
-inline void Draw( const std::vector< std::vector< char > >& frameBuf )
+inline void Draw( Frame& frame )
 {
-    for ( int i = 0; i < frameBuf.size(); i++ )
-    {
-        for ( int j = 0; j < frameBuf[ 0 ].size(); j++ )
-        {
-            std::cout << frameBuf[ i ][ j ];
-        }
-        std::cout << '\n';
-    }
+    std::cout << frame.Buffer();
 }
 
 } // namespace DrawUtils
