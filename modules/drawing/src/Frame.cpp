@@ -19,7 +19,7 @@ Frame::~Frame()
 {
 }
 
-const bool Frame::Write( const int& x, const int& y, const char& dat )
+bool Frame::Write( const int& x, const int& y, const char& dat )
 {
     if (Empty())
     {
@@ -30,6 +30,7 @@ const bool Frame::Write( const int& x, const int& y, const char& dat )
         return false;
     }
 
+    // m_frameWidth + 1 because the end of each row is a newline that we forbid writing to
     m_buffer[ y * ( m_frameWidth + 1 ) + x ] = dat;
     return true;
 }
@@ -41,6 +42,7 @@ const char Frame::At( const int& x, const int& y ) const
         throw std::out_of_range( "Cannot access (x,y) coordinate -- out of bounds" );
     }
 
+    // m_frameWidth + 1 because the end of each row is a newline that we forbid reading from
     return m_buffer[ y * ( m_frameWidth + 1 ) + x ];
 }
 

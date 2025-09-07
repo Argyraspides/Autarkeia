@@ -189,10 +189,6 @@ inline void QuickDrawTriangle( const Vec2I& p1,
 
 inline void DrawPixel( const Vec2I& p, Frame& frame, const char& drawChar )
 {
-    if ( frame.Empty() )
-    {
-        return;
-    }
     frame.Write(p.x, p.y, drawChar);
 }
 

@@ -17,7 +17,7 @@ class Frame
     const int Height() const;
     const int FlatSize() const;
 
-    const bool Write( const int& x, const int& y, const char& dat );
+    bool Write( const int& x, const int& y, const char& dat );
     const char At( const int& x, const int& y ) const;
     std::string& Buffer();
 
