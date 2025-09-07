@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <unistd.h>
 
 namespace DrawUtils
 {
@@ -126,7 +127,6 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
         Vec2I currPt = p1;
         for ( int i = 0; i <= it; i++ )
         {
-
             if ( dist < 0 )
             {
                 currPt.y += dyPolarity;
@@ -148,7 +148,6 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
         Vec2I currPt = p1;
         for ( int i = 0; i <= it; i++ )
         {
-
             if ( dist > 0 )
             {
                 currPt.x += dxPolarity;
@@ -202,6 +201,11 @@ inline void Clear( Frame& frame, const char& clearChar )
     for (int y = 0; y < frame.Height(); y++)
         for (int x = 0; x < frame.Width(); x++)
             frame.Write(x, y, clearChar);
+}
+
+inline void ClearScreen()
+{
+    write(STDOUT_FILENO, "\33[H\33[2J\33[3J", 11);
 }
 
 inline void Draw( Frame& frame )
