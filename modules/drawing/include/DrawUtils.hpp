@@ -142,41 +142,35 @@ inline void QuickDrawLine(
     }
 
     int dx = p2.x - p1.x;
+    int dxPolarity = dx < 0 ? -1 : 1;
+
     int dy = p2.y - p1.y;
-    int err = ( 2 * dy ) - ( 2 * dx * p1.y ) + dy;
-    int dirX = 1, dirY = 1;
+    int dyPolarity = dy < 0 ? -1 : 1;
 
-    if (p1.x > p2.x)
-    {
-        dy *= -1;
-        dirX = -1;
-    }
-
-    if (p1.y > p2.y)
-    {
-        dx *= -1;
-        dirY = -1;
-    }
+    int dist = 0;
 
     int it = abs(p1.x - p2.x);
     Vec2I currPt = p1;
     for ( int i = 0; i <= it; i++ )
     {
-        if ( currPt.y < 0 || currPt.y >= frameBuf.size() || currPt.x < 0 || currPt.x >= frameBuf[ 0 ].size() )
+
+        if ( dist < 0 )
+        {
+            currPt.y += dyPolarity;
+            dist += dx * dxPolarity;
+        }
+
+        if ( currPt.y >= 0 && currPt.y < frameBuf.size() && currPt.x >= 0 && currPt.x < frameBuf[ 0 ].size() )
+        {
+            frameBuf[ currPt.y ][ currPt.x ] = drawChar;
+        }
+        else
         {
             break;
         }
 
-        frameBuf[ currPt.y ][ currPt.x ] = drawChar;
-
-        if ( err > 0 )
-        {
-            currPt.y += dirY;
-            err += -dx;
-        }
-
-        currPt.x += dirX;
-        err += dy;
+        currPt.x += dxPolarity;
+        dist += -dy * dyPolarity;
     }
 }
 
