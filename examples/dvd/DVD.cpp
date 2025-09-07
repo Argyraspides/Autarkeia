@@ -1,7 +1,7 @@
 #include "DrawUtils.hpp"
 #include <thread>
 
-constexpr size_t width = 20;
+constexpr size_t width = 40;
 constexpr size_t height = 20;
 
 
