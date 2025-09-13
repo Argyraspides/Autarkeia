@@ -9,6 +9,7 @@
 #include <fstream>
 #include <optional>
 #include <string>
+#include <vector>
 
 /**
  * @brief Detects peripherals connected on Linux systems by opening /proc/bus/input/devices and reading its contents
@@ -22,7 +23,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
 
 std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry );
 
-std::optional< std::vector< KeyboardInfo > > GetConnectedKeyboards();
+std::vector< KeyboardInfo > GetConnectedKeyboards();
 
 } // namespace PeripheralDetector
 

@@ -6,7 +6,6 @@
 #define AUTARKEIA_KEYBOARDINFO_HPP
 #include <string>
 #include <utility>
-#include <vector>
 
 struct KeyboardInfo
 {

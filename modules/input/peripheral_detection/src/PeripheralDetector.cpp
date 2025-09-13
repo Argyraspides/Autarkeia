@@ -123,12 +123,12 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-std::optional< std::vector< KeyboardInfo > > GetConnectedKeyboards()
+std::vector< KeyboardInfo > GetConnectedKeyboards()
 {
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
 
     if ( !deviceFile.is_open() )
-        return std::nullopt;
+        throw std::ios_base::failure("Could not open the device file to check for peripherals: " + DEVICE_FILE_INFO_PATH);
 
     std::vector< KeyboardInfo > connectedKeyboards;
 
@@ -163,8 +163,7 @@ std::optional< std::vector< KeyboardInfo > > GetConnectedKeyboards()
         ss.str( "" );
     }
 
-    return connectedKeyboards.empty() ? std::nullopt
-                                      : std::optional< std::vector< KeyboardInfo > >( connectedKeyboards );
+    return connectedKeyboards;
 }
 
 } // namespace PeripheralDetector

@@ -15,12 +15,12 @@ static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 KeyboardInputHandler::KeyboardInputHandler()
     : m_running( false ),
       m_keyboardInputHandlerThread( std::thread() ),
-      m_lastPressedKeys( std::queue< KeyInput >() ),
+      m_lastPressedKeys( std::queue< KeyInputCode >() ),
       m_lastPressedKeysMutex( std::mutex() )
 {
 }
 
-KeyInput KeyboardInputHandler::GetLastKeyPress()
+KeyInputCode KeyboardInputHandler::GetLastKeyPress()
 {
     std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
@@ -29,7 +29,7 @@ KeyInput KeyboardInputHandler::GetLastKeyPress()
         return KEY_CNT;
     }
 
-    KeyInput keyPressed = m_lastPressedKeys.front();
+    KeyInputCode keyPressed = m_lastPressedKeys.front();
     m_lastPressedKeys.pop();
 
     return keyPressed;
@@ -60,10 +60,10 @@ void KeyboardInputHandler::Stop()
 
 void KeyboardInputHandler::ListenToKeyboard()
 {
-    if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
+    if ( m_connectedKeyboards.empty() )
         return;
 
-    m_currentListeningKeyboard = m_connectedKeyboards.value().front();
+    m_currentListeningKeyboard = m_connectedKeyboards.front();
     std::ifstream inputCharDev( m_currentListeningKeyboard.value().eventDevicePath );
 
     if ( !inputCharDev.is_open() )
@@ -97,9 +97,16 @@ void KeyboardInputHandler::WaitForKeyboards()
 {
     while ( m_running )
     {
-        m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
+        try
+        {
+            m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
+        }
+        catch ( std::ios_base::failure& iosbf )
+        {
+            continue;
+        }
 
-        if ( m_connectedKeyboards.has_value() )
+        if ( !m_connectedKeyboards.empty() )
             break;
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
