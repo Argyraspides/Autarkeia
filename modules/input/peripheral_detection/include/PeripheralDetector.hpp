@@ -23,7 +23,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
 
 std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry );
 
-std::vector< KeyboardInfo > GetConnectedKeyboards();
+std::optional < std::vector< KeyboardInfo > > GetConnectedKeyboards();
 
 } // namespace PeripheralDetector
 

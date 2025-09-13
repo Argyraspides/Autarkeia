@@ -25,9 +25,7 @@ KeyInputCode KeyboardInputHandler::GetLastKeyPress()
     std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
     if ( m_lastPressedKeys.empty() )
-    {
         return KEY_CNT;
-    }
 
     KeyInputCode keyPressed = m_lastPressedKeys.front();
     m_lastPressedKeys.pop();
@@ -35,9 +33,12 @@ KeyInputCode KeyboardInputHandler::GetLastKeyPress()
     return keyPressed;
 }
 
-std::string KeyboardInputHandler::GetCurrentKeyboardName()
+std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName()
 {
-    return "";
+    if (m_currentListeningKeyboard.has_value())
+        return m_currentListeningKeyboard.value().keyboardName;
+
+    return std::nullopt;
 }
 
 void KeyboardInputHandler::StartListening()
@@ -60,18 +61,14 @@ void KeyboardInputHandler::Stop()
 
 void KeyboardInputHandler::ListenToKeyboard()
 {
-    if ( m_connectedKeyboards.empty() )
+    if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
         return;
 
-    m_currentListeningKeyboard = m_connectedKeyboards.front();
+    m_currentListeningKeyboard = m_connectedKeyboards.value().front();
     std::ifstream inputCharDev( m_currentListeningKeyboard.value().eventDevicePath );
 
     if ( !inputCharDev.is_open() )
-    {
-        std::cout << "Cannot open character device \"" << m_currentListeningKeyboard.value().eventDevicePath << "\""
-                  << std::endl;
-        return;
-    }
+        throw std::ios_base::failure("Unable to open input character device: " + m_currentListeningKeyboard.value().eventDevicePath );
 
     struct input_event keyboardInputEvent{};
     while ( m_running )
@@ -93,20 +90,14 @@ void KeyboardInputHandler::ListenToKeyboard()
         m_lastPressedKeys.push( keyboardInputEvent.code );
     }
 }
+
 void KeyboardInputHandler::WaitForKeyboards()
 {
     while ( m_running )
     {
-        try
-        {
-            m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
-        }
-        catch ( std::ios_base::failure& iosbf )
-        {
-            continue;
-        }
+        m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
 
-        if ( !m_connectedKeyboards.empty() )
+        if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
             break;
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );

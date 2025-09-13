@@ -5,6 +5,7 @@
 #include <iostream>
 #include <linux/input-event-codes.h>
 #include <sstream>
+#include <unistd.h>
 
 static inline std::string EV_START_LINE = "B: EV=";
 static inline std::string KEY_START_LINE = "B: KEY=";
@@ -123,12 +124,20 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-std::vector< KeyboardInfo > GetConnectedKeyboards()
+std::optional < std::vector< KeyboardInfo > > GetConnectedKeyboards()
 {
+    int code = access( DEVICE_FILE_INFO_PATH.c_str(), R_OK );
+    if ( code != 0 )
+    {
+        // TODO::ARGYRASPIDES() { ADD SOME ERROR LOGGING }
+        std::cout << "Error! Insufficient permissions to access " << DEVICE_FILE_INFO_PATH << " to access keyboard information" << std::endl;
+        return std::nullopt;
+    }
+
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
 
     if ( !deviceFile.is_open() )
-        throw std::ios_base::failure("Could not open the device file to check for peripherals: " + DEVICE_FILE_INFO_PATH);
+        return std::nullopt;
 
     std::vector< KeyboardInfo > connectedKeyboards;
 

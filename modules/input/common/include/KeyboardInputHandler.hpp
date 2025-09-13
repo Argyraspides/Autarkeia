@@ -19,7 +19,7 @@ class KeyboardInputHandler
     KeyboardInputHandler();
 
     KeyInputCode GetLastKeyPress();
-    std::string GetCurrentKeyboardName();
+    std::optional< std::string > GetCurrentKeyboardName();
 
     void StartListening();
     void Stop();
@@ -32,7 +32,7 @@ class KeyboardInputHandler
     bool m_running;
     std::thread m_keyboardInputHandlerThread;
 
-    std::vector< KeyboardInfo > m_connectedKeyboards;
+    std::optional< std::vector< KeyboardInfo > > m_connectedKeyboards;
     std::optional< KeyboardInfo > m_currentListeningKeyboard;
 
     std::queue< KeyInputCode > m_lastPressedKeys;
