@@ -10,6 +10,7 @@
 #include <optional>
 #include <queue>
 #include <thread>
+#include <atomic>
 
 using KeyInputCode = size_t;
 
@@ -29,7 +30,7 @@ class KeyboardInputHandler
     void WaitForKeyboards();
 
   private:
-    bool m_running;
+    std::atomic_bool m_running;
     std::thread m_keyboardInputHandlerThread;
 
     std::optional< std::vector< KeyboardInfo > > m_connectedKeyboards;

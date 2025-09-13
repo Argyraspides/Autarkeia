@@ -124,20 +124,14 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-std::optional < std::vector< KeyboardInfo > > GetConnectedKeyboards()
+std::vector< KeyboardInfo > GetConnectedKeyboards()
 {
-    int code = access( DEVICE_FILE_INFO_PATH.c_str(), R_OK );
-    if ( code != 0 )
-    {
-        // TODO::ARGYRASPIDES() { ADD SOME ERROR LOGGING }
-        std::cout << "Error! Insufficient permissions to access " << DEVICE_FILE_INFO_PATH << " to access keyboard information" << std::endl;
-        return std::nullopt;
-    }
+    if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK | R_OK) != 0 )
+        throw std::runtime_error("Cannot open " + DEVICE_FILE_INFO_PATH + " to check for keyboards - check you have permissions to open the file. The file might not even exist!");
 
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
-
     if ( !deviceFile.is_open() )
-        return std::nullopt;
+        throw std::runtime_error("Cannot open " + DEVICE_FILE_INFO_PATH + " to check for keyboards");
 
     std::vector< KeyboardInfo > connectedKeyboards;
 

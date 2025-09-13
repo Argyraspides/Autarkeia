@@ -3,8 +3,12 @@
 //
 #include "KeyboardInputHandler.hpp"
 #include "PeripheralDetector.hpp"
+#include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
 
@@ -15,6 +19,7 @@ static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 KeyboardInputHandler::KeyboardInputHandler()
     : m_running( false ),
       m_keyboardInputHandlerThread( std::thread() ),
+      m_connectedKeyboards( std::nullopt ),
       m_lastPressedKeys( std::queue< KeyInputCode >() ),
       m_lastPressedKeysMutex( std::mutex() )
 {
@@ -35,7 +40,7 @@ KeyInputCode KeyboardInputHandler::GetLastKeyPress()
 
 std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName()
 {
-    if (m_currentListeningKeyboard.has_value())
+    if ( m_currentListeningKeyboard.has_value() )
         return m_currentListeningKeyboard.value().keyboardName;
 
     return std::nullopt;
@@ -55,25 +60,50 @@ void KeyboardInputHandler::StartListening()
 void KeyboardInputHandler::Stop()
 {
     m_running = false;
+
     if ( m_keyboardInputHandlerThread.joinable() )
         m_keyboardInputHandlerThread.join();
 }
 
 void KeyboardInputHandler::ListenToKeyboard()
 {
-    if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
+    if ( !m_connectedKeyboards.has_value() )
+        return;
+
+    if ( m_connectedKeyboards.value().empty() )
         return;
 
     m_currentListeningKeyboard = m_connectedKeyboards.value().front();
-    std::ifstream inputCharDev( m_currentListeningKeyboard.value().eventDevicePath );
 
-    if ( !inputCharDev.is_open() )
-        throw std::ios_base::failure("Unable to open input character device: " + m_currentListeningKeyboard.value().eventDevicePath );
+    // Keyboard might have been unplugged
+    if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), F_OK ) != 0 )
+        return;
+
+    if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), R_OK ) != 0 )
+        throw std::runtime_error( "Unable to open input character device: " +
+                                  m_currentListeningKeyboard.value().eventDevicePath + " insufficient permissions" );
+
+    int keyboardFd = open( m_currentListeningKeyboard.value().eventDevicePath.c_str(), O_RDONLY );
+
+    if ( keyboardFd < 0 )
+    {
+        close( keyboardFd );
+        throw std::runtime_error( "Unable to open input character device: " +
+                          m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown");
+    }
 
     struct input_event keyboardInputEvent{};
     while ( m_running )
     {
-        if ( !inputCharDev.read( reinterpret_cast< char* >( &keyboardInputEvent ), sizeof( input_event ) ) )
+        ssize_t bytesRead = read( keyboardFd, reinterpret_cast< void* >( &keyboardInputEvent ), sizeof( input_event ) );
+
+        if ( bytesRead < 0 && errno == ENODEV ) // Keyboard probs unplugged / dead
+        {
+            close(keyboardFd);
+            return;
+        }
+
+        if ( bytesRead != sizeof( input_event ) )
             continue;
 
         if ( keyboardInputEvent.type != EV_KEY )
@@ -88,7 +118,11 @@ void KeyboardInputHandler::ListenToKeyboard()
             m_lastPressedKeys.pop();
 
         m_lastPressedKeys.push( keyboardInputEvent.code );
+
     }
+
+    close( keyboardFd );
+
 }
 
 void KeyboardInputHandler::WaitForKeyboards()
@@ -97,7 +131,7 @@ void KeyboardInputHandler::WaitForKeyboards()
     {
         m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
 
-        if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
+        if ( m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
             break;
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
