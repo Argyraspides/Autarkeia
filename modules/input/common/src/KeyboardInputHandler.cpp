@@ -52,10 +52,6 @@ void KeyboardInputHandler::Start()
 {
     m_running = true;
 
-    m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::WaitForKeyboards, this );
-
-    m_keyboardInputHandlerThread.join();
-
     m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::HandleStates, this );
 
     m_keyboardInputHandlerThread.join();
