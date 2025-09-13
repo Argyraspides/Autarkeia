@@ -2,6 +2,7 @@
 // Created by gaugamela on 9/11/25.
 //
 #include "PeripheralDetector.hpp"
+#include "PeripheralInputException.hpp"
 #include <iostream>
 #include <linux/input-event-codes.h>
 #include <sstream>
@@ -126,14 +127,20 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
 
 std::vector< KeyboardInfo > GetConnectedKeyboards()
 {
-    if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK | R_OK ) != 0 )
-        throw std::runtime_error(
+    if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
+        throw InputException::PeripheralInputException( "Something is seriously wrong! The file " +
+                                                        DEVICE_FILE_INFO_PATH +
+                                                        " does not exist! What have you done to your Linux system???" );
+
+    if ( access( DEVICE_FILE_INFO_PATH.c_str(), R_OK ) != 0 )
+        throw InputException::PeripheralInputException(
             "Cannot open " + DEVICE_FILE_INFO_PATH +
-            " to check for keyboards - check you have permissions to open the file. The file might not even exist!" );
+            " to find connected keyboards. You must run this program with sudo!" );
 
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
     if ( !deviceFile.is_open() )
-        throw std::runtime_error( "Cannot open " + DEVICE_FILE_INFO_PATH + " to check for keyboards" );
+        throw InputException::PeripheralInputException( "Cannot open " + DEVICE_FILE_INFO_PATH +
+                                                        " to check for keyboards for an unknown reason! Something is very wrong!" );
 
     std::vector< KeyboardInfo > connectedKeyboards;
 

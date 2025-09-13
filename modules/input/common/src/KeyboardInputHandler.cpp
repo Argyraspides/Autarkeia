@@ -3,6 +3,7 @@
 //
 #include "KeyboardInputHandler.hpp"
 #include "PeripheralDetector.hpp"
+#include "PeripheralInputException.hpp"
 #include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>
@@ -47,7 +48,7 @@ std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName()
     return std::nullopt;
 }
 
-void KeyboardInputHandler::StartListening()
+void KeyboardInputHandler::Start()
 {
     m_running = true;
 
@@ -56,6 +57,11 @@ void KeyboardInputHandler::StartListening()
     m_keyboardInputHandlerThread.join();
 
     m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::HandleStates, this );
+
+    m_keyboardInputHandlerThread.join();
+
+    if ( m_keyboardException )
+        std::rethrow_exception( m_keyboardException );
 }
 
 void KeyboardInputHandler::Stop()
@@ -81,15 +87,15 @@ void KeyboardInputHandler::ListenToKeyboard()
         return;
 
     if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), R_OK ) != 0 )
-        throw std::runtime_error( "Unable to open input character device: " +
-                                  m_currentListeningKeyboard.value().eventDevicePath + " insufficient permissions" );
+        throw InputException::PeripheralInputException( "Unable to open input device file: " +
+                                  m_currentListeningKeyboard.value().eventDevicePath + ". Insufficient permissions. Please run program with sudo/give this program permission to access the device file." );
 
     int keyboardFd = open( m_currentListeningKeyboard.value().eventDevicePath.c_str(), O_RDONLY );
 
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
-        throw std::runtime_error( "Unable to open input character device: " +
+        throw InputException::PeripheralInputException( "Unable to open device file " +
                                   m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown" );
     }
 
@@ -129,12 +135,19 @@ void KeyboardInputHandler::WaitForKeyboards()
 {
     while ( m_running )
     {
-        m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
+        try
+        {
+            m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
+        }
+        catch ( InputException::PeripheralInputException& )
+        {
+            throw;
+        }
 
         if ( m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
         {
             m_currentState = HandlerState::ListeningForInput;
-            break;
+            return;
         }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
@@ -145,15 +158,23 @@ void KeyboardInputHandler::HandleStates()
 {
     while ( m_running )
     {
-        switch ( m_currentState )
+        try
         {
-        case HandlerState::WaitingForKeyboard:
-            WaitForKeyboards();
-            break;
-        case HandlerState::ListeningForInput:
-            ListenToKeyboard();
-            break;
-        default:;
+            switch ( m_currentState )
+            {
+            case HandlerState::WaitingForKeyboard:
+                WaitForKeyboards();
+                break;
+            case HandlerState::ListeningForInput:
+                ListenToKeyboard();
+                break;
+            default:;
+            }
+        }
+        catch (InputException::PeripheralInputException& pie)
+        {
+            m_keyboardException = std::current_exception();
+            return;
         }
     }
 }

@@ -13,6 +13,8 @@ set( INPUT_COMMON_SOURCES
 set( INPUT_COMMON_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/KeyboardInfo.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/KeyboardInputHandler.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/PeripheralInputException.hpp
 )
 
 add_library( InputCommon
