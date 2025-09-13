@@ -171,7 +171,7 @@ void KeyboardInputHandler::HandleStates()
             default:;
             }
         }
-        catch ( InputException::PeripheralInputException& pie )
+        catch ( InputException::PeripheralInputException& )
         {
             m_keyboardException = std::current_exception();
             return;
