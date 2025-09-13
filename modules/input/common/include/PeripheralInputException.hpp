@@ -19,7 +19,10 @@ namespace InputException
  *      2: The file associated with the peripheral (usually /dev/eventN) cannot be opened (usually due to insufficient
  * permissions)
  */
+
+using PeripheralInputExceptionPtr = std::exception_ptr;
 class PeripheralInputException : public std::exception
+
 {
   public:
     explicit PeripheralInputException( const std::string& exceptionMsg )

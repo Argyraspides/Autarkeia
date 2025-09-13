@@ -3,7 +3,6 @@
 //
 #include "KeyboardInputHandler.hpp"
 #include "PeripheralDetector.hpp"
-#include "PeripheralInputException.hpp"
 #include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>

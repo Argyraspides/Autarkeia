@@ -6,6 +6,7 @@
 #define AUTARKEIA_KEYBOARDINPUTHANDLER_HPP
 
 #include "KeyboardInfo.hpp"
+#include "PeripheralInputException.hpp"
 #include <atomic>
 #include <mutex>
 #include <optional>
@@ -53,7 +54,7 @@ class KeyboardInputHandler
     std::mutex m_lastPressedKeysMutex;
 
     HandlerState m_currentState;
-    std::exception_ptr m_keyboardException;
+    InputException::PeripheralInputExceptionPtr m_keyboardException;
 };
 
 #endif // AUTARKEIA_KEYBOARDINPUTHANDLER_HPP
