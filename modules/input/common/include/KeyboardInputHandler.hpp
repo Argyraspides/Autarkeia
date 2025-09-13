@@ -6,11 +6,11 @@
 #define AUTARKEIA_KEYBOARDINPUTHANDLER_HPP
 
 #include "KeyboardInfo.hpp"
+#include <atomic>
 #include <mutex>
 #include <optional>
 #include <queue>
 #include <thread>
-#include <atomic>
 
 using KeyInputCode = size_t;
 

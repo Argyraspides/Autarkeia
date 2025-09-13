@@ -126,12 +126,14 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
 
 std::vector< KeyboardInfo > GetConnectedKeyboards()
 {
-    if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK | R_OK) != 0 )
-        throw std::runtime_error("Cannot open " + DEVICE_FILE_INFO_PATH + " to check for keyboards - check you have permissions to open the file. The file might not even exist!");
+    if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK | R_OK ) != 0 )
+        throw std::runtime_error(
+            "Cannot open " + DEVICE_FILE_INFO_PATH +
+            " to check for keyboards - check you have permissions to open the file. The file might not even exist!" );
 
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
     if ( !deviceFile.is_open() )
-        throw std::runtime_error("Cannot open " + DEVICE_FILE_INFO_PATH + " to check for keyboards");
+        throw std::runtime_error( "Cannot open " + DEVICE_FILE_INFO_PATH + " to check for keyboards" );
 
     std::vector< KeyboardInfo > connectedKeyboards;
 

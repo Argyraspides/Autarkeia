@@ -89,7 +89,7 @@ void KeyboardInputHandler::ListenToKeyboard()
     {
         close( keyboardFd );
         throw std::runtime_error( "Unable to open input character device: " +
-                          m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown");
+                                  m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown" );
     }
 
     struct input_event keyboardInputEvent{};
@@ -99,7 +99,7 @@ void KeyboardInputHandler::ListenToKeyboard()
 
         if ( bytesRead < 0 && errno == ENODEV ) // Keyboard probs unplugged / dead
         {
-            close(keyboardFd);
+            close( keyboardFd );
             return;
         }
 
@@ -118,11 +118,9 @@ void KeyboardInputHandler::ListenToKeyboard()
             m_lastPressedKeys.pop();
 
         m_lastPressedKeys.push( keyboardInputEvent.code );
-
     }
 
     close( keyboardFd );
-
 }
 
 void KeyboardInputHandler::WaitForKeyboards()
