@@ -139,8 +139,9 @@ std::vector< KeyboardInfo > GetConnectedKeyboards()
 
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
     if ( !deviceFile.is_open() )
-        throw InputException::PeripheralInputException( "Cannot open " + DEVICE_FILE_INFO_PATH +
-                                                        " to check for keyboards for an unknown reason! Something is very wrong!" );
+        throw InputException::PeripheralInputException(
+            "Cannot open " + DEVICE_FILE_INFO_PATH +
+            " to check for keyboards for an unknown reason! Something is very wrong!" );
 
     std::vector< KeyboardInfo > connectedKeyboards;
 

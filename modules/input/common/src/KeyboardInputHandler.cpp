@@ -87,16 +87,18 @@ void KeyboardInputHandler::ListenToKeyboard()
         return;
 
     if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), R_OK ) != 0 )
-        throw InputException::PeripheralInputException( "Unable to open input device file: " +
-                                  m_currentListeningKeyboard.value().eventDevicePath + ". Insufficient permissions. Please run program with sudo/give this program permission to access the device file." );
+        throw InputException::PeripheralInputException(
+            "Unable to open input device file: " + m_currentListeningKeyboard.value().eventDevicePath +
+            ". Insufficient permissions. Please run program with sudo/give this program permission to access the "
+            "device file." );
 
     int keyboardFd = open( m_currentListeningKeyboard.value().eventDevicePath.c_str(), O_RDONLY );
 
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
-        throw InputException::PeripheralInputException( "Unable to open device file " +
-                                  m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown" );
+        throw InputException::PeripheralInputException(
+            "Unable to open device file " + m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown" );
     }
 
     struct input_event keyboardInputEvent{};
@@ -171,7 +173,7 @@ void KeyboardInputHandler::HandleStates()
             default:;
             }
         }
-        catch (InputException::PeripheralInputException& pie)
+        catch ( InputException::PeripheralInputException& pie )
         {
             m_keyboardException = std::current_exception();
             return;

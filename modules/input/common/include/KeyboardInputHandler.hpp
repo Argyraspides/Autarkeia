@@ -31,7 +31,8 @@ class KeyboardInputHandler
     /**
      * @brief Starts the keyboard input handler. Automatically detects connected keyboards and begins listening
      * to key presses, adding them to the buffer
-     * @throws PeripheralInputException thrown if it's impossible to listen to the keyboard or figure out if any are connected
+     * @throws PeripheralInputException thrown if it's impossible to listen to the keyboard or figure out if any are
+     * connected
      */
     void Start();
     void Stop();
