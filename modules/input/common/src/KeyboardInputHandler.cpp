@@ -21,7 +21,8 @@ KeyboardInputHandler::KeyboardInputHandler()
       m_keyboardInputHandlerThread( std::thread() ),
       m_connectedKeyboards( std::nullopt ),
       m_lastPressedKeys( std::queue< KeyInputCode >() ),
-      m_lastPressedKeysMutex( std::mutex() )
+      m_lastPressedKeysMutex( std::mutex() ),
+      m_currentState( HandlerState::WaitingForKeyboard )
 {
 }
 
@@ -54,7 +55,7 @@ void KeyboardInputHandler::StartListening()
 
     m_keyboardInputHandlerThread.join();
 
-    m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::ListenToKeyboard, this );
+    m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::HandleStates, this );
 }
 
 void KeyboardInputHandler::Stop()
@@ -100,6 +101,7 @@ void KeyboardInputHandler::ListenToKeyboard()
         if ( bytesRead < 0 && errno == ENODEV ) // Keyboard probs unplugged / dead
         {
             close( keyboardFd );
+            m_currentState = HandlerState::WaitingForKeyboard;
             return;
         }
 
@@ -130,8 +132,28 @@ void KeyboardInputHandler::WaitForKeyboards()
         m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
 
         if ( m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
+        {
+            m_currentState = HandlerState::ListeningForInput;
             break;
+        }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
+    }
+}
+
+void KeyboardInputHandler::HandleStates()
+{
+    while ( m_running )
+    {
+        switch (m_currentState)
+        {
+            case HandlerState::WaitingForKeyboard:
+                WaitForKeyboards();
+                break;
+            case HandlerState::ListeningForInput:
+                ListenToKeyboard();
+                break;
+            default:;
+        }
     }
 }

@@ -14,6 +14,12 @@
 
 using KeyInputCode = size_t;
 
+enum class HandlerState
+{
+    WaitingForKeyboard,
+    ListeningForInput
+};
+
 class KeyboardInputHandler
 {
   public:
@@ -28,6 +34,7 @@ class KeyboardInputHandler
   private:
     void ListenToKeyboard();
     void WaitForKeyboards();
+    void HandleStates();
 
   private:
     std::atomic_bool m_running;
@@ -38,6 +45,8 @@ class KeyboardInputHandler
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
+
+    HandlerState m_currentState;
 };
 
 #endif // AUTARKEIA_KEYBOARDINPUTHANDLER_HPP
