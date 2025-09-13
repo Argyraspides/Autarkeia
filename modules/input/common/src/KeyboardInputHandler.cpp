@@ -145,15 +145,15 @@ void KeyboardInputHandler::HandleStates()
 {
     while ( m_running )
     {
-        switch (m_currentState)
+        switch ( m_currentState )
         {
-            case HandlerState::WaitingForKeyboard:
-                WaitForKeyboards();
-                break;
-            case HandlerState::ListeningForInput:
-                ListenToKeyboard();
-                break;
-            default:;
+        case HandlerState::WaitingForKeyboard:
+            WaitForKeyboards();
+            break;
+        case HandlerState::ListeningForInput:
+            ListenToKeyboard();
+            break;
+        default:;
         }
     }
 }
