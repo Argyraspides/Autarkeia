@@ -16,7 +16,7 @@ static constexpr uint16_t KEY_RELEASED = 0;
 static constexpr uint16_t KEY_PRESSED = 1;
 static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
-KeyboardInputHandler::KeyboardInputHandler()
+KeyboardInputHandler::KeyboardInputHandler() noexcept
     : m_running( false ),
       m_keyboardInputHandlerThread( std::thread() ),
       m_connectedKeyboards( std::nullopt ),
@@ -26,7 +26,12 @@ KeyboardInputHandler::KeyboardInputHandler()
 {
 }
 
-KeyInputCode KeyboardInputHandler::GetLastKeyPress()
+KeyboardInputHandler::~KeyboardInputHandler() noexcept
+{
+    Stop();
+}
+
+KeyInputCode KeyboardInputHandler::GetNextKeyPress() noexcept
 {
     std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
@@ -39,7 +44,7 @@ KeyInputCode KeyboardInputHandler::GetLastKeyPress()
     return keyPressed;
 }
 
-std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName()
+std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName() noexcept
 {
     if ( m_currentListeningKeyboard.has_value() )
         return m_currentListeningKeyboard.value().keyboardName;
@@ -53,13 +58,11 @@ void KeyboardInputHandler::Start()
 
     m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::HandleStates, this );
 
-    m_keyboardInputHandlerThread.join();
-
     if ( m_keyboardException )
         std::rethrow_exception( m_keyboardException );
 }
 
-void KeyboardInputHandler::Stop()
+void KeyboardInputHandler::Stop() noexcept
 {
     m_running = false;
 

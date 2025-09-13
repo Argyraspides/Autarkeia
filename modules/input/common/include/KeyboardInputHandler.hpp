@@ -7,6 +7,7 @@
 
 #include "KeyboardInfo.hpp"
 #include "PeripheralInputException.hpp"
+#include <linux/input-event-codes.h>
 #include <atomic>
 #include <mutex>
 #include <optional>
@@ -21,22 +22,56 @@ enum class HandlerState
     ListeningForInput
 };
 
+/**
+ * @brief KeyboardInputHandler automatically detects connected keyboards and begins listening to key presses.
+ * For safety, you should ensure the entire lifecycle of the object (the moment Start() is called) is contained in a try/catch block.
+ * KeyboardInputHandler relies on certain Linux device files to be both present and readable, which can change at any
+ * arbitrary time. See the KeyboardInputHandler::Start() function description.
+ *
+ * Example use:
+ *
+ * @code
+ * try
+ * {
+ *     KeyboardInputHandler handler;
+ *     handler.Start();
+ *
+ *     while (applicationRunning)
+ *     {
+ *         auto key = handler.GetLastKeyPress();
+ *         // Process key...
+ *     }
+ *
+ *     handler.Stop();
+ * }
+ * catch (const PeripheralInputException& e)
+ * {
+ *     // Handle keyboard system failures
+ * }
+ * @endcode
+ */
 class KeyboardInputHandler
 {
   public:
-    KeyboardInputHandler();
-
-    KeyInputCode GetLastKeyPress();
-    std::optional< std::string > GetCurrentKeyboardName();
+    KeyboardInputHandler() noexcept;
+    ~KeyboardInputHandler() noexcept;
 
     /**
-     * @brief Starts the keyboard input handler. Automatically detects connected keyboards and begins listening
+     * @brief Returns the next key that the user pressed (the buffer is a queue). The last key the user pressed
+     * would be the key at the end of the queue. Use macros in linux/input-event-codes.h for checking which key was pressed
+     * (prefixed with "KEY_")
+     */
+    KeyInputCode GetNextKeyPress() noexcept;
+    std::optional< std::string > GetCurrentKeyboardName() noexcept;
+
+    /**
+     * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins listening
      * to key presses, adding them to the buffer
      * @throws PeripheralInputException thrown if it's impossible to listen to the keyboard or figure out if any are
      * connected
      */
     void Start();
-    void Stop();
+    void Stop() noexcept;
 
   private:
     void ListenToKeyboard();
