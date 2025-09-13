@@ -66,23 +66,23 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     }
 }
 
-inline void DrawLineVertical(
-    int y1, int y2, const int x, Frame& frame, const char& drawChar )
+inline void DrawLineVertical( int y1, int y2, const int x, Frame& frame, const char& drawChar )
 {
     if ( y1 > y2 )
         std::swap( y1, y2 );
 
-    while ( y1 <= y2 && frame.Write(x, y1++, drawChar) );
+    while ( y1 <= y2 && frame.Write( x, y1++, drawChar ) )
+        ;
 }
 
-inline void DrawLineHorizontal(
-    int x1, int x2, const int y, Frame& frame, const char& drawChar )
+inline void DrawLineHorizontal( int x1, int x2, const int y, Frame& frame, const char& drawChar )
 {
 
     if ( x1 > x2 )
         std::swap( x1, x2 );
 
-    while ( x1 <= x2 && frame.Write(x1++, y, drawChar) );
+    while ( x1 <= x2 && frame.Write( x1++, y, drawChar ) )
+        ;
 }
 
 inline void QuickDrawLine( const Vec2I& p1, // Starting point
@@ -123,7 +123,7 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
                 dist += dx * dxPolarity;
             }
 
-            if (!frame.Write(currPt.x, currPt.y, drawChar))
+            if ( !frame.Write( currPt.x, currPt.y, drawChar ) )
                 break;
 
             currPt.x += dxPolarity;
@@ -142,7 +142,7 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
                 dist += -dy * dyPolarity;
             }
 
-            if (!frame.Write(currPt.x, currPt.y, drawChar))
+            if ( !frame.Write( currPt.x, currPt.y, drawChar ) )
                 break;
 
             currPt.y += dyPolarity;
@@ -151,22 +151,14 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
     }
 }
 
-inline void DrawTriangle( const Vec2I& p1,
-                          const Vec2I& p2,
-                          const Vec2I& p3,
-                          Frame& frame,
-                          const char& drawChar )
+inline void DrawTriangle( const Vec2I& p1, const Vec2I& p2, const Vec2I& p3, Frame& frame, const char& drawChar )
 {
     DrawLine( p1, p2, frame, drawChar );
     DrawLine( p2, p3, frame, drawChar );
     DrawLine( p3, p1, frame, drawChar );
 }
 
-inline void QuickDrawTriangle( const Vec2I& p1,
-                               const Vec2I& p2,
-                               const Vec2I& p3,
-                               Frame& frame,
-                               const char& drawChar )
+inline void QuickDrawTriangle( const Vec2I& p1, const Vec2I& p2, const Vec2I& p3, Frame& frame, const char& drawChar )
 {
     QuickDrawLine( p1, p2, frame, drawChar );
     QuickDrawLine( p2, p3, frame, drawChar );
@@ -175,21 +167,21 @@ inline void QuickDrawTriangle( const Vec2I& p1,
 
 inline void DrawPixel( const Vec2I& p, Frame& frame, const char& drawChar )
 {
-    frame.Write(p.x, p.y, drawChar);
+    frame.Write( p.x, p.y, drawChar );
 }
 
 inline void Clear( Frame& frame, const char& clearChar )
 {
-    for (int y = 0; y < frame.Height(); y++)
-        for (int x = 0; x < frame.Width(); x++)
-            frame.Write(x, y, clearChar);
+    for ( int y = 0; y < frame.Height(); y++ )
+        for ( int x = 0; x < frame.Width(); x++ )
+            frame.Write( x, y, clearChar );
 }
 
 inline void ClearScreen()
 {
     // Run 'strace clear > /dev/null' to find out how this works.
     // Check the write() syscall at the end
-    write(STDOUT_FILENO, "\33[H\33[2J\33[3J", 11);
+    write( STDOUT_FILENO, "\33[H\33[2J\33[3J", 11 );
 }
 
 inline void Draw( Frame& frame )

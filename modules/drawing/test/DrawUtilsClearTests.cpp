@@ -5,4 +5,3 @@
 #include "DrawUtils.hpp"
 #include "DrawUtilsConvenienceFunctions.hpp"
 #include "catch_amalgamated.hpp"
-

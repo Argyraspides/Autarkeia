@@ -1,0 +1,29 @@
+cmake_minimum_required(VERSION 3.31)
+set( CMAKE_CXX_STANDARD 17 )
+
+message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
+
+project( InputCommon )
+
+set( INPUT_COMMON_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardInfo.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardInputHandler.cpp
+)
+
+set( INPUT_COMMON_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/KeyboardInfo.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/KeyboardInputHandler.hpp
+)
+
+add_library( InputCommon
+    ${INPUT_COMMON_SOURCES}
+    ${INPUT_COMMON_HEADERS}
+)
+
+target_include_directories( InputCommon PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries( InputCommon PRIVATE
+    PeripheralDetector
+)
