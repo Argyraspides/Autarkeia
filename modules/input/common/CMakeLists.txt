@@ -6,8 +6,7 @@ message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 project( InputCommon )
 
 set( INPUT_COMMON_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardInfo.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardInputHandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardInputHandler.cpp
 )
 
 set( INPUT_COMMON_HEADERS

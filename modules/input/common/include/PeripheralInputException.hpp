@@ -8,7 +8,7 @@
 #include <exception>
 #include <string>
 
-namespace InputException
+namespace InputCommon
 {
 
 /**
@@ -22,7 +22,6 @@ namespace InputException
 
 using PeripheralInputExceptionPtr = std::exception_ptr;
 class PeripheralInputException : public std::exception
-
 {
   public:
     explicit PeripheralInputException( const std::string& exceptionMsg )

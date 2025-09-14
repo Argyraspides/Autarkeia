@@ -2,7 +2,7 @@
 // Created by gaugamela on 9/11/25.
 //
 #include "KeyboardInputHandler.hpp"
-#include "PeripheralDetector.hpp"
+#include "InputPeripheralDetection.hpp"
 #include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>
@@ -16,6 +16,8 @@ static constexpr uint16_t KEY_RELEASED = 0;
 static constexpr uint16_t KEY_PRESSED = 1;
 static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
+namespace InputCommon
+{
 KeyboardInputHandler::KeyboardInputHandler() noexcept
     : m_running( false ),
       m_keyboardInputHandlerThread( std::thread() ),
@@ -85,7 +87,7 @@ void KeyboardInputHandler::ListenToKeyboard()
         return;
 
     if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), R_OK ) != 0 )
-        throw InputException::PeripheralInputException(
+        throw InputCommon::PeripheralInputException(
             "Unable to open input device file: " + m_currentListeningKeyboard.value().eventDevicePath +
             ". Insufficient permissions. Please run program with sudo/give this program permission to access the "
             "device file." );
@@ -95,7 +97,7 @@ void KeyboardInputHandler::ListenToKeyboard()
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
-        throw InputException::PeripheralInputException(
+        throw InputCommon::PeripheralInputException(
             "Unable to open device file " + m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown" );
     }
 
@@ -137,9 +139,9 @@ void KeyboardInputHandler::WaitForKeyboards()
     {
         try
         {
-            m_connectedKeyboards = PeripheralDetector::GetConnectedKeyboards();
+            m_connectedKeyboards = InputPeripheralDetection::GetConnectedKeyboards();
         }
-        catch ( InputException::PeripheralInputException& )
+        catch ( InputCommon::PeripheralInputException& )
         {
             throw;
         }
@@ -171,10 +173,12 @@ void KeyboardInputHandler::HandleStates()
             default:;
             }
         }
-        catch ( InputException::PeripheralInputException& )
+        catch ( InputCommon::PeripheralInputException& )
         {
             m_keyboardException = std::current_exception();
             return;
         }
     }
 }
+
+} // namespace InputCommon

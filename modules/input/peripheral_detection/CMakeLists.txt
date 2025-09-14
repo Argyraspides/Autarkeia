@@ -6,11 +6,11 @@ message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 project( PeripheralDetector )
 
 set( PERIPHERAL_DETECTION_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/PeripheralDetector.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/InputPeripheralDetection.hpp
 )
 
 add_library( PeripheralDetector
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/PeripheralDetector.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/InputPeripheralDetection.cpp
 )
 
 target_include_directories( PeripheralDetector PUBLIC

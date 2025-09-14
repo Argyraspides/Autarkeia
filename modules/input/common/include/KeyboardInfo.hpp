@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+namespace InputCommon
+{
 struct KeyboardInfo
 {
     std::string keyboardName;
@@ -18,5 +20,6 @@ struct KeyboardInfo
     {
     }
 };
+}
 
 #endif // AUTARKEIA_KEYBOARDINFO_HPP

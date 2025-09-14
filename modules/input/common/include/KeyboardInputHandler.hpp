@@ -14,6 +14,9 @@
 #include <queue>
 #include <thread>
 
+namespace InputCommon
+{
+
 using KeyInputCode = size_t;
 
 enum class HandlerState
@@ -82,14 +85,16 @@ class KeyboardInputHandler
     std::atomic_bool m_running;
     std::thread m_keyboardInputHandlerThread;
 
-    std::optional< std::vector< KeyboardInfo > > m_connectedKeyboards;
-    std::optional< KeyboardInfo > m_currentListeningKeyboard;
+    std::optional< std::vector< InputCommon::KeyboardInfo > > m_connectedKeyboards;
+    std::optional< InputCommon::KeyboardInfo > m_currentListeningKeyboard;
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
 
     HandlerState m_currentState;
-    InputException::PeripheralInputExceptionPtr m_keyboardException;
+    InputCommon::PeripheralInputExceptionPtr m_keyboardException;
 };
+
+}
 
 #endif // AUTARKEIA_KEYBOARDINPUTHANDLER_HPP

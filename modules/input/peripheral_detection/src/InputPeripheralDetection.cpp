@@ -1,7 +1,7 @@
 //
 // Created by gaugamela on 9/11/25.
 //
-#include "PeripheralDetector.hpp"
+#include "InputPeripheralDetection.hpp"
 #include "PeripheralInputException.hpp"
 #include <iostream>
 #include <linux/input-event-codes.h>
@@ -18,7 +18,7 @@ static inline std::string DEVICE_FILE_INTERFACE_PREFIX_PATH = "/dev/input";
 
 static inline std::string EVENT_DEVICE_FILE_PREFIX_NAME = "event";
 
-namespace PeripheralDetector
+namespace InputPeripheralDetection
 {
 bool IsKeyboard( const std::string& deviceFileEntry )
 {
@@ -125,25 +125,25 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-std::vector< KeyboardInfo > GetConnectedKeyboards()
+std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
 {
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
-        throw InputException::PeripheralInputException( "Something is seriously wrong! The file " +
+        throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " +
                                                         DEVICE_FILE_INFO_PATH +
                                                         " does not exist! What have you done to your Linux system???" );
 
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), R_OK ) != 0 )
-        throw InputException::PeripheralInputException(
+        throw InputCommon::PeripheralInputException(
             "Cannot open " + DEVICE_FILE_INFO_PATH +
             " to find connected keyboards. You must run this program with sudo!" );
 
     std::ifstream deviceFile( DEVICE_FILE_INFO_PATH );
     if ( !deviceFile.is_open() )
-        throw InputException::PeripheralInputException(
+        throw InputCommon::PeripheralInputException(
             "Cannot open " + DEVICE_FILE_INFO_PATH +
             " to check for keyboards for an unknown reason! Something is very wrong!" );
 
-    std::vector< KeyboardInfo > connectedKeyboards;
+    std::vector< InputCommon::KeyboardInfo > connectedKeyboards;
 
     std::string currLine;
     std::stringstream ss;
@@ -170,7 +170,7 @@ std::vector< KeyboardInfo > GetConnectedKeyboards()
             continue;
         }
 
-        KeyboardInfo kbInfo{ deviceName.value(), eventDeviceName.value() };
+        InputCommon::KeyboardInfo kbInfo{ deviceName.value(), eventDeviceName.value() };
         connectedKeyboards.push_back( kbInfo );
 
         ss.str( "" );
