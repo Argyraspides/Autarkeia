@@ -36,6 +36,6 @@ class PeripheralInputException : public std::exception
     const std::string m_exceptionMsg;
 };
 
-} // namespace InputException
+} // namespace InputCommon
 
 #endif // AUTARKEIA_KEYBOARDEXCEPTION_HPP

@@ -25,6 +25,6 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
 
 std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards();
 
-} // namespace PeripheralDetector
+} // namespace InputPeripheralDetection
 
 #endif // AUTARKEIA_PERIPHERALDETECTOR_HPP

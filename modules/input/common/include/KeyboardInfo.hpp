@@ -20,6 +20,6 @@ struct KeyboardInfo
     {
     }
 };
-}
+} // namespace InputCommon
 
 #endif // AUTARKEIA_KEYBOARDINFO_HPP

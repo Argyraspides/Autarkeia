@@ -128,9 +128,8 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
 std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
 {
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
-        throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " +
-                                                        DEVICE_FILE_INFO_PATH +
-                                                        " does not exist! What have you done to your Linux system???" );
+        throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " + DEVICE_FILE_INFO_PATH +
+                                                     " does not exist! What have you done to your Linux system???" );
 
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), R_OK ) != 0 )
         throw InputCommon::PeripheralInputException(
@@ -179,4 +178,4 @@ std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
     return connectedKeyboards;
 }
 
-} // namespace PeripheralDetector
+} // namespace InputPeripheralDetection

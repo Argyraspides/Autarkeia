@@ -95,6 +95,6 @@ class KeyboardInputHandler
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
 };
 
-}
+} // namespace InputCommon
 
 #endif // AUTARKEIA_KEYBOARDINPUTHANDLER_HPP
