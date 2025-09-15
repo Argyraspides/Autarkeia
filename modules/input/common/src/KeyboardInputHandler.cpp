@@ -37,6 +37,9 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 {
     std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
+    if ( m_keyboardException )
+        std::rethrow_exception( m_keyboardException );
+
     if ( m_lastPressedKeys.empty() )
         return std::nullopt;
 
@@ -57,11 +60,7 @@ std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName() noex
 void KeyboardInputHandler::Start()
 {
     m_running = true;
-
     m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::HandleStates, this );
-
-    if ( m_keyboardException )
-        std::rethrow_exception( m_keyboardException );
 }
 
 void KeyboardInputHandler::Stop() noexcept
