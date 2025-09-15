@@ -33,12 +33,12 @@ KeyboardInputHandler::~KeyboardInputHandler() noexcept
     Stop();
 }
 
-KeyInputCode KeyboardInputHandler::GetNextKeyPress() noexcept
+std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 {
     std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
     if ( m_lastPressedKeys.empty() )
-        return KEY_CNT;
+        return std::nullopt;
 
     KeyInputCode keyPressed = m_lastPressedKeys.front();
     m_lastPressedKeys.pop();
