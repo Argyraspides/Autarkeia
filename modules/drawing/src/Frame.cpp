@@ -6,13 +6,14 @@
 #include <stdexcept>
 #define DEFAULT_INIT_CHAR '.'
 
-Frame::Frame( int width, int height ) : m_frameWidth( width ), m_frameHeight( height )
+Frame::Frame( int width, int height )
+    : m_frameWidth( width ),
+      m_frameHeight( height )
 {
-    m_buffer = std::string( (width * height) + height, DEFAULT_INIT_CHAR );
+    m_buffer = std::string( ( width * height ) + height, DEFAULT_INIT_CHAR );
 
-    for (int i = width; i < m_buffer.size(); i += (width + 1))
-        m_buffer[i] = '\n';
-
+    for ( int i = width; i < m_buffer.size(); i += ( width + 1 ) )
+        m_buffer[ i ] = '\n';
 }
 
 Frame::~Frame()
@@ -21,7 +22,7 @@ Frame::~Frame()
 
 bool Frame::Write( const int& x, const int& y, const char& dat )
 {
-    if (Empty())
+    if ( Empty() )
         return false;
     if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
         return false;
