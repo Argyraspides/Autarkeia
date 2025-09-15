@@ -73,17 +73,20 @@ void KeyboardInputHandler::Stop() noexcept
 
 void KeyboardInputHandler::ListenToKeyboard()
 {
-    if ( !m_connectedKeyboards.has_value() )
+    if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
+    {
+        m_currentState = HandlerState::WaitingForKeyboard;
         return;
-
-    if ( m_connectedKeyboards.value().empty() )
-        return;
+    }
 
     m_currentListeningKeyboard = m_connectedKeyboards.value().front();
 
     // Keyboard might have been unplugged
     if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), F_OK ) != 0 )
+    {
+        m_currentState = HandlerState::WaitingForKeyboard;
         return;
+    }
 
     if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), R_OK ) != 0 )
         throw InputCommon::PeripheralInputException(
