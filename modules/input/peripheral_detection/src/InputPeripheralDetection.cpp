@@ -119,7 +119,6 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     {
         if ( eventName.find( EVENT_DEVICE_FILE_PREFIX_NAME ) != std::string::npos )
         {
-            // TODO::ARGYRASPIDES() { Find out if there might actually be multiple 'event' files per device??? }
             handlerDeviceNames = DEVICE_FILE_INTERFACE_PREFIX_PATH.append( "/" ).append( eventName );
             break;
         }
