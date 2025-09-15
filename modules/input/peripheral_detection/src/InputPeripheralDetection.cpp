@@ -38,6 +38,7 @@ bool IsKeyboard( const std::string& deviceFileEntry )
     }
     catch ( const std::out_of_range& e )
     {
+        // TODO::ARGYRASPIDES() { Must replace with logging class in future }
         std::cerr << "KeyboardInfo::IsKeyboard() - " << e.what();
         return false;
     }
@@ -79,6 +80,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
     }
     catch ( const std::out_of_range& e )
     {
+        // TODO::ARGYRASPIDES() { Must replace with logging class in future }
         std::cerr << "KeyboardInfo::GetDeviceName() - " << e.what();
         return std::nullopt;
     }
@@ -104,6 +106,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     }
     catch ( const std::out_of_range& e )
     {
+        // TODO::ARGYRASPIDES() { Must replace with logging class in future }
         std::cerr << "KeyboardInfo::GetHandlerNames() - " << e.what();
         return std::nullopt;
     }
