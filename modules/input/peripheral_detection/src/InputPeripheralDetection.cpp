@@ -8,13 +8,13 @@
 #include <sstream>
 #include <unistd.h>
 
-static inline std::string EV_START_LINE = "B: EV=";
-static inline std::string KEY_START_LINE = "B: KEY=";
-static inline std::string NAME_START_LINE = "N: Name=";
-static inline std::string HANDLERS_START_LINE = "H: Handlers=";
+static const inline std::string EV_START_LINE = "B: EV=";
+static const inline std::string KEY_START_LINE = "B: KEY=";
+static const inline std::string NAME_START_LINE = "N: Name=";
+static const inline std::string HANDLERS_START_LINE = "H: Handlers=";
 
-static inline std::string DEVICE_FILE_INFO_PATH = "/proc/bus/input/devices";
-static inline std::string DEVICE_FILE_INTERFACE_PREFIX_PATH = "/dev/input";
+static const inline std::string DEVICE_FILE_INFO_PATH = "/proc/bus/input/devices";
+static const inline std::string DEVICE_FILE_INTERFACE_PREFIX_PATH = "/dev/input";
 
 static inline std::string EVENT_DEVICE_FILE_PREFIX_NAME = "event";
 
@@ -119,7 +119,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     {
         if ( eventName.find( EVENT_DEVICE_FILE_PREFIX_NAME ) != std::string::npos )
         {
-            handlerDeviceNames = DEVICE_FILE_INTERFACE_PREFIX_PATH.append( "/" ).append( eventName );
+            handlerDeviceNames = DEVICE_FILE_INTERFACE_PREFIX_PATH + "/" + eventName;
             break;
         }
     }

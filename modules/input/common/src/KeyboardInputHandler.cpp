@@ -33,7 +33,7 @@ KeyboardInputHandler::~KeyboardInputHandler() noexcept
     Stop();
 }
 
-std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
+std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
 {
     std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
@@ -55,6 +55,11 @@ std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName() noex
         return m_currentListeningKeyboard.value().keyboardName;
 
     return std::nullopt;
+}
+
+const std::optional< std::vector< InputCommon::KeyboardInfo > >& KeyboardInputHandler::GetConnectedKeyboards() noexcept
+{
+    return m_connectedKeyboards;
 }
 
 void KeyboardInputHandler::Start()
@@ -104,7 +109,7 @@ void KeyboardInputHandler::ListenToKeyboard()
     }
 
     struct input_event keyboardInputEvent{};
-    while ( m_running )
+    while ( m_currentState == HandlerState::ListeningForInput )
     {
         ssize_t bytesRead = read( keyboardFd, reinterpret_cast< void* >( &keyboardInputEvent ), sizeof( input_event ) );
 
@@ -137,7 +142,7 @@ void KeyboardInputHandler::ListenToKeyboard()
 
 void KeyboardInputHandler::WaitForKeyboards()
 {
-    while ( m_running )
+    while ( m_currentState == HandlerState::WaitingForKeyboard )
     {
         try
         {

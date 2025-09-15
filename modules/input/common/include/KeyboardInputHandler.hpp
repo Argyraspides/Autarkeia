@@ -22,7 +22,7 @@ using KeyInputCode = size_t;
 enum class HandlerState
 {
     WaitingForKeyboard,
-    ListeningForInput
+    ListeningForInput,
 };
 
 /**
@@ -67,6 +67,7 @@ class KeyboardInputHandler
      */
     std::optional< KeyInputCode > GetNextKeyPress() noexcept;
     std::optional< std::string > GetCurrentKeyboardName() noexcept;
+    const std::optional< std::vector< InputCommon::KeyboardInfo > >& GetConnectedKeyboards() noexcept;
 
     /**
      * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins
@@ -91,6 +92,7 @@ class KeyboardInputHandler
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
+    std::mutex m_connectedKeyboardsMutex;
 
     HandlerState m_currentState;
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
