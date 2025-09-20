@@ -10,10 +10,12 @@
 int main()
 {
     InputCommon::KeyboardInputHandler kbd;
-    Frame frame( 20, 20 );
+
+    constexpr size_t frameSize = 20;
+    Frame frame( frameSize, frameSize );
     kbd.Start();
 
-    Vec2I ballPos = { 10, 10 };
+    Vec2I ballPos = { frameSize / 2, frameSize / 2 };
 
     while ( true )
     {
@@ -34,16 +36,16 @@ int main()
         switch ( key.value() )
         {
         case KEY_UP:
-            ballPos.y--;
+            ballPos.y = (ballPos.y - 1 < 0) ? (frameSize - 1) : (ballPos.y - 1);
             break;
         case KEY_DOWN:
-            ballPos.y++;
+            ballPos.y = (ballPos.y + 1) % frameSize;
             break;
         case KEY_LEFT:
-            ballPos.x--;
+            ballPos.x = (ballPos.x - 1 < 0) ? (frameSize - 1) : (ballPos.x - 1);
             break;
         case KEY_RIGHT:
-            ballPos.x++;
+            ballPos.x = (ballPos.x + 1) % frameSize;
             break;
         default:;
         }

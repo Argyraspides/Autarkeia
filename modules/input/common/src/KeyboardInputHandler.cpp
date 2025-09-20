@@ -142,20 +142,13 @@ void KeyboardInputHandler::DetectKeyboards()
             m_connectedKeyboards.insert( keyboardInfo );
         }
 
-        // for ( const InputCommon::KeyboardInfo& keyboardInfo : m_connectedKeyboards )
-        // {
-        //     if ( !access( keyboardInfo.eventDevicePath.c_str(), F_OK | R_OK ) )
-        //         m_connectedKeyboards.erase( keyboardInfo );
-        // }
-
-        // for ( auto it = m_connectedKeyboards.begin(); it != m_connectedKeyboards.end(); ++it )
-        // {
-        //     if ( !access( it->eventDevicePath.c_str(), F_OK | R_OK ) )
-        //     {
-        //         m_connectedKeyboards.erase( *it );
-        //         it = m_connectedKeyboards.begin();
-        //     }
-        // }
+        for ( auto it = m_connectedKeyboards.begin(); it != m_connectedKeyboards.end(); )
+        {
+            if ( access( it->eventDevicePath.c_str(), F_OK | R_OK ) != 0 )
+                it = m_connectedKeyboards.erase( it );
+            else
+                ++it;
+        }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
     }
