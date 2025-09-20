@@ -142,6 +142,7 @@ void KeyboardInputHandler::WaitForKeyboards()
             m_keyboardInputThreads.push_back(
                 std::thread( &KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo )
             );
+            m_connectedKeyboards.insert( keyboardInfo );
         }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );

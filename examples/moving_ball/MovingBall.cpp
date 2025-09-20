@@ -18,7 +18,7 @@ int main()
             if ( !key.has_value() )
                 continue;
 
-            std::cout << "Pressed key: " << key.value();
+            std::cout << "Pressed key: " << key.value() << "\n";
 
         }
         catch (InputCommon::PeripheralInputException& pie)
