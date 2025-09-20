@@ -32,6 +32,7 @@ namespace InputCommon
 {
 
 using KeyInputCode = size_t;
+constexpr KeyInputCode InvalidKeyCode = std::numeric_limits< size_t >::max();
 
 enum class HandlerState
 {
@@ -105,7 +106,8 @@ class KeyboardInputHandler
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
 
-    std::atomic< InputCommon::PeripheralInputExceptionPtr > m_keyboardException;
+    InputCommon::PeripheralInputExceptionPtr m_keyboardException;
+    std::mutex m_keyboardExceptionMutex;
 };
 
 } // namespace InputCommon

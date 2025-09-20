@@ -35,16 +35,23 @@ KeyboardInputHandler::~KeyboardInputHandler() noexcept
 
 std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
 {
-    std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
-    if ( m_keyboardException )
-        std::rethrow_exception( m_keyboardException );
+    {
+        std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
+        if ( m_keyboardException )
+            std::rethrow_exception( m_keyboardException );
+    }
 
-    if ( m_lastPressedKeys.empty() )
-        return std::nullopt;
+    KeyInputCode keyPressed = InputCommon::InvalidKeyCode;
+    {
+        std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
-    KeyInputCode keyPressed = m_lastPressedKeys.front();
-    m_lastPressedKeys.pop();
+        if ( m_lastPressedKeys.empty() )
+            return std::nullopt;
+
+        keyPressed = m_lastPressedKeys.front();
+        m_lastPressedKeys.pop();
+    }
 
     return keyPressed;
 }
@@ -74,6 +81,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     // TODO::ARGYRASPIDES() { You need to set the exception pointer here }
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
     {
+        std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
         m_keyboardException = std::make_exception_ptr( InputCommon::PeripheralInputException(
             "Unable to open input device file: " + keyboardInfo.eventDevicePath +
             ". Insufficient permissions. Please run program with sudo/give this program permission to access the "
@@ -86,6 +94,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
+        std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
         m_keyboardException = std::make_exception_ptr( InputCommon::PeripheralInputException(
             "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown" ) );
         return;
@@ -133,6 +142,7 @@ void KeyboardInputHandler::DetectKeyboards()
         }
         catch ( InputCommon::PeripheralInputException& )
         {
+            std::lock_guard< std::mutex > keyboardExceptionLock( m_keyboardExceptionMutex );
             m_keyboardException = std::current_exception();
             return;
         }
