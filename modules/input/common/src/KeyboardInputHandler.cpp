@@ -36,7 +36,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
             std::rethrow_exception( m_keyboardException );
     }
 
-    KeyInputCode keyPressed = InputCommon::InvalidKeyCode;
+    std::optional< KeyInputCode > keyPressed = std::nullopt;
     {
         std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
