@@ -135,13 +135,9 @@ void KeyboardInputHandler::WaitForKeyboards()
         for ( const InputCommon::KeyboardInfo& keyboardInfo : connectedKeyboards )
         {
             if ( m_connectedKeyboards.find( keyboardInfo ) != m_connectedKeyboards.end() )
-            {
                 continue;
-            }
 
-            m_keyboardInputThreads.push_back(
-                std::thread( &KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo )
-            );
+            m_keyboardInputThreads.emplace_back( &KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo );
             m_connectedKeyboards.insert( keyboardInfo );
         }
 
