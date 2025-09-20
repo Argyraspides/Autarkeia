@@ -7,6 +7,7 @@
 #include <linux/input-event-codes.h>
 #include <sstream>
 #include <unistd.h>
+#include <set>
 
 static const inline std::string EV_START_LINE = "B: EV=";
 static const inline std::string KEY_START_LINE = "B: KEY=";
@@ -127,7 +128,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
+InputCommon::KeyboardHashSet GetConnectedKeyboards()
 {
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
         throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " + DEVICE_FILE_INFO_PATH +
@@ -144,7 +145,7 @@ std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
             "Cannot open " + DEVICE_FILE_INFO_PATH +
             " to check for keyboards for an unknown reason! Something is very wrong!" );
 
-    std::vector< InputCommon::KeyboardInfo > connectedKeyboards;
+    InputCommon::KeyboardHashSet connectedKeyboards;
 
     std::string currLine;
     std::stringstream ss;
@@ -172,7 +173,7 @@ std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
         }
 
         InputCommon::KeyboardInfo kbInfo{ deviceName.value(), eventDeviceName.value() };
-        connectedKeyboards.push_back( kbInfo );
+        connectedKeyboards.insert( kbInfo );
 
         ss.str( "" );
     }

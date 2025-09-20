@@ -13,6 +13,7 @@
 #include <optional>
 #include <queue>
 #include <thread>
+#include <set>
 
 namespace InputCommon
 {
@@ -66,8 +67,6 @@ class KeyboardInputHandler
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
     std::optional< KeyInputCode > GetNextKeyPress() noexcept;
-    std::optional< std::string > GetCurrentKeyboardName() noexcept;
-    const std::optional< std::vector< InputCommon::KeyboardInfo > >& GetConnectedKeyboards() noexcept;
 
     /**
      * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins
@@ -79,22 +78,24 @@ class KeyboardInputHandler
     void Stop() noexcept;
 
   private:
-    void ListenToKeyboard();
+    void ListenToKeyboard( InputCommon::KeyboardInfo );
     void WaitForKeyboards();
     void HandleStates();
 
   private:
     std::atomic_bool m_running;
-    std::thread m_keyboardInputHandlerThread;
 
-    std::optional< std::vector< InputCommon::KeyboardInfo > > m_connectedKeyboards;
+    std::vector< std::thread > m_keyboardInputThreads;
+    std::thread m_keyboardDetectionThread;
+
+    InputCommon::KeyboardHashSet m_connectedKeyboards;
     std::optional< InputCommon::KeyboardInfo > m_currentListeningKeyboard;
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
     std::mutex m_connectedKeyboardsMutex;
 
-    HandlerState m_currentState;
+    std::atomic< HandlerState > m_currentState;
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
 };
 

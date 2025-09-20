@@ -6,6 +6,7 @@
 #define AUTARKEIA_KEYBOARDINFO_HPP
 #include <string>
 #include <utility>
+#include <unordered_set>
 
 namespace InputCommon
 {
@@ -20,6 +21,19 @@ struct KeyboardInfo
     {
     }
 };
+
+inline auto KeyboardInfoHashFunc = [](const KeyboardInfo& k1) {
+    std::hash< std::string > stringHash;
+    return stringHash(k1.eventDevicePath);
+};
+
+inline auto KeyboardInfoEqualFunc = [](const KeyboardInfo& k1, const KeyboardInfo& k2) {
+    return k1.eventDevicePath == k2.eventDevicePath;
+};
+
+using KeyboardHashSet =
+    std::unordered_set< KeyboardInfo, decltype( KeyboardInfoHashFunc ), decltype( KeyboardInfoEqualFunc ) >;
+
 } // namespace InputCommon
 
 #endif // AUTARKEIA_KEYBOARDINFO_HPP
