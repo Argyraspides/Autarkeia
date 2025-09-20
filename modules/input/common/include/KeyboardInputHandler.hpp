@@ -56,6 +56,7 @@ enum class HandlerState
  *
  *     while (applicationRunning)
  *     {
+ *         handler.WaitForKeyPress();
  *         auto key = handler.GetLastKeyPress();
  *         // Process key...
  *     }
@@ -82,6 +83,9 @@ class KeyboardInputHandler
      */
     std::optional< KeyInputCode > GetNextKeyPress();
 
+    /**
+     * @brief Blocks the calling thread until a key press is available to take from the buffer
+     */
     void WaitForKeyPress();
 
     /**
