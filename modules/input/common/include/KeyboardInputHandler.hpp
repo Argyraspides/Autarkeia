@@ -80,7 +80,6 @@ class KeyboardInputHandler
   private:
     void ListenToKeyboard( InputCommon::KeyboardInfo );
     void WaitForKeyboards();
-    void HandleStates();
 
   private:
     std::atomic_bool m_running;

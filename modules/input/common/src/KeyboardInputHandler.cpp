@@ -58,6 +58,12 @@ void KeyboardInputHandler::Start()
 void KeyboardInputHandler::Stop() noexcept
 {
     m_running = false;
+
+    m_keyboardDetectionThread.join();
+
+    for ( std::thread& thread : m_keyboardInputThreads )
+        thread.join();
+
 }
 
 void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardInfo )
