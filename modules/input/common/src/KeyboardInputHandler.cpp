@@ -77,7 +77,6 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     if ( access( keyboardInfo.eventDevicePath.c_str(), F_OK ) != 0 )
         return;
 
-    // TODO::ARGYRASPIDES() { You need to set the exception pointer here }
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
     {
         std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
