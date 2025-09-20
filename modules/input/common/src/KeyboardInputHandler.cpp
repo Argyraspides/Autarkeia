@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <semaphore>
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
 
@@ -18,13 +19,7 @@ static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
 namespace InputCommon
 {
-KeyboardInputHandler::KeyboardInputHandler() noexcept
-    : m_running( false ),
-      m_keyboardInputThreads( std::vector< std::thread >() ),
-      m_keyboardDetectionThread( std::thread() ),
-      m_connectedKeyboards( InputCommon::KeyboardHashSet() ),
-      m_lastPressedKeys( std::queue< KeyInputCode >() ),
-      m_lastPressedKeysMutex( std::mutex() )
+KeyboardInputHandler::KeyboardInputHandler() noexcept : m_running( false ), m_waitForInputSemaphore( 0 )
 {
 }
 
@@ -35,7 +30,6 @@ KeyboardInputHandler::~KeyboardInputHandler() noexcept
 
 std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
 {
-
     {
         std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
         if ( m_keyboardException )
@@ -54,6 +48,11 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
     }
 
     return keyPressed;
+}
+
+void KeyboardInputHandler::WaitForKeyPress()
+{
+    m_waitForInputSemaphore.acquire();
 }
 
 void KeyboardInputHandler::Start()
@@ -126,6 +125,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
             m_lastPressedKeys.pop();
 
         m_lastPressedKeys.push( keyboardInputEvent.code );
+        m_waitForInputSemaphore.release();
     }
 
     close( keyboardFd );

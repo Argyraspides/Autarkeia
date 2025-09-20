@@ -7,7 +7,7 @@
 #include <linux/input-event-codes.h>
 #include <sstream>
 #include <unistd.h>
-#include <set>
+#include <cstdint>
 
 static const inline std::string EV_START_LINE = "B: EV=";
 static const inline std::string KEY_START_LINE = "B: KEY=";

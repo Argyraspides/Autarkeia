@@ -9,7 +9,6 @@
 #include <fstream>
 #include <optional>
 #include <string>
-#include <set>
 
 /**
  * @brief Detects peripherals connected on Linux systems by opening /proc/bus/input/devices and reading its contents

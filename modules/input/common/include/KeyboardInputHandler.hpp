@@ -82,6 +82,8 @@ class KeyboardInputHandler
      */
     std::optional< KeyInputCode > GetNextKeyPress();
 
+    void WaitForKeyPress();
+
     /**
      * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins
      * listening to key presses, adding them to the buffer
@@ -108,6 +110,8 @@ class KeyboardInputHandler
 
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
     std::mutex m_keyboardExceptionMutex;
+
+    std::binary_semaphore m_waitForInputSemaphore;
 };
 
 } // namespace InputCommon
