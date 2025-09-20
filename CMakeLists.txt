@@ -6,7 +6,7 @@ option( BUILD_TESTS "Builds Autarkeia tests" ON )
 option( BUILD_EXAMPLE_DVD "Builds bouncing DVD thingy example" ON )
 option( BUILD_EXAMPLE_MOVING_BALL "Builds moving ball example, keyboard inputs n shit" ON )
 
-set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD 20 )
 
 add_subdirectory( modules/drawing )
 add_subdirectory( modules/input )
