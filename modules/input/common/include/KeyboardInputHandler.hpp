@@ -8,12 +8,10 @@
 #include "KeyboardInfo.hpp"
 #include "PeripheralInputException.hpp"
 #include <atomic>
-#include <linux/input-event-codes.h>
 #include <mutex>
 #include <optional>
 #include <queue>
 #include <thread>
-#include <set>
 
 namespace InputCommon
 {
