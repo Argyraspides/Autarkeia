@@ -15,6 +15,7 @@ struct KeyboardInfo
     std::string keyboardName;
     std::string eventDevicePath;
 
+    KeyboardInfo() = default;
     KeyboardInfo( std::string keyboardName, std::string eventDevicePath )
         : keyboardName( std::move( keyboardName ) ),
           eventDevicePath( std::move( eventDevicePath ) )
@@ -22,17 +23,24 @@ struct KeyboardInfo
     }
 };
 
-inline auto KeyboardInfoHashFunc = [](const KeyboardInfo& k1) {
-    std::hash< std::string > stringHash;
-    return stringHash(k1.eventDevicePath);
+struct KeyboardInfoHashFunc
+{
+    std::size_t operator()(const KeyboardInfo& k1 ) const
+    {
+        std::hash< std::string > stringHash;
+        return stringHash(k1.eventDevicePath);
+    }
 };
 
-inline auto KeyboardInfoEqualFunc = [](const KeyboardInfo& k1, const KeyboardInfo& k2) {
-    return k1.eventDevicePath == k2.eventDevicePath;
+struct KeyboardInfoEqualFunc
+{
+    bool operator()(const KeyboardInfo& k1, const KeyboardInfo& k2 ) const
+    {
+        return k1.eventDevicePath == k2.eventDevicePath;
+    }
 };
 
-using KeyboardHashSet =
-    std::unordered_set< KeyboardInfo, decltype( KeyboardInfoHashFunc ), decltype( KeyboardInfoEqualFunc ) >;
+using KeyboardHashSet = std::unordered_set< KeyboardInfo, KeyboardInfoHashFunc, KeyboardInfoEqualFunc >;
 
 } // namespace InputCommon
 

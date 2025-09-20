@@ -66,7 +66,7 @@ class KeyboardInputHandler
      * pressed (prefixed with "KEY_").
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
-    std::optional< KeyInputCode > GetNextKeyPress() noexcept;
+    std::optional< KeyInputCode > GetNextKeyPress();
 
     /**
      * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins

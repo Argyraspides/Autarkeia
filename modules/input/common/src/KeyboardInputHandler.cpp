@@ -52,7 +52,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
 void KeyboardInputHandler::Start()
 {
     m_running = true;
-    m_keyboardDetectionThread = std::thread( KeyboardInputHandler::WaitForKeyboards, this );
+    m_keyboardDetectionThread = std::thread( &KeyboardInputHandler::WaitForKeyboards, this );
 }
 
 void KeyboardInputHandler::Stop() noexcept
@@ -140,7 +140,7 @@ void KeyboardInputHandler::WaitForKeyboards()
             }
 
             m_keyboardInputThreads.push_back(
-                std::thread( KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo )
+                std::thread( &KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo )
             );
         }
 
