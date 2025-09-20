@@ -13,6 +13,21 @@
 #include <queue>
 #include <thread>
 
+/* TODO::ARGYRASPIDES() {
+ *
+ *      A bit of a fundamental design tension here. We throw exceptions if keyboard device files cannot be read on the
+ *      reasoning that if a keyboard cannot be read from in the first place -- there is literally nothing the KeyboardInputHandler
+ *      can do about it, so we throw. However a user may have multiple keyboards, where at least one keyboard might still be
+ *      readable/detectable/parseable, in which case we probably dont want to throw an exception.
+ *
+ *      Think about this and fix later. In 99% of cases a user will only have one keyboard so not an urgent fix.
+ *
+ *      Also something a bit weird, different keyboard threads may throw an exception at the same time for different reasons, but you
+ *      have only one exception pointer. Might be okay ... only downside is that we don't show all exceptions that occurred,
+ *      just one.
+ * }
+ *
+*/
 namespace InputCommon
 {
 
@@ -90,7 +105,7 @@ class KeyboardInputHandler
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
 
-    InputCommon::PeripheralInputExceptionPtr m_keyboardException;
+    std::atomic< InputCommon::PeripheralInputExceptionPtr > m_keyboardException;
 };
 
 } // namespace InputCommon

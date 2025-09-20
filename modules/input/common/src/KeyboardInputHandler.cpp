@@ -63,7 +63,6 @@ void KeyboardInputHandler::Stop() noexcept
 
     for ( std::thread& thread : m_keyboardInputThreads )
         thread.join();
-
 }
 
 void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardInfo )
@@ -74,18 +73,22 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
 
     // TODO::ARGYRASPIDES() { You need to set the exception pointer here }
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
-        throw InputCommon::PeripheralInputException(
+    {
+        m_keyboardException = std::make_exception_ptr( InputCommon::PeripheralInputException(
             "Unable to open input device file: " + keyboardInfo.eventDevicePath +
             ". Insufficient permissions. Please run program with sudo/give this program permission to access the "
-            "device file." );
+            "device file." ) );
+        return;
+    }
 
     int keyboardFd = open( keyboardInfo.eventDevicePath.c_str(), O_RDONLY );
 
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
-        throw InputCommon::PeripheralInputException( "Unable to open device file " + keyboardInfo.eventDevicePath +
-                                                     " ... cause unknown" );
+        m_keyboardException = std::make_exception_ptr( InputCommon::PeripheralInputException(
+            "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown" ) );
+        return;
     }
 
     struct input_event keyboardInputEvent{};
@@ -130,7 +133,8 @@ void KeyboardInputHandler::DetectKeyboards()
         }
         catch ( InputCommon::PeripheralInputException& )
         {
-            throw;
+            m_keyboardException = std::current_exception();
+            return;
         }
 
         for ( const InputCommon::KeyboardInfo& keyboardInfo : connectedKeyboards )
