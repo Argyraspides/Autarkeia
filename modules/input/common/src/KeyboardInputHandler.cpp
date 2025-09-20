@@ -11,6 +11,7 @@
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
 
+static constexpr uint16_t KEY_HELD = 2;
 static constexpr uint16_t KEY_RELEASED = 0;
 static constexpr uint16_t KEY_PRESSED = 1;
 static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
@@ -71,6 +72,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     if ( access( keyboardInfo.eventDevicePath.c_str(), F_OK ) != 0 )
         return;
 
+    // TODO::ARGYRASPIDES() { You need to set the exception pointer here }
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
         throw InputCommon::PeripheralInputException(
             "Unable to open input device file: " + keyboardInfo.eventDevicePath +
@@ -103,7 +105,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
         if ( keyboardInputEvent.type != EV_KEY )
             continue;
 
-        if ( keyboardInputEvent.value != KEY_PRESSED )
+        if ( keyboardInputEvent.value == KEY_RELEASED )
             continue;
 
         std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
@@ -140,11 +142,20 @@ void KeyboardInputHandler::DetectKeyboards()
             m_connectedKeyboards.insert( keyboardInfo );
         }
 
-        for ( const InputCommon::KeyboardInfo& keyboardInfo : m_connectedKeyboards )
-        {
-            if ( !access( keyboardInfo.eventDevicePath.c_str(), F_OK | R_OK ) )
-                m_connectedKeyboards.erase( keyboardInfo );
-        }
+        // for ( const InputCommon::KeyboardInfo& keyboardInfo : m_connectedKeyboards )
+        // {
+        //     if ( !access( keyboardInfo.eventDevicePath.c_str(), F_OK | R_OK ) )
+        //         m_connectedKeyboards.erase( keyboardInfo );
+        // }
+
+        // for ( auto it = m_connectedKeyboards.begin(); it != m_connectedKeyboards.end(); ++it )
+        // {
+        //     if ( !access( it->eventDevicePath.c_str(), F_OK | R_OK ) )
+        //     {
+        //         m_connectedKeyboards.erase( *it );
+        //         it = m_connectedKeyboards.begin();
+        //     }
+        // }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
     }
