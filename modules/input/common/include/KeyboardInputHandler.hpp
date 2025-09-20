@@ -77,7 +77,7 @@ class KeyboardInputHandler
 
   private:
     void ListenToKeyboard( InputCommon::KeyboardInfo );
-    void WaitForKeyboards();
+    void DetectKeyboards();
 
   private:
     std::atomic_bool m_running;
@@ -89,7 +89,6 @@ class KeyboardInputHandler
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
-    std::mutex m_connectedKeyboardsMutex;
 
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
 };

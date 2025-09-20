@@ -51,7 +51,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
 void KeyboardInputHandler::Start()
 {
     m_running = true;
-    m_keyboardDetectionThread = std::thread( &KeyboardInputHandler::WaitForKeyboards, this );
+    m_keyboardDetectionThread = std::thread( &KeyboardInputHandler::DetectKeyboards, this );
 }
 
 void KeyboardInputHandler::Stop() noexcept
@@ -117,7 +117,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     close( keyboardFd );
 }
 
-void KeyboardInputHandler::WaitForKeyboards()
+void KeyboardInputHandler::DetectKeyboards()
 {
     while ( m_running )
     {
@@ -138,6 +138,12 @@ void KeyboardInputHandler::WaitForKeyboards()
 
             m_keyboardInputThreads.emplace_back( &KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo );
             m_connectedKeyboards.insert( keyboardInfo );
+        }
+
+        for ( const InputCommon::KeyboardInfo& keyboardInfo : m_connectedKeyboards )
+        {
+            if ( !access( keyboardInfo.eventDevicePath.c_str(), F_OK | R_OK ) )
+                m_connectedKeyboards.erase( keyboardInfo );
         }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
