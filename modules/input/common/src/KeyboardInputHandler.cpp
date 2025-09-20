@@ -23,8 +23,7 @@ KeyboardInputHandler::KeyboardInputHandler() noexcept
       m_keyboardDetectionThread( std::thread() ),
       m_connectedKeyboards( InputCommon::KeyboardHashSet() ),
       m_lastPressedKeys( std::queue< KeyInputCode >() ),
-      m_lastPressedKeysMutex( std::mutex() ),
-      m_currentState( HandlerState::WaitingForKeyboard )
+      m_lastPressedKeysMutex( std::mutex() )
 {
 }
 

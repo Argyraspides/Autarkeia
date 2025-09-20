@@ -86,13 +86,11 @@ class KeyboardInputHandler
     std::thread m_keyboardDetectionThread;
 
     InputCommon::KeyboardHashSet m_connectedKeyboards;
-    std::optional< InputCommon::KeyboardInfo > m_currentListeningKeyboard;
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
     std::mutex m_connectedKeyboardsMutex;
 
-    std::atomic< HandlerState > m_currentState;
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
 };
 
