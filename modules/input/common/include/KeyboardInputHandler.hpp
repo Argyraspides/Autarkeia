@@ -84,10 +84,6 @@ class KeyboardInputHandler
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
 
-    InputCommon::PeripheralInputExceptionPtr m_keyboardException;
-    bool m_keyboardExceptionOccurred;
-    std::mutex m_keyboardExceptionMutex;
-
     static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
     std::counting_semaphore< MAX_KEY_PRESSED_BUF_SIZE > m_waitForInputSemaphore;
 };
