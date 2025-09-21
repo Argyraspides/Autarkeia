@@ -114,6 +114,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
         if ( keyboardInputEvent.type != EV_KEY )
             continue;
 
+        // BEWARE::ARGYRASPIDES() { BEHAVIOR TO ONLY LISTEN TO KEY PRESSES/HOLDS, NOT RELEASES }
         if ( keyboardInputEvent.value == KEY_RELEASED )
             continue;
 
