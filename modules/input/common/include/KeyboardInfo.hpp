@@ -15,7 +15,6 @@ struct KeyboardInfo
     std::string keyboardName;
     std::string eventDevicePath;
 
-    KeyboardInfo() = default;
     KeyboardInfo( std::string keyboardName, std::string eventDevicePath )
         : keyboardName( std::move( keyboardName ) ),
           eventDevicePath( std::move( eventDevicePath ) )
