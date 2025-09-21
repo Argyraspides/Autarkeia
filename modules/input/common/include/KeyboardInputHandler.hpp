@@ -49,25 +49,24 @@ enum class HandlerState
  * Example use:
  *
  * @code
-  try
-  {
-      KeyboardInputHandler handler;
-      handler.Start();
-
-      while (applicationRunning)
-      {
-          handler.WaitForKeyPress();
-          auto key = handler.GetLastKeyPress();
-          // Process key...
-      }
-
-      handler.Stop();
-  }
-  catch (const PeripheralInputE
-xception& e)
-  {
-      // Handle keyboard system failures
-  }
+ * try
+ * {
+ *     KeyboardInputHandler handler;
+ *     handler.Start();
+*
+ *     while (applicationRunning)
+ *     {
+ *         handler.WaitForKeyPress();
+ *         auto key = handler.GetLastKeyPress();
+ *         // Process key...
+ *     }
+ *
+ *     handler.Stop();
+ * }
+ * catch (const PeripheralInputException& e)
+ * {
+ *     // Handle keyboard system failures
+ * }
  * @endcode
  */
 class KeyboardInputHandler
