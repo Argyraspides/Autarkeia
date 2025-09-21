@@ -19,11 +19,9 @@ int main()
 
     while ( true )
     {
-        std::optional< InputCommon::KeyInputCode > key;
 
         kbd.WaitForKeyPress();
-
-        key = kbd.GetNextKeyPress();
+        std::optional< InputCommon::KeyInputCode > key = kbd.GetNextKeyPress();
 
         if ( !key )
             continue;
