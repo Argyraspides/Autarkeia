@@ -83,7 +83,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
             " with device file at " << keyboardInfo.eventDevicePath <<
             ". Insufficient permissions. Please run program with "
             "sudo/give this program permission to access the "
-            "device file.";
+            "device file." << std::endl;
         return;
     }
 
@@ -93,7 +93,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     {
         close( keyboardFd );
         // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
-        std::cout << "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown";
+        std::cout << "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown" << std::endl;
         return;
     }
 
