@@ -13,32 +13,10 @@
 #include <queue>
 #include <thread>
 
-/* TODO::ARGYRASPIDES() {
- *
- *      A bit of a fundamental design tension here. We throw exceptions if keyboard device files cannot be read on the
- *      reasoning that if a keyboard cannot be read from in the first place -- there is literally nothing the KeyboardInputHandler
- *      can do about it, so we throw. However a user may have multiple keyboards, where at least one keyboard might still be
- *      readable/detectable/parseable, in which case we probably dont want to throw an exception.
- *
- *      Think about this and fix later. In 99% of cases a user will only have one keyboard so not an urgent fix.
- *
- *      Also something a bit weird, different keyboard threads may throw an exception at the same time for different reasons, but you
- *      have only one exception pointer. Might be okay ... only downside is that we don't show all exceptions that occurred,
- *      just one.
- * }
- *
-*/
 namespace InputCommon
 {
 
 using KeyInputCode = size_t;
-constexpr KeyInputCode InvalidKeyCode = std::numeric_limits< size_t >::max();
-
-enum class HandlerState
-{
-    WaitingForKeyboard,
-    ListeningForInput,
-};
 
 /**
  * @brief KeyboardInputHandler automatically detects connected keyboards and begins listening to key presses.
@@ -49,24 +27,18 @@ enum class HandlerState
  * Example use:
  *
  * @code
- * try
- * {
+ *
  *     KeyboardInputHandler handler;
  *     handler.Start();
-*
+ *
  *     while (applicationRunning)
  *     {
  *         handler.WaitForKeyPress();
  *         auto key = handler.GetLastKeyPress();
- *         // Process key...
+ *         // Do something with the key
  *     }
  *
  *     handler.Stop();
- * }
- * catch (const PeripheralInputException& e)
- * {
- *     // Handle keyboard system failures
- * }
  * @endcode
  */
 class KeyboardInputHandler
@@ -81,12 +53,12 @@ class KeyboardInputHandler
      * pressed (prefixed with "KEY_").
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
-    std::optional< KeyInputCode > GetNextKeyPress();
+    std::optional< KeyInputCode > GetNextKeyPress() noexcept;
 
     /**
      * @brief Blocks the calling thread until a key press is available to take from the buffer
      */
-    void WaitForKeyPress();
+    void WaitForKeyPress() noexcept;
 
     /**
      * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins
@@ -94,12 +66,12 @@ class KeyboardInputHandler
      * @throws PeripheralInputException thrown if it's impossible to listen to the keyboard or figure out if any are
      * connected
      */
-    void Start();
+    void Start() noexcept;
     void Stop() noexcept;
 
   private:
-    void ListenToKeyboard( InputCommon::KeyboardInfo );
-    void DetectKeyboards();
+    void ListenToKeyboard( InputCommon::KeyboardInfo ) noexcept;
+    void DetectKeyboards() noexcept;
 
   private:
     std::atomic_bool m_running;
@@ -113,9 +85,11 @@ class KeyboardInputHandler
     std::mutex m_lastPressedKeysMutex;
 
     InputCommon::PeripheralInputExceptionPtr m_keyboardException;
+    bool m_keyboardExceptionOccurred;
     std::mutex m_keyboardExceptionMutex;
 
-    std::binary_semaphore m_waitForInputSemaphore;
+    static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
+    std::counting_semaphore< MAX_KEY_PRESSED_BUF_SIZE > m_waitForInputSemaphore;
 };
 
 } // namespace InputCommon

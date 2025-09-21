@@ -16,11 +16,11 @@
 namespace InputPeripheralDetection
 {
 
-bool IsKeyboard( const std::string& deviceFileEntry );
+bool IsKeyboard( const std::string& deviceFileEntry ) noexcept;
 
-std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry );
+std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry ) noexcept;
 
-std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry );
+std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry ) noexcept;
 
 InputCommon::KeyboardHashSet GetConnectedKeyboards();
 

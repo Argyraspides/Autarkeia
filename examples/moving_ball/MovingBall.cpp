@@ -23,15 +23,7 @@ int main()
 
         kbd.WaitForKeyPress();
 
-        try
-        {
-            key = kbd.GetNextKeyPress();
-        }
-        catch (InputCommon::PeripheralInputException& pie)
-        {
-            std::cerr << pie.what();
-            return 0;
-        }
+        key = kbd.GetNextKeyPress();
 
         if ( !key )
             continue;

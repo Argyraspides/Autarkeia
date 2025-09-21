@@ -21,7 +21,7 @@ static inline std::string EVENT_DEVICE_FILE_PREFIX_NAME = "event";
 
 namespace InputPeripheralDetection
 {
-bool IsKeyboard( const std::string& deviceFileEntry )
+bool IsKeyboard( const std::string& deviceFileEntry ) noexcept
 {
     if ( deviceFileEntry.empty() )
         return false;
@@ -61,7 +61,7 @@ bool IsKeyboard( const std::string& deviceFileEntry )
     return keyThreshold <= 0;
 }
 
-std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
+std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry ) noexcept
 {
     if ( deviceFileEntry.empty() )
         return std::nullopt;
@@ -89,7 +89,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
     return nameEntryValue.empty() ? std::nullopt : std::optional< std::string >( nameEntryValue );
 }
 
-std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry )
+std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry ) noexcept
 {
     if ( deviceFileEntry.empty() )
         return std::nullopt;

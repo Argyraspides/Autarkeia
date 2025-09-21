@@ -5,21 +5,23 @@
 #include "InputPeripheralDetection.hpp"
 #include <fcntl.h>
 #include <linux/input.h>
+#include <semaphore>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <semaphore>
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
 
 static constexpr uint16_t KEY_HELD = 2;
 static constexpr uint16_t KEY_RELEASED = 0;
 static constexpr uint16_t KEY_PRESSED = 1;
-static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
 namespace InputCommon
 {
-KeyboardInputHandler::KeyboardInputHandler() noexcept : m_running( false ), m_waitForInputSemaphore( 0 )
+KeyboardInputHandler::KeyboardInputHandler() noexcept
+    : m_running( false ),
+      m_waitForInputSemaphore( 0 )
 {
 }
 
@@ -28,15 +30,10 @@ KeyboardInputHandler::~KeyboardInputHandler() noexcept
     Stop();
 }
 
-std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
+std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 {
-    {
-        std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
-        if ( m_keyboardException )
-            std::rethrow_exception( m_keyboardException );
-    }
-
     std::optional< KeyInputCode > keyPressed = std::nullopt;
+
     {
         std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
@@ -50,12 +47,12 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress()
     return keyPressed;
 }
 
-void KeyboardInputHandler::WaitForKeyPress()
+void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
     m_waitForInputSemaphore.acquire();
 }
 
-void KeyboardInputHandler::Start()
+void KeyboardInputHandler::Start() noexcept
 {
     m_running = true;
     m_keyboardDetectionThread = std::thread( &KeyboardInputHandler::DetectKeyboards, this );
@@ -71,7 +68,7 @@ void KeyboardInputHandler::Stop() noexcept
         thread.join();
 }
 
-void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardInfo )
+void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardInfo ) noexcept
 {
     // Keyboard might have been unplugged
     if ( access( keyboardInfo.eventDevicePath.c_str(), F_OK ) != 0 )
@@ -79,11 +76,14 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
 
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
     {
-        std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
-        m_keyboardException = std::make_exception_ptr( InputCommon::PeripheralInputException(
-            "Unable to open input device file: " + keyboardInfo.eventDevicePath +
-            ". Insufficient permissions. Please run program with sudo/give this program permission to access the "
-            "device file." ) );
+        // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
+        std::cout <<
+            "Unable to open input device file for keyboard " <<
+            keyboardInfo.keyboardName <<
+            " with device file at " << keyboardInfo.eventDevicePath <<
+            ". Insufficient permissions. Please run program with "
+            "sudo/give this program permission to access the "
+            "device file.";
         return;
     }
 
@@ -92,9 +92,8 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
-        std::lock_guard< std::mutex > keyboardExceptionPtrLock( m_keyboardExceptionMutex );
-        m_keyboardException = std::make_exception_ptr( InputCommon::PeripheralInputException(
-            "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown" ) );
+        // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
+        std::cout << "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown";
         return;
     }
 
@@ -130,7 +129,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     close( keyboardFd );
 }
 
-void KeyboardInputHandler::DetectKeyboards()
+void KeyboardInputHandler::DetectKeyboards() noexcept
 {
     while ( m_running )
     {
@@ -139,11 +138,10 @@ void KeyboardInputHandler::DetectKeyboards()
         {
             connectedKeyboards = InputPeripheralDetection::GetConnectedKeyboards();
         }
-        catch ( InputCommon::PeripheralInputException& )
+        catch ( InputCommon::PeripheralInputException& pie )
         {
-            std::lock_guard< std::mutex > keyboardExceptionLock( m_keyboardExceptionMutex );
-            m_keyboardException = std::current_exception();
-            return;
+            // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
+            std::cout << pie.what() << "\n";
         }
 
         for ( const InputCommon::KeyboardInfo& keyboardInfo : connectedKeyboards )
