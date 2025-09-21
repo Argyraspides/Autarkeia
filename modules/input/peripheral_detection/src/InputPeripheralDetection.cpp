@@ -7,20 +7,21 @@
 #include <linux/input-event-codes.h>
 #include <sstream>
 #include <unistd.h>
+#include <cstdint>
 
-static inline std::string EV_START_LINE = "B: EV=";
-static inline std::string KEY_START_LINE = "B: KEY=";
-static inline std::string NAME_START_LINE = "N: Name=";
-static inline std::string HANDLERS_START_LINE = "H: Handlers=";
+static const inline std::string EV_START_LINE = "B: EV=";
+static const inline std::string KEY_START_LINE = "B: KEY=";
+static const inline std::string NAME_START_LINE = "N: Name=";
+static const inline std::string HANDLERS_START_LINE = "H: Handlers=";
 
-static inline std::string DEVICE_FILE_INFO_PATH = "/proc/bus/input/devices";
-static inline std::string DEVICE_FILE_INTERFACE_PREFIX_PATH = "/dev/input";
+static const inline std::string DEVICE_FILE_INFO_PATH = "/proc/bus/input/devices";
+static const inline std::string DEVICE_FILE_INTERFACE_PREFIX_PATH = "/dev/input";
 
 static inline std::string EVENT_DEVICE_FILE_PREFIX_NAME = "event";
 
 namespace InputPeripheralDetection
 {
-bool IsKeyboard( const std::string& deviceFileEntry )
+bool IsKeyboard( const std::string& deviceFileEntry ) noexcept
 {
     if ( deviceFileEntry.empty() )
         return false;
@@ -60,7 +61,7 @@ bool IsKeyboard( const std::string& deviceFileEntry )
     return keyThreshold <= 0;
 }
 
-std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
+std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry ) noexcept
 {
     if ( deviceFileEntry.empty() )
         return std::nullopt;
@@ -88,7 +89,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
     return nameEntryValue.empty() ? std::nullopt : std::optional< std::string >( nameEntryValue );
 }
 
-std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry )
+std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry ) noexcept
 {
     if ( deviceFileEntry.empty() )
         return std::nullopt;
@@ -119,7 +120,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     {
         if ( eventName.find( EVENT_DEVICE_FILE_PREFIX_NAME ) != std::string::npos )
         {
-            handlerDeviceNames = DEVICE_FILE_INTERFACE_PREFIX_PATH.append( "/" ).append( eventName );
+            handlerDeviceNames = DEVICE_FILE_INTERFACE_PREFIX_PATH + "/" + eventName;
             break;
         }
     }
@@ -127,7 +128,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
+InputCommon::KeyboardHashSet GetConnectedKeyboards()
 {
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
         throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " + DEVICE_FILE_INFO_PATH +
@@ -144,7 +145,7 @@ std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
             "Cannot open " + DEVICE_FILE_INFO_PATH +
             " to check for keyboards for an unknown reason! Something is very wrong!" );
 
-    std::vector< InputCommon::KeyboardInfo > connectedKeyboards;
+    InputCommon::KeyboardHashSet connectedKeyboards;
 
     std::string currLine;
     std::stringstream ss;
@@ -172,7 +173,7 @@ std::vector< InputCommon::KeyboardInfo > GetConnectedKeyboards()
         }
 
         InputCommon::KeyboardInfo kbInfo{ deviceName.value(), eventDeviceName.value() };
-        connectedKeyboards.push_back( kbInfo );
+        connectedKeyboards.insert( kbInfo );
 
         ss.str( "" );
     }

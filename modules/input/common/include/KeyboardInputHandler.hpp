@@ -8,7 +8,6 @@
 #include "KeyboardInfo.hpp"
 #include "PeripheralInputException.hpp"
 #include <atomic>
-#include <linux/input-event-codes.h>
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -19,12 +18,6 @@ namespace InputCommon
 
 using KeyInputCode = size_t;
 
-enum class HandlerState
-{
-    WaitingForKeyboard,
-    ListeningForInput
-};
-
 /**
  * @brief KeyboardInputHandler automatically detects connected keyboards and begins listening to key presses.
  * For safety, you should ensure the entire lifecycle of the object (the moment Start() is called) is contained in a
@@ -34,23 +27,18 @@ enum class HandlerState
  * Example use:
  *
  * @code
- * try
- * {
+ *
  *     KeyboardInputHandler handler;
  *     handler.Start();
  *
  *     while (applicationRunning)
  *     {
+ *         handler.WaitForKeyPress();
  *         auto key = handler.GetLastKeyPress();
- *         // Process key...
+ *         // Do something with the key
  *     }
  *
  *     handler.Stop();
- * }
- * catch (const PeripheralInputException& e)
- * {
- *     // Handle keyboard system failures
- * }
  * @endcode
  */
 class KeyboardInputHandler
@@ -66,7 +54,11 @@ class KeyboardInputHandler
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
     std::optional< KeyInputCode > GetNextKeyPress() noexcept;
-    std::optional< std::string > GetCurrentKeyboardName() noexcept;
+
+    /**
+     * @brief Blocks the calling thread until a key press is available to take from the buffer
+     */
+    void WaitForKeyPress() noexcept;
 
     /**
      * @brief Starts the keyboard input handler on another thread. Automatically detects connected keyboards and begins
@@ -74,26 +66,26 @@ class KeyboardInputHandler
      * @throws PeripheralInputException thrown if it's impossible to listen to the keyboard or figure out if any are
      * connected
      */
-    void Start();
+    void Start() noexcept;
     void Stop() noexcept;
 
   private:
-    void ListenToKeyboard();
-    void WaitForKeyboards();
-    void HandleStates();
+    void ListenToKeyboard( InputCommon::KeyboardInfo ) noexcept;
+    void DetectKeyboards() noexcept;
 
   private:
     std::atomic_bool m_running;
-    std::thread m_keyboardInputHandlerThread;
 
-    std::optional< std::vector< InputCommon::KeyboardInfo > > m_connectedKeyboards;
-    std::optional< InputCommon::KeyboardInfo > m_currentListeningKeyboard;
+    std::vector< std::thread > m_keyboardInputThreads;
+    std::thread m_keyboardDetectionThread;
+
+    InputCommon::KeyboardHashSet m_connectedKeyboards;
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
 
-    HandlerState m_currentState;
-    InputCommon::PeripheralInputExceptionPtr m_keyboardException;
+    static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
+    std::counting_semaphore< MAX_KEY_PRESSED_BUF_SIZE > m_waitForInputSemaphore;
 };
 
 } // namespace InputCommon

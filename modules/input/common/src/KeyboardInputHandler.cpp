@@ -4,27 +4,24 @@
 #include "KeyboardInputHandler.hpp"
 #include "InputPeripheralDetection.hpp"
 #include <fcntl.h>
-#include <iostream>
 #include <linux/input.h>
+#include <semaphore>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
 
+static constexpr uint16_t KEY_HELD = 2;
 static constexpr uint16_t KEY_RELEASED = 0;
 static constexpr uint16_t KEY_PRESSED = 1;
-static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
 namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
     : m_running( false ),
-      m_keyboardInputHandlerThread( std::thread() ),
-      m_connectedKeyboards( std::nullopt ),
-      m_lastPressedKeys( std::queue< KeyInputCode >() ),
-      m_lastPressedKeysMutex( std::mutex() ),
-      m_currentState( HandlerState::WaitingForKeyboard )
+      m_waitForInputSemaphore( 0 )
 {
 }
 
@@ -35,72 +32,69 @@ KeyboardInputHandler::~KeyboardInputHandler() noexcept
 
 std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 {
-    std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
+    std::optional< KeyInputCode > keyPressed = std::nullopt;
 
-    if ( m_keyboardException )
-        std::rethrow_exception( m_keyboardException );
+    {
+        std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
-    if ( m_lastPressedKeys.empty() )
-        return std::nullopt;
+        if ( m_lastPressedKeys.empty() )
+            return std::nullopt;
 
-    KeyInputCode keyPressed = m_lastPressedKeys.front();
-    m_lastPressedKeys.pop();
+        keyPressed = m_lastPressedKeys.front();
+        m_lastPressedKeys.pop();
+    }
 
     return keyPressed;
 }
 
-std::optional< std::string > KeyboardInputHandler::GetCurrentKeyboardName() noexcept
+void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
-    if ( m_currentListeningKeyboard.has_value() )
-        return m_currentListeningKeyboard.value().keyboardName;
-
-    return std::nullopt;
+    m_waitForInputSemaphore.acquire();
 }
 
-void KeyboardInputHandler::Start()
+void KeyboardInputHandler::Start() noexcept
 {
     m_running = true;
-    m_keyboardInputHandlerThread = std::thread( &KeyboardInputHandler::HandleStates, this );
+    m_keyboardDetectionThread = std::thread( &KeyboardInputHandler::DetectKeyboards, this );
 }
 
 void KeyboardInputHandler::Stop() noexcept
 {
     m_running = false;
 
-    if ( m_keyboardInputHandlerThread.joinable() )
-        m_keyboardInputHandlerThread.join();
+    m_keyboardDetectionThread.join();
+
+    for ( std::thread& thread : m_keyboardInputThreads )
+        thread.join();
 }
 
-void KeyboardInputHandler::ListenToKeyboard()
+void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardInfo ) noexcept
 {
-    if ( !m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
-    {
-        m_currentState = HandlerState::WaitingForKeyboard;
-        return;
-    }
-
-    m_currentListeningKeyboard = m_connectedKeyboards.value().front();
-
     // Keyboard might have been unplugged
-    if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), F_OK ) != 0 )
+    if ( access( keyboardInfo.eventDevicePath.c_str(), F_OK ) != 0 )
+        return;
+
+    if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
     {
-        m_currentState = HandlerState::WaitingForKeyboard;
+        // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
+        std::cout <<
+            "Unable to open input device file for keyboard " <<
+            keyboardInfo.keyboardName <<
+            " with device file at " << keyboardInfo.eventDevicePath <<
+            ". Insufficient permissions. Please run program with "
+            "sudo/give this program permission to access the "
+            "device file." << std::endl;
         return;
     }
 
-    if ( access( m_currentListeningKeyboard.value().eventDevicePath.c_str(), R_OK ) != 0 )
-        throw InputCommon::PeripheralInputException(
-            "Unable to open input device file: " + m_currentListeningKeyboard.value().eventDevicePath +
-            ". Insufficient permissions. Please run program with sudo/give this program permission to access the "
-            "device file." );
-
-    int keyboardFd = open( m_currentListeningKeyboard.value().eventDevicePath.c_str(), O_RDONLY );
+    int keyboardFd = open( keyboardInfo.eventDevicePath.c_str(), O_RDONLY );
 
     if ( keyboardFd < 0 )
     {
         close( keyboardFd );
-        throw InputCommon::PeripheralInputException(
-            "Unable to open device file " + m_currentListeningKeyboard.value().eventDevicePath + " ... cause unknown" );
+        // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
+        std::cout << "Unable to open device file " + keyboardInfo.eventDevicePath + " ... cause unknown" << std::endl;
+        return;
     }
 
     struct input_event keyboardInputEvent{};
@@ -111,7 +105,6 @@ void KeyboardInputHandler::ListenToKeyboard()
         if ( bytesRead < 0 && errno == ENODEV ) // Keyboard probs unplugged / dead
         {
             close( keyboardFd );
-            m_currentState = HandlerState::WaitingForKeyboard;
             return;
         }
 
@@ -121,7 +114,8 @@ void KeyboardInputHandler::ListenToKeyboard()
         if ( keyboardInputEvent.type != EV_KEY )
             continue;
 
-        if ( keyboardInputEvent.value != KEY_PRESSED )
+        // BEWARE::ARGYRASPIDES() { BEHAVIOR TO ONLY LISTEN TO KEY PRESSES/HOLDS, NOT RELEASES }
+        if ( keyboardInputEvent.value == KEY_RELEASED )
             continue;
 
         std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
@@ -130,56 +124,45 @@ void KeyboardInputHandler::ListenToKeyboard()
             m_lastPressedKeys.pop();
 
         m_lastPressedKeys.push( keyboardInputEvent.code );
+        m_waitForInputSemaphore.release();
     }
 
     close( keyboardFd );
 }
 
-void KeyboardInputHandler::WaitForKeyboards()
+void KeyboardInputHandler::DetectKeyboards() noexcept
 {
     while ( m_running )
     {
+        InputCommon::KeyboardHashSet connectedKeyboards;
         try
         {
-            m_connectedKeyboards = InputPeripheralDetection::GetConnectedKeyboards();
+            connectedKeyboards = InputPeripheralDetection::GetConnectedKeyboards();
         }
-        catch ( InputCommon::PeripheralInputException& )
+        catch ( InputCommon::PeripheralInputException& pie )
         {
-            throw;
+            // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
+            std::cout << pie.what() << "\n";
         }
 
-        if ( m_connectedKeyboards.has_value() || m_connectedKeyboards.value().empty() )
+        for ( const InputCommon::KeyboardInfo& keyboardInfo : connectedKeyboards )
         {
-            m_currentState = HandlerState::ListeningForInput;
-            return;
+            if ( m_connectedKeyboards.find( keyboardInfo ) != m_connectedKeyboards.end() )
+                continue;
+
+            m_keyboardInputThreads.emplace_back( &KeyboardInputHandler::ListenToKeyboard, this, keyboardInfo );
+            m_connectedKeyboards.insert( keyboardInfo );
+        }
+
+        for ( auto it = m_connectedKeyboards.begin(); it != m_connectedKeyboards.end(); )
+        {
+            if ( access( it->eventDevicePath.c_str(), F_OK | R_OK ) != 0 )
+                it = m_connectedKeyboards.erase( it );
+            else
+                ++it;
         }
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
-    }
-}
-
-void KeyboardInputHandler::HandleStates()
-{
-    while ( m_running )
-    {
-        try
-        {
-            switch ( m_currentState )
-            {
-            case HandlerState::WaitingForKeyboard:
-                WaitForKeyboards();
-                break;
-            case HandlerState::ListeningForInput:
-                ListenToKeyboard();
-                break;
-            default:;
-            }
-        }
-        catch ( InputCommon::PeripheralInputException& )
-        {
-            m_keyboardException = std::current_exception();
-            return;
-        }
     }
 }
 

@@ -12,4 +12,5 @@ add_executable( MovingBall
 
 target_link_libraries( MovingBall
     InputCommon
+    Drawing
 )
