@@ -14,6 +14,11 @@ struct Vec2I
         return { x + other.x, y + other.y };
     }
 
+    Vec2I operator/( const int& other ) const
+    {
+        return { x / other, y / other };
+    }
+
     void operator=( const Vec2I& other )
     {
         x = other.x;
