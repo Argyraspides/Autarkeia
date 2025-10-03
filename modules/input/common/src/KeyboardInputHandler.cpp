@@ -21,7 +21,7 @@ namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
     : m_running( false ),
-    m_keysAvailable( false )
+      m_keysAvailable( false )
 {
 }
 
@@ -55,7 +55,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 
 void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
-    m_keysAvailable.wait(false);
+    m_keysAvailable.wait( false );
 }
 
 void KeyboardInputHandler::Start() noexcept
@@ -132,7 +132,6 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
 
         m_keysAvailable = true;
         m_keysAvailable.notify_all();
-
     }
 
     close( keyboardFd );
