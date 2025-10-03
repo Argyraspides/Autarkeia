@@ -4,9 +4,9 @@
 #include "KeyboardInputHandler.hpp"
 #include "InputPeripheralDetection.hpp"
 #include <fcntl.h>
+#include <iostream>
 #include <linux/input.h>
 #include <semaphore>
-#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -21,7 +21,8 @@ namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
     : m_running( false ),
-      m_waitForInputSemaphore( 0 )
+      m_waitForInputSemaphore( 0 ),
+      m_currentSemaphoreCt( 0 )
 {
 }
 
@@ -50,6 +51,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
     m_waitForInputSemaphore.acquire();
+    --m_currentSemaphoreCt;
 }
 
 void KeyboardInputHandler::Start() noexcept
@@ -77,13 +79,12 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
     {
         // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
-        std::cout <<
-            "Unable to open input device file for keyboard " <<
-            keyboardInfo.keyboardName <<
-            " with device file at " << keyboardInfo.eventDevicePath <<
-            ". Insufficient permissions. Please run program with "
-            "sudo/give this program permission to access the "
-            "device file." << std::endl;
+        std::cout << "Unable to open input device file for keyboard " << keyboardInfo.keyboardName
+                  << " with device file at " << keyboardInfo.eventDevicePath
+                  << ". Insufficient permissions. Please run program with "
+                     "sudo/give this program permission to access the "
+                     "device file."
+                  << std::endl;
         return;
     }
 
@@ -124,7 +125,13 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
             m_lastPressedKeys.pop();
 
         m_lastPressedKeys.push( keyboardInputEvent.code );
-        m_waitForInputSemaphore.release();
+
+        // Prevent semaphore going above its max count (undefined behavior otherwise)
+        if (m_currentSemaphoreCt < MAX_KEY_PRESSED_BUF_SIZE)
+        {
+            m_waitForInputSemaphore.release();
+            --m_currentSemaphoreCt;
+        }
     }
 
     close( keyboardFd );

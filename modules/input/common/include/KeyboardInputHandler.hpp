@@ -86,6 +86,7 @@ class KeyboardInputHandler
 
     static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
     std::counting_semaphore< MAX_KEY_PRESSED_BUF_SIZE > m_waitForInputSemaphore;
+    std::atomic< size_t > m_currentSemaphoreCt;
 };
 
 } // namespace InputCommon
