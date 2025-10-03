@@ -8,11 +8,11 @@
 #include "KeyboardInfo.hpp"
 #include "PeripheralInputException.hpp"
 #include <atomic>
+#include <condition_variable>
 #include <mutex>
 #include <optional>
 #include <queue>
 #include <thread>
-#include <condition_variable>
 
 namespace InputCommon
 {
