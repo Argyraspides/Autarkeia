@@ -51,7 +51,8 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
     std::unique_lock< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
-    m_keysAvailableCv.wait( lastPressedKeysQueueLock, [ this ]() -> bool { return !m_lastPressedKeys.empty(); } );
+    m_keysAvailableCv.wait( lastPressedKeysQueueLock,
+                            [ this ]() -> bool { return !m_lastPressedKeys.empty() || !m_running; } );
 }
 
 void KeyboardInputHandler::Start() noexcept
@@ -63,6 +64,8 @@ void KeyboardInputHandler::Start() noexcept
 void KeyboardInputHandler::Stop() noexcept
 {
     m_running = false;
+
+    m_keysAvailableCv.notify_all();
 
     m_keyboardDetectionThread.join();
 
