@@ -41,8 +41,6 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 
         keyPressed = m_lastPressedKeys.front();
         m_lastPressedKeys.pop();
-
-        m_keysAvailableCv.notify_all();
     }
 
     return keyPressed;
