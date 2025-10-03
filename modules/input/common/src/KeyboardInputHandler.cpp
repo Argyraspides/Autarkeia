@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
+static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
 static constexpr uint16_t KEY_HELD = 2;
 static constexpr uint16_t KEY_RELEASED = 0;

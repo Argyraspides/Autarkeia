@@ -85,8 +85,6 @@ class KeyboardInputHandler
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
     std::condition_variable m_keysAvailableCv;
-
-    static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 };
 
 } // namespace InputCommon
