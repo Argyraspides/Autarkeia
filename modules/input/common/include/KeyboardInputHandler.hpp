@@ -21,8 +21,7 @@ using KeyInputCode = size_t;
 
 /**
  * @brief KeyboardInputHandler automatically detects connected keyboards and begins listening to key presses.
- * For safety, you should ensure the entire lifecycle of the object (the moment Start() is called) is contained in a
- * try/catch block. KeyboardInputHandler relies on certain Linux device files to be both present and readable, which can
+ * KeyboardInputHandler relies on certain Linux device files to be both present and readable, which can
  * change at any arbitrary time. See the KeyboardInputHandler::Start() function description.
  *
  * Example use:
