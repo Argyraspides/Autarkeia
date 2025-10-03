@@ -3,11 +3,11 @@
 //
 #include "InputPeripheralDetection.hpp"
 #include "PeripheralInputException.hpp"
+#include <cstdint>
 #include <iostream>
 #include <linux/input-event-codes.h>
 #include <sstream>
 #include <unistd.h>
-#include <cstdint>
 
 static const inline std::string EV_START_LINE = "B: EV=";
 static const inline std::string KEY_START_LINE = "B: KEY=";
