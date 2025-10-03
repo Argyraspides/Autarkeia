@@ -21,8 +21,7 @@ namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
     : m_running( false ),
-      m_waitForInputSemaphore( 0 ),
-      m_currentSemaphoreCt( 0 )
+    m_keysAvailable( false )
 {
 }
 
@@ -43,6 +42,12 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 
         keyPressed = m_lastPressedKeys.front();
         m_lastPressedKeys.pop();
+
+        if ( m_lastPressedKeys.empty() )
+        {
+            m_keysAvailable = false;
+            m_keysAvailable.notify_all();
+        }
     }
 
     return keyPressed;
@@ -50,8 +55,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 
 void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
-    m_waitForInputSemaphore.acquire();
-    --m_currentSemaphoreCt;
+    m_keysAvailable.wait(false);
 }
 
 void KeyboardInputHandler::Start() noexcept
@@ -126,12 +130,9 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
 
         m_lastPressedKeys.push( keyboardInputEvent.code );
 
-        // Prevent semaphore going above its max count (undefined behavior otherwise)
-        if ( m_currentSemaphoreCt < MAX_KEY_PRESSED_BUF_SIZE )
-        {
-            m_waitForInputSemaphore.release();
-            --m_currentSemaphoreCt;
-        }
+        m_keysAvailable = true;
+        m_keysAvailable.notify_all();
+
     }
 
     close( keyboardFd );

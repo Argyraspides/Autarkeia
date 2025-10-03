@@ -85,8 +85,7 @@ class KeyboardInputHandler
     std::mutex m_lastPressedKeysMutex;
 
     static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
-    std::counting_semaphore< MAX_KEY_PRESSED_BUF_SIZE > m_waitForInputSemaphore;
-    std::atomic< size_t > m_currentSemaphoreCt;
+    std::atomic< bool > m_keysAvailable;
 };
 
 } // namespace InputCommon
