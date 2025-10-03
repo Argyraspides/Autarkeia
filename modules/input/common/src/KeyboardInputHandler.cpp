@@ -20,8 +20,7 @@ static constexpr uint16_t KEY_PRESSED = 1;
 namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
-    : m_running( false ),
-      m_keysAvailable( false )
+    : m_running( false )
 {
 }
 
@@ -43,11 +42,7 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
         keyPressed = m_lastPressedKeys.front();
         m_lastPressedKeys.pop();
 
-        if ( m_lastPressedKeys.empty() )
-        {
-            m_keysAvailable = false;
-            m_keysAvailable.notify_all();
-        }
+        m_keysAvailableCv.notify_all();
     }
 
     return keyPressed;
@@ -55,7 +50,8 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 
 void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
-    m_keysAvailable.wait( false );
+    std::unique_lock< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
+    m_keysAvailableCv.wait( lastPressedKeysQueueLock, [ this ]() -> bool { return !m_lastPressedKeys.empty(); } );
 }
 
 void KeyboardInputHandler::Start() noexcept
@@ -123,15 +119,16 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
         if ( keyboardInputEvent.value == KEY_RELEASED )
             continue;
 
-        std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
+        {
+            std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
-        if ( m_lastPressedKeys.size() == MAX_KEY_PRESSED_BUF_SIZE )
-            m_lastPressedKeys.pop();
+            if ( m_lastPressedKeys.size() == MAX_KEY_PRESSED_BUF_SIZE )
+                m_lastPressedKeys.pop();
 
-        m_lastPressedKeys.push( keyboardInputEvent.code );
+            m_lastPressedKeys.push( keyboardInputEvent.code );
+        }
 
-        m_keysAvailable = true;
-        m_keysAvailable.notify_all();
+        m_keysAvailableCv.notify_all();
     }
 
     close( keyboardFd );
