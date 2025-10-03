@@ -127,7 +127,7 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
         m_lastPressedKeys.push( keyboardInputEvent.code );
 
         // Prevent semaphore going above its max count (undefined behavior otherwise)
-        if (m_currentSemaphoreCt < MAX_KEY_PRESSED_BUF_SIZE)
+        if ( m_currentSemaphoreCt < MAX_KEY_PRESSED_BUF_SIZE )
         {
             m_waitForInputSemaphore.release();
             --m_currentSemaphoreCt;

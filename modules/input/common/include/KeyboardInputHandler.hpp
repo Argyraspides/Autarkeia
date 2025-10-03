@@ -48,9 +48,9 @@ class KeyboardInputHandler
     ~KeyboardInputHandler() noexcept;
 
     /**
-     * @brief Returns the next key that the user pressed (the buffer is a queue), and consumes the event. The last key the user pressed
-     * would be the key at the end of the queue. Use macros in linux/input-event-codes.h for checking which key was
-     * pressed (prefixed with "KEY_").
+     * @brief Returns the next key that the user pressed (the buffer is a queue), and consumes the event. The last key
+     * the user pressed would be the key at the end of the queue. Use macros in linux/input-event-codes.h for checking
+     * which key was pressed (prefixed with "KEY_").
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
     std::optional< KeyInputCode > GetNextKeyPress() noexcept;
