@@ -8,6 +8,7 @@
 #include "KeyboardInfo.hpp"
 #include "PeripheralInputException.hpp"
 #include <atomic>
+#include <condition_variable>
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -20,8 +21,7 @@ using KeyInputCode = size_t;
 
 /**
  * @brief KeyboardInputHandler automatically detects connected keyboards and begins listening to key presses.
- * For safety, you should ensure the entire lifecycle of the object (the moment Start() is called) is contained in a
- * try/catch block. KeyboardInputHandler relies on certain Linux device files to be both present and readable, which can
+ * KeyboardInputHandler relies on certain Linux device files to be both present and readable, which can
  * change at any arbitrary time. See the KeyboardInputHandler::Start() function description.
  *
  * Example use:
@@ -48,9 +48,9 @@ class KeyboardInputHandler
     ~KeyboardInputHandler() noexcept;
 
     /**
-     * @brief Returns the next key that the user pressed (the buffer is a queue), and consumes the event. The last key the user pressed
-     * would be the key at the end of the queue. Use macros in linux/input-event-codes.h for checking which key was
-     * pressed (prefixed with "KEY_").
+     * @brief Returns the next key that the user pressed (the buffer is a queue), and consumes the event. The last key
+     * the user pressed would be the key at the end of the queue. Use macros in linux/input-event-codes.h for checking
+     * which key was pressed (prefixed with "KEY_").
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
     std::optional< KeyInputCode > GetNextKeyPress() noexcept;
@@ -83,9 +83,7 @@ class KeyboardInputHandler
 
     std::queue< KeyInputCode > m_lastPressedKeys;
     std::mutex m_lastPressedKeysMutex;
-
-    static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
-    std::counting_semaphore< MAX_KEY_PRESSED_BUF_SIZE > m_waitForInputSemaphore;
+    std::condition_variable m_keysAvailableCv;
 };
 
 } // namespace InputCommon

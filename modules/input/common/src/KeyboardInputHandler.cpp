@@ -4,14 +4,15 @@
 #include "KeyboardInputHandler.hpp"
 #include "InputPeripheralDetection.hpp"
 #include <fcntl.h>
+#include <iostream>
 #include <linux/input.h>
 #include <semaphore>
-#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
+static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
 static constexpr uint16_t KEY_HELD = 2;
 static constexpr uint16_t KEY_RELEASED = 0;
@@ -20,8 +21,7 @@ static constexpr uint16_t KEY_PRESSED = 1;
 namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
-    : m_running( false ),
-      m_waitForInputSemaphore( 0 )
+    : m_running( false )
 {
 }
 
@@ -49,7 +49,9 @@ std::optional< KeyInputCode > KeyboardInputHandler::GetNextKeyPress() noexcept
 
 void KeyboardInputHandler::WaitForKeyPress() noexcept
 {
-    m_waitForInputSemaphore.acquire();
+    std::unique_lock< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
+    m_keysAvailableCv.wait( lastPressedKeysQueueLock,
+                            [ this ]() -> bool { return !m_lastPressedKeys.empty() || !m_running; } );
 }
 
 void KeyboardInputHandler::Start() noexcept
@@ -61,6 +63,8 @@ void KeyboardInputHandler::Start() noexcept
 void KeyboardInputHandler::Stop() noexcept
 {
     m_running = false;
+
+    m_keysAvailableCv.notify_all();
 
     m_keyboardDetectionThread.join();
 
@@ -77,13 +81,12 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     if ( access( keyboardInfo.eventDevicePath.c_str(), R_OK ) != 0 )
     {
         // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
-        std::cout <<
-            "Unable to open input device file for keyboard " <<
-            keyboardInfo.keyboardName <<
-            " with device file at " << keyboardInfo.eventDevicePath <<
-            ". Insufficient permissions. Please run program with "
-            "sudo/give this program permission to access the "
-            "device file." << std::endl;
+        std::cout << "Unable to open input device file for keyboard " << keyboardInfo.keyboardName
+                  << " with device file at " << keyboardInfo.eventDevicePath
+                  << ". Insufficient permissions. Please run program with "
+                     "sudo/give this program permission to access the "
+                     "device file."
+                  << std::endl;
         return;
     }
 
@@ -118,13 +121,16 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
         if ( keyboardInputEvent.value == KEY_RELEASED )
             continue;
 
-        std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
+        {
+            std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
 
-        if ( m_lastPressedKeys.size() == MAX_KEY_PRESSED_BUF_SIZE )
-            m_lastPressedKeys.pop();
+            if ( m_lastPressedKeys.size() == MAX_KEY_PRESSED_BUF_SIZE )
+                m_lastPressedKeys.pop();
 
-        m_lastPressedKeys.push( keyboardInputEvent.code );
-        m_waitForInputSemaphore.release();
+            m_lastPressedKeys.push( keyboardInputEvent.code );
+        }
+
+        m_keysAvailableCv.notify_all();
     }
 
     close( keyboardFd );

@@ -5,8 +5,8 @@
 #ifndef AUTARKEIA_KEYBOARDINFO_HPP
 #define AUTARKEIA_KEYBOARDINFO_HPP
 #include <string>
-#include <utility>
 #include <unordered_set>
+#include <utility>
 
 namespace InputCommon
 {
@@ -24,16 +24,16 @@ struct KeyboardInfo
 
 struct KeyboardInfoHashFunc
 {
-    std::size_t operator()(const KeyboardInfo& k1 ) const
+    std::size_t operator()( const KeyboardInfo& k1 ) const
     {
         std::hash< std::string > stringHash;
-        return stringHash(k1.eventDevicePath);
+        return stringHash( k1.eventDevicePath );
     }
 };
 
 struct KeyboardInfoEqualFunc
 {
-    bool operator()(const KeyboardInfo& k1, const KeyboardInfo& k2 ) const
+    bool operator()( const KeyboardInfo& k1, const KeyboardInfo& k2 ) const
     {
         return k1.eventDevicePath == k2.eventDevicePath;
     }
