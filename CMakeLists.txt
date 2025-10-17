@@ -11,6 +11,7 @@ set( CMAKE_CXX_STANDARD 20 )
 
 add_subdirectory( modules/drawing )
 add_subdirectory( modules/input )
+add_subdirectory( modules/sprite )
 
 if( BUILD_TESTS )
     add_subdirectory( modules/catch2 )
@@ -37,4 +38,5 @@ target_link_libraries( Autarkeia PRIVATE
     Drawing
     InputCommon
     PeripheralDetector
+    Sprite
 )

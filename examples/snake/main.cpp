@@ -2,14 +2,13 @@
 // Created by gaugamela on 9/24/25.
 //
 
-#include <iostream>
 #include <vector>
 #include "Vec2I.hpp"
 #include <thread>
 #include "DrawUtils.hpp"
+#include "KeyboardInputHandler.hpp"
 
 Vec2I boardSize = { 25, 25 };
-
 
 int main()
 {
@@ -23,14 +22,21 @@ int main()
     snakeVelocities.push_back( { -1, 0 } );
 
     Frame frame { boardSize.x, boardSize.y };
+    InputCommon::KeyboardInputHandler kbd;
+    kbd.Start();
 
+    auto originalTime = std::chrono::steady_clock::now();
     while ( true )
     {
-        std::this_thread::sleep_for( std::chrono::milliseconds(20) );
+        auto now = std::chrono::steady_clock::now();
+        auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - originalTime);
+        const char snakeChar = 'x';
         DrawUtils::Clear( frame, '.' );
         DrawUtils::ClearScreen();
+
+        for (const Vec2I& snakePt : snakePoints )
+            DrawUtils::DrawPixel( snakePt, frame, snakeChar );
+
         DrawUtils::Draw( frame );
     }
-
-
 }

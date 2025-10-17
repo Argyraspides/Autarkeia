@@ -22,3 +22,7 @@ add_library( Drawing STATIC
 target_include_directories( Drawing PUBLIC
     ${DRAWING_INCLUDE_DIRS}
 )
+
+target_link_libraries( Drawing
+    PRIVATE Sprite
+)

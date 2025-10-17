@@ -9,6 +9,7 @@
 class Frame
 {
   public:
+    Frame() = delete;
     Frame( int width, int height );
     ~Frame();
 
