@@ -5,10 +5,8 @@
 #ifndef VEC2I_HPP
 #define VEC2I_HPP
 
-#include <bit>
 #include <cstdint>
 #include <cstring>
-#include <unordered_map>
 
 struct Vec2I
 {
@@ -19,6 +17,7 @@ struct Vec2I
           y( 0 )
     {
     }
+
     Vec2I( int x, int y )
         : x( x ),
           y( y )
@@ -28,6 +27,11 @@ struct Vec2I
     Vec2I operator+( const Vec2I& other ) const
     {
         return { x + other.x, y + other.y };
+    }
+
+    Vec2I operator-( const Vec2I& other ) const
+    {
+        return { x - other.x, y - other.y };
     }
 
     void operator+=( const Vec2I& other )

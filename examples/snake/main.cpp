@@ -14,14 +14,14 @@
 Vec2I boardSize = { 25, 25 };
 
 std::unordered_set< Vec2I, Vec2IHash > anchorPoints;
-std::unordered_set< Vec2I, Vec2IHash > anchorVelocities;
-
+std::unordered_map< Vec2I, Vec2I, Vec2IHash, Vec2IEquality > anchorVelocities;
 std::unordered_map< Vec2I, int, Vec2IHash, Vec2IEquality > anchorPointHits;
 
 std::vector< Vec2I > snakeVelocities;
 std::vector< Vec2I > snakePoints;
 
 size_t frameTimeMs = 100;
+Frame frame{ boardSize.x, boardSize.y };
 
 void UpdateSnakePositions()
 {
@@ -35,9 +35,11 @@ void UpdateSnakePositions()
             continue;
         }
 
-        snakeVelocities[ i ] = *anchorPoints.find( pt );
+        snakeVelocities[ i ] = anchorVelocities[ pt ];
         if ( ++anchorPointHits[ pt ] == snakePoints.size() )
         {
+            anchorPoints.erase( pt );
+            anchorVelocities.erase( pt );
             anchorPointHits.erase( pt );
         }
     }
@@ -46,6 +48,18 @@ void UpdateSnakePositions()
     {
         Vec2I& pt = snakePoints[ i ];
         pt += snakeVelocities[ i ];
+
+        if ( pt.x > frame.Width() )
+            pt.x = 0;
+
+        if ( pt.x < 0 )
+            pt.x = frame.Width();
+
+        if ( pt.y > frame.Height() )
+            pt.y = 0;
+
+        if ( pt.y < 0 )
+            pt.y = frame.Height();
     }
 }
 
@@ -55,7 +69,6 @@ int main()
     snakePoints.push_back( boardSize / 2 );
     snakeVelocities.push_back( { -1, 0 } );
 
-    Frame frame{ boardSize.x, boardSize.y };
     InputCommon::KeyboardInputHandler kbd;
     kbd.Start();
 
@@ -94,19 +107,23 @@ int main()
         {
         case KEY_W:
             anchorPoints.insert( snakePoints.front() );
-            anchorVelocities.insert( VEC2I_UP );
+            anchorVelocities[ snakePoints.front() ] = VEC2I_UP;
             break;
         case KEY_A:
             anchorPoints.insert( snakePoints.front() );
-            anchorVelocities.insert( VEC2I_LEFT );
+            anchorVelocities[ snakePoints.front() ] = VEC2I_LEFT;
             break;
         case KEY_S:
             anchorPoints.insert( snakePoints.front() );
-            anchorVelocities.insert( VEC2I_DOWN );
+            anchorVelocities[ snakePoints.front() ] = VEC2I_DOWN;
             break;
         case KEY_D:
             anchorPoints.insert( snakePoints.front() );
-            anchorVelocities.insert( VEC2I_RIGHT );
+            anchorVelocities[ snakePoints.front() ] = VEC2I_RIGHT;
+            break;
+        case KEY_SPACE:
+            snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
+            snakeVelocities.push_back( snakeVelocities.back() );
             break;
         }
     }

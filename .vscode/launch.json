@@ -1,0 +1,51 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "gdb Launch",
+      "type": "gdb",
+      "request": "launch",
+      "target": "${workspaceFolder}/build/examples/snake/Snake",
+      "cwd": "${workspaceFolder}",
+      // "valuesFormatting": "prettyPrinters",
+      "preLaunchTask": "CMake: build",
+      "autorun": [
+        "set print pretty on",
+        "python import sys",
+        "python sys.path.insert(0, '/usr/share/gcc/python')",
+        "python from libstdcxx.v6.printers import register_libstdcxx_printers",
+        "python register_libstdcxx_printers(None)"
+      ]
+    },
+    {
+      "name": "gdb Attach",
+      "type": "gdb",
+      "request": "attach",
+      "target": "${input:processId}",
+      "cwd": "${workspaceFolder}",
+      "valuesFormatting": "parseText"
+    },
+    {
+      "name": "gdb Remote",
+      "type": "gdb",
+      "request": "attach",
+      "target": "${input:remoteTarget}",
+      "remote": true,
+      "cwd": "${workspaceFolder}",
+      "valuesFormatting": "parseText"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "processId",
+      "type": "promptString",
+      "description": "Process ID to attach to"
+    },
+    {
+      "id": "remoteTarget",
+      "type": "promptString",
+      "description": "Remote target (e.g., localhost:1234)",
+      "default": "localhost:1234"
+    }
+  ]
+}
