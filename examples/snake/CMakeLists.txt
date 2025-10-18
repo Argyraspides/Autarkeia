@@ -12,7 +12,7 @@ add_executable( Snake
     ${SNAKE_SOURCES}
 )
 
-target_link_libraries( Snake
+target_link_libraries( Snake PRIVATE
     InputCommon
     Drawing
 )
