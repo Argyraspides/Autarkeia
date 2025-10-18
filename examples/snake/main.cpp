@@ -23,6 +23,8 @@ std::vector< Vec2I > snakePoints;
 size_t frameTimeMs = 100;
 Frame frame{ boardSize.x, boardSize.y };
 
+InputCommon::KeyboardInputHandler kbd;
+
 void UpdateSnakePositions()
 {
     // Update velocities based on the anchor points hit
@@ -63,13 +65,43 @@ void UpdateSnakePositions()
     }
 }
 
+void HandleUserInput()
+{
+    std::optional< InputCommon::KeyInputCode > keyPress = kbd.GetNextKeyPress();
+
+    if ( !keyPress )
+        return;
+
+    switch ( keyPress.value() )
+    {
+    case KEY_W:
+        anchorPoints.insert( snakePoints.front() );
+        anchorVelocities[ snakePoints.front() ] = VEC2I_UP;
+        break;
+    case KEY_A:
+        anchorPoints.insert( snakePoints.front() );
+        anchorVelocities[ snakePoints.front() ] = VEC2I_LEFT;
+        break;
+    case KEY_S:
+        anchorPoints.insert( snakePoints.front() );
+        anchorVelocities[ snakePoints.front() ] = VEC2I_DOWN;
+        break;
+    case KEY_D:
+        anchorPoints.insert( snakePoints.front() );
+        anchorVelocities[ snakePoints.front() ] = VEC2I_RIGHT;
+        break;
+    case KEY_SPACE:
+        snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
+        snakeVelocities.push_back( snakeVelocities.back() );
+        break;
+    }
+}
+
 int main()
 {
-
     snakePoints.push_back( boardSize / 2 );
     snakeVelocities.push_back( { -1, 0 } );
 
-    InputCommon::KeyboardInputHandler kbd;
     kbd.Start();
 
     auto startTime = std::chrono::steady_clock::now();
@@ -79,9 +111,7 @@ int main()
         auto deltaTime = std::chrono::duration_cast< std::chrono::milliseconds >( now - startTime );
 
         if ( deltaTime < std::chrono::milliseconds( frameTimeMs ) )
-        {
             continue;
-        }
 
         startTime += std::chrono::milliseconds( frameTimeMs );
 
@@ -96,35 +126,6 @@ int main()
 
         DrawUtils::Draw( frame );
 
-        std::optional< InputCommon::KeyInputCode > keyPress = kbd.GetNextKeyPress();
-
-        if ( !keyPress )
-        {
-            continue;
-        }
-
-        switch ( keyPress.value() )
-        {
-        case KEY_W:
-            anchorPoints.insert( snakePoints.front() );
-            anchorVelocities[ snakePoints.front() ] = VEC2I_UP;
-            break;
-        case KEY_A:
-            anchorPoints.insert( snakePoints.front() );
-            anchorVelocities[ snakePoints.front() ] = VEC2I_LEFT;
-            break;
-        case KEY_S:
-            anchorPoints.insert( snakePoints.front() );
-            anchorVelocities[ snakePoints.front() ] = VEC2I_DOWN;
-            break;
-        case KEY_D:
-            anchorPoints.insert( snakePoints.front() );
-            anchorVelocities[ snakePoints.front() ] = VEC2I_RIGHT;
-            break;
-        case KEY_SPACE:
-            snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
-            snakeVelocities.push_back( snakeVelocities.back() );
-            break;
-        }
+        HandleUserInput();
     }
 }
