@@ -8,6 +8,7 @@
 #include "Vec2I.hpp"
 #include <chrono>
 #include <linux/input-event-codes.h>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -17,6 +18,8 @@ std::unordered_set< Vec2I, Vec2IHash > anchorPoints;
 std::unordered_map< Vec2I, Vec2I, Vec2IHash, Vec2IEquality > anchorVelocities;
 std::unordered_map< Vec2I, int, Vec2IHash, Vec2IEquality > anchorPointHits;
 
+Vec2I snakeFood = { 20, 20 };
+
 std::vector< Vec2I > snakeVelocities;
 std::vector< Vec2I > snakePoints;
 
@@ -25,30 +28,24 @@ Frame frame{ boardSize.x, boardSize.y };
 
 InputCommon::KeyboardInputHandler kbd;
 
-void UpdateSnakePositions()
+void UpdateSnake()
 {
     // Update velocities based on the anchor points hit
     for ( int i = 0; i < snakePoints.size(); i++ )
     {
         Vec2I& pt = snakePoints[ i ];
 
-        if ( !anchorPoints.contains( pt ) )
+        if ( anchorPoints.contains( pt ) )
         {
-            continue;
+            snakeVelocities[ i ] = anchorVelocities[ pt ];
+            if ( ++anchorPointHits[ pt ] == snakePoints.size() )
+            {
+                anchorPoints.erase( pt );
+                anchorVelocities.erase( pt );
+                anchorPointHits.erase( pt );
+            }
         }
 
-        snakeVelocities[ i ] = anchorVelocities[ pt ];
-        if ( ++anchorPointHits[ pt ] == snakePoints.size() )
-        {
-            anchorPoints.erase( pt );
-            anchorVelocities.erase( pt );
-            anchorPointHits.erase( pt );
-        }
-    }
-
-    for ( int i = 0; i < snakePoints.size(); i++ )
-    {
-        Vec2I& pt = snakePoints[ i ];
         pt += snakeVelocities[ i ];
 
         if ( pt.x > frame.Width() )
@@ -62,6 +59,13 @@ void UpdateSnakePositions()
 
         if ( pt.y < 0 )
             pt.y = frame.Height();
+
+        if ( snakePoints.front() == snakeFood )
+        {
+            snakeFood = { rand() % frame.Width(), rand() % frame.Height() };
+            snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
+            snakeVelocities.push_back( snakeVelocities.back() );
+        }
     }
 }
 
@@ -90,11 +94,22 @@ void HandleUserInput()
         anchorPoints.insert( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_RIGHT;
         break;
-    case KEY_SPACE:
-        snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
-        snakeVelocities.push_back( snakeVelocities.back() );
-        break;
     }
+}
+
+void Render()
+{
+    static const char snakeChar = 'x';
+    DrawUtils::Clear( frame, '.' );
+    DrawUtils::ClearScreen();
+
+    for ( const Vec2I& snakePt : snakePoints )
+        DrawUtils::DrawPixel( snakePt, frame, snakeChar );
+
+    static const char foodChar = '0';
+    DrawUtils::DrawPixel( snakeFood, frame, foodChar );
+
+    DrawUtils::Draw( frame );
 }
 
 int main()
@@ -115,17 +130,8 @@ int main()
 
         startTime += std::chrono::milliseconds( frameTimeMs );
 
-        static const char snakeChar = 'x';
-        DrawUtils::Clear( frame, '.' );
-        DrawUtils::ClearScreen();
-
-        UpdateSnakePositions();
-
-        for ( const Vec2I& snakePt : snakePoints )
-            DrawUtils::DrawPixel( snakePt, frame, snakeChar );
-
-        DrawUtils::Draw( frame );
-
         HandleUserInput();
+        UpdateSnake();
+        Render();
     }
 }
