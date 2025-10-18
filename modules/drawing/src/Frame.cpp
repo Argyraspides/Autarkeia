@@ -52,21 +52,21 @@ std::string& Frame::Buffer()
     return m_buffer;
 }
 
-const bool Frame::Empty() const
+bool Frame::Empty() const
 {
     return m_buffer.empty();
 }
 
-const int Frame::Width() const
+int Frame::Width() const
 {
     return m_frameWidth;
 }
 
-const int Frame::Height() const
+int Frame::Height() const
 {
     return m_frameHeight;
 }
-const int Frame::FlatSize() const
+int Frame::FlatSize() const
 {
     return m_frameWidth * m_frameHeight;
 }

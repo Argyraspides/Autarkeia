@@ -4,7 +4,8 @@
 
 #include "KeyboardInputHandler.hpp"
 #include "DrawUtils.hpp"
-#include <iostream>
+#include "Frame.hpp"
+#include "Vec2I.hpp"
 #include <linux/input-event-codes.h>
 
 int main()

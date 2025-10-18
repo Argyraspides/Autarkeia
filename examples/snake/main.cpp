@@ -2,10 +2,9 @@
 // Created by gaugamela on 9/24/25.
 //
 
-#include <vector>
 #include "Vec2I.hpp"
-#include <thread>
 #include "DrawUtils.hpp"
+#include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
 
 Vec2I boardSize = { 25, 25 };
@@ -25,11 +24,12 @@ int main()
     InputCommon::KeyboardInputHandler kbd;
     kbd.Start();
 
-    auto originalTime = std::chrono::steady_clock::now();
+    auto startTime = std::chrono::steady_clock::now();
     while ( true )
     {
         auto now = std::chrono::steady_clock::now();
-        auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - originalTime);
+        auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime);
+
         const char snakeChar = 'x';
         DrawUtils::Clear( frame, '.' );
         DrawUtils::ClearScreen();

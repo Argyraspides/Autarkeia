@@ -6,6 +6,7 @@ option( BUILD_TESTS "Builds Autarkeia tests" ON )
 option( BUILD_EXAMPLE_DVD "Builds bouncing DVD thingy example" ON )
 option( BUILD_EXAMPLE_MOVING_BALL "Builds moving ball example, keyboard inputs n shit" ON )
 option( BUILD_EXAMPLE_SNAKE "Builds snake example (literally just a game of snake)" ON )
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 set( CMAKE_CXX_STANDARD 20 )
 

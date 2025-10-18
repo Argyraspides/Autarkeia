@@ -2,6 +2,8 @@
 // Created by gaugamela on 10/18/25.
 //
 #include "DrawUtils.hpp"
+#include "Vec2I.hpp"
+#include "Frame.hpp"
 #include <cmath>
 #include <iostream>
 #include <unistd.h>
@@ -9,7 +11,7 @@
 namespace DrawUtils
 {
 
-inline void DrawLine( const Vec2I& p1, // Starting point
+void DrawLine( const Vec2I& p1, // Starting point
                       const Vec2I& p2, // Ending point
                       Frame& frameBuffer,
                       const char& drawChar )
@@ -60,7 +62,7 @@ inline void DrawLine( const Vec2I& p1, // Starting point
     }
 }
 
-inline void DrawLineVertical( int y1, int y2, int x, Frame& frame, const char& drawChar )
+void DrawLineVertical( int y1, int y2, int x, Frame& frame, const char& drawChar )
 {
     if ( y1 > y2 )
         std::swap( y1, y2 );
@@ -69,7 +71,7 @@ inline void DrawLineVertical( int y1, int y2, int x, Frame& frame, const char& d
         ;
 }
 
-inline void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, const char& drawChar )
+void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, const char& drawChar )
 {
 
     if ( x1 > x2 )
@@ -79,7 +81,7 @@ inline void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, const char&
         ;
 }
 
-inline void QuickDrawLine( const Vec2I& p1, // Starting point
+void QuickDrawLine( const Vec2I& p1, // Starting point
                            const Vec2I& p2, // Ending point
                            Frame& frame,
                            const char& drawChar )
@@ -145,40 +147,40 @@ inline void QuickDrawLine( const Vec2I& p1, // Starting point
     }
 }
 
-inline void DrawTriangle( const Vec2I& p1, const Vec2I& p2, const Vec2I& p3, Frame& frame, const char& drawChar )
+void DrawTriangle( const Vec2I& p1, const Vec2I& p2, const Vec2I& p3, Frame& frame, const char& drawChar )
 {
     DrawLine( p1, p2, frame, drawChar );
     DrawLine( p2, p3, frame, drawChar );
     DrawLine( p3, p1, frame, drawChar );
 }
 
-inline void QuickDrawTriangle( const Vec2I& p1, const Vec2I& p2, const Vec2I& p3, Frame& frame, const char& drawChar )
+void QuickDrawTriangle( const Vec2I& p1, const Vec2I& p2, const Vec2I& p3, Frame& frame, const char& drawChar )
 {
     QuickDrawLine( p1, p2, frame, drawChar );
     QuickDrawLine( p2, p3, frame, drawChar );
     QuickDrawLine( p3, p1, frame, drawChar );
 }
 
-inline void DrawPixel( const Vec2I& p, Frame& frame, const char& drawChar )
+void DrawPixel( const Vec2I& p, Frame& frame, const char& drawChar )
 {
     frame.Write( p.x, p.y, drawChar );
 }
 
-inline void Clear( Frame& frame, const char& clearChar )
+void Clear( Frame& frame, const char& clearChar )
 {
     for ( int y = 0; y < frame.Height(); y++ )
         for ( int x = 0; x < frame.Width(); x++ )
             frame.Write( x, y, clearChar );
 }
 
-inline void ClearScreen()
+void ClearScreen()
 {
     // Run 'strace clear > /dev/null' to find out how this works.
     // Check the write() syscall at the end
     write( STDOUT_FILENO, "\33[H\33[2J\33[3J", 11 );
 }
 
-inline void Draw( Frame& frame )
+void Draw( Frame& frame )
 {
     std::cout << frame.Buffer();
 }
