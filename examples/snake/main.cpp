@@ -36,7 +36,7 @@ Frame frame{ boardSize.x, boardSize.y };
 InputCommon::KeyboardInputHandler kbd;
 
 bool pauseGame = false;
-bool gameRunning = false;
+bool gameRunning = true;
 bool playerWon = false;
 
 void GrowSnake()
@@ -113,8 +113,6 @@ void UpdateSnake()
                 headOnLine = snakeHead.y == p1.y;
                 headInBounds = snakeHead.x >= leftPt.x && snakeHead.x <= rightPt.x;
             }
-
-            assert( !( headOnLine && headInBounds ) && "YOU LOST!!!" );
 
             if ( headOnLine && headInBounds )
             {
@@ -248,4 +246,6 @@ int main()
     {
         std::cout << "YOU LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     }
+
+    kbd.Stop();
 }
