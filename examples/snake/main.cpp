@@ -79,36 +79,28 @@ void HandleUserInput()
     {
     case KEY_W: {
         if ( snakeVelocities.front() == VEC2I_DOWN )
-        {
             return;
-        }
         anchorPoints.insert( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_UP;
         break;
     }
     case KEY_A: {
-        if ( snakeVelocities.front() == VEC2I_RIGHT)
-        {
+        if ( snakeVelocities.front() == VEC2I_RIGHT )
             return;
-        }
         anchorPoints.insert( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_LEFT;
         break;
     }
     case KEY_S: {
         if ( snakeVelocities.front() == VEC2I_UP )
-        {
             return;
-        }
         anchorPoints.insert( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_DOWN;
         break;
     }
     case KEY_D: {
         if ( snakeVelocities.front() == VEC2I_LEFT )
-        {
             return;
-        }
         anchorPoints.insert( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_RIGHT;
         break;
