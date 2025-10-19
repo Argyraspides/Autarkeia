@@ -12,19 +12,23 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 Vec2I boardSize = { 25, 25 };
 
 std::unordered_set< Vec2I, Vec2IHash > anchorPoints;
+
+// First element is always the tail coz it completes the lines you have to check for
+// snake intersection with itself
 std::vector< Vec2I > anchorPointsList;
 
 std::unordered_map< Vec2I, Vec2I, Vec2IHash, Vec2IEquality > anchorVelocities;
 std::unordered_map< Vec2I, int, Vec2IHash, Vec2IEquality > anchorPointHits;
 
-Vec2I snakeFood = { 20, 20 };
-
 std::vector< Vec2I > snakeVelocities;
 std::vector< Vec2I > snakePoints;
+
+Vec2I snakeFood = { 20, 20 };
 
 size_t frameTimeMs = 75;
 Frame frame{ boardSize.x, boardSize.y };
@@ -32,6 +36,8 @@ Frame frame{ boardSize.x, boardSize.y };
 InputCommon::KeyboardInputHandler kbd;
 
 bool pauseGame = false;
+bool gameRunning = false;
+bool playerWon = false;
 
 void GrowSnake()
 {
@@ -77,7 +83,7 @@ void UpdateSnake()
     if ( snakePoints.front() == snakeFood )
         GrowSnake();
 
-    anchorPointsList[0] = snakePoints.back();
+    anchorPointsList[ 0 ] = snakePoints.back();
 
     if ( anchorPointsList.size() >= 2 )
     {
@@ -109,6 +115,12 @@ void UpdateSnake()
             }
 
             assert( !( headOnLine && headInBounds ) && "YOU LOST!!!" );
+
+            if ( headOnLine && headInBounds )
+            {
+                gameRunning = false;
+                playerWon = false;
+            }
         }
     }
 }
@@ -193,20 +205,21 @@ int main()
 {
     snakePoints.push_back( boardSize / 2 );
     snakeVelocities.push_back( { -1, 0 } );
-    anchorPointsList.push_back(snakePoints.front());
+    anchorPointsList.push_back( snakePoints.front() );
     kbd.Start();
 
     auto startTime = std::chrono::steady_clock::now();
-    while ( true )
+    while ( gameRunning )
     {
-        auto nextFrameTime = startTime + std::chrono::milliseconds(frameTimeMs - 1);
+        auto nextFrameTime = startTime + std::chrono::milliseconds( frameTimeMs - 1 );
         auto now = std::chrono::steady_clock::now();
         auto timeToWait = nextFrameTime - now;
 
-        std::this_thread::sleep_for(timeToWait);
+        std::this_thread::sleep_for( timeToWait );
 
-        auto trueNextFrameTime = std::chrono::steady_clock::now() + std::chrono::milliseconds(1);
-        while(std::chrono::steady_clock::now() < trueNextFrameTime );
+        auto trueNextFrameTime = std::chrono::steady_clock::now() + std::chrono::milliseconds( 1 );
+        while ( std::chrono::steady_clock::now() < trueNextFrameTime )
+            ;
 
         startTime = std::chrono::steady_clock::now();
 
@@ -220,5 +233,19 @@ int main()
         UpdateSnake();
         Render();
 
+        if ( snakePoints.size() == boardSize.x * boardSize.y )
+        {
+            playerWon = true;
+            gameRunning = false;
+        }
+    }
+
+    if(playerWon)
+    {
+        std::cout << "YOU WON LETS FUCKING GO THAT'S BASICALLY IMPOSSIBLE" << std::endl;
+    }
+    else 
+    {
+        std::cout << "YOU LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     }
 }
