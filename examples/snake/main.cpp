@@ -6,7 +6,6 @@
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
 #include "Vec2I.hpp"
-#include <cassert>
 #include <chrono>
 #include <linux/input-event-codes.h>
 #include <thread>
