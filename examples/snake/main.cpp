@@ -8,7 +8,6 @@
 #include "Vec2I.hpp"
 #include <chrono>
 #include <linux/input-event-codes.h>
-#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -30,6 +29,14 @@ InputCommon::KeyboardInputHandler kbd;
 
 void UpdateSnake()
 {
+
+    if ( snakePoints.front() == snakeFood )
+    {
+        snakeFood = { rand() % frame.Width(), rand() % frame.Height() };
+        snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
+        snakeVelocities.push_back( snakeVelocities.back() );
+    }
+
     // Update velocities based on the anchor points hit
     for ( int i = 0; i < snakePoints.size(); i++ )
     {
@@ -59,13 +66,6 @@ void UpdateSnake()
 
         if ( pt.y < 0 )
             pt.y = frame.Height();
-
-        if ( snakePoints.front() == snakeFood )
-        {
-            snakeFood = { rand() % frame.Width(), rand() % frame.Height() };
-            snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
-            snakeVelocities.push_back( snakeVelocities.back() );
-        }
     }
 }
 
