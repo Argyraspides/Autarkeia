@@ -30,14 +30,17 @@ Frame frame{ boardSize.x, boardSize.y };
 
 InputCommon::KeyboardInputHandler kbd;
 
+bool pauseGame = false;
+
+void GrowSnake()
+{
+    snakeFood = { rand() % frame.Width(), rand() % frame.Height() };
+    snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
+    snakeVelocities.push_back( snakeVelocities.back() );
+}
+
 void UpdateSnake()
 {
-    if ( snakePoints.front() == snakeFood )
-    {
-        snakeFood = { rand() % frame.Width(), rand() % frame.Height() };
-        snakePoints.push_back( snakePoints.back() - snakeVelocities.back() );
-        snakeVelocities.push_back( snakeVelocities.back() );
-    }
 
     // Update velocities based on the anchor points hit
     for ( int i = 0; i < snakePoints.size(); i++ )
@@ -50,7 +53,7 @@ void UpdateSnake()
             if ( ++anchorPointHits[ pt ] == snakePoints.size() )
             {
                 anchorPoints.erase( pt );
-                anchorPointsList.erase( anchorPointsList.begin() );
+                anchorPointsList.erase( anchorPointsList.begin() + 1 );
                 anchorVelocities.erase( pt );
                 anchorPointHits.erase( pt );
             }
@@ -71,21 +74,41 @@ void UpdateSnake()
             pt.y = frame.Height() - 1;
     }
 
+    if ( snakePoints.front() == snakeFood )
+        GrowSnake();
+
+    anchorPointsList[0] = snakePoints.back();
+
     if ( anchorPointsList.size() >= 2 )
     {
         Vec2I snakeHead = snakePoints.front();
 
-        for ( int i = 0; i < anchorPointsList.size(); i += 2 )
+        for ( int i = 0; i < anchorPointsList.size() - 1; i++ )
         {
-            Vec2I& p1 = anchorPointsList[ i ];
-            Vec2I& p2 = anchorPointsList[ i + 1 ];
+            const Vec2I& p1 = anchorPointsList[ i ];
+            const Vec2I& p2 = anchorPointsList[ i + 1 ];
 
             bool lineVertical = p1.x == p2.x;
-
+            bool headOnLine = false;
+            bool headInBounds = false;
             if ( lineVertical )
-                assert( snakeHead.x != p1.x && "YOU LOST!!!" );
+            {
+                Vec2I topPt = p1.y < p2.y ? p1 : p2;
+                Vec2I bottomPt = p1.y > p2.y ? p1 : p2;
+
+                headOnLine = snakeHead.x == p1.x;
+                headInBounds = snakeHead.y <= bottomPt.y && snakeHead.y >= topPt.y;
+            }
             else
-                assert( snakeHead.y != p1.y && "YOU LOST!!!" );
+            {
+                Vec2I leftPt = p1.x < p2.x ? p1 : p2;
+                Vec2I rightPt = p1.x > p2.x ? p1 : p2;
+
+                headOnLine = snakeHead.y == p1.y;
+                headInBounds = snakeHead.x >= leftPt.x && snakeHead.x <= rightPt.x;
+            }
+
+            assert( !( headOnLine && headInBounds ) && "YOU LOST!!!" );
         }
     }
 }
@@ -97,34 +120,52 @@ void HandleUserInput()
     if ( !keyPress )
         return;
 
+    Vec2I& headVel = snakeVelocities.front();
+
     switch ( keyPress.value() )
     {
-    case KEY_W: {
-        if ( snakeVelocities.front() == VEC2I_DOWN )
+    case KEY_W:
+    case KEY_UP: {
+        if ( headVel == VEC2I_DOWN || headVel == VEC2I_UP )
             return;
         anchorPoints.insert( snakePoints.front() );
+        anchorPointsList.push_back( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_UP;
         break;
     }
-    case KEY_A: {
-        if ( snakeVelocities.front() == VEC2I_RIGHT )
+    case KEY_A:
+    case KEY_LEFT: {
+        if ( headVel == VEC2I_RIGHT || headVel == VEC2I_LEFT )
             return;
         anchorPoints.insert( snakePoints.front() );
+        anchorPointsList.push_back( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_LEFT;
         break;
     }
-    case KEY_S: {
-        if ( snakeVelocities.front() == VEC2I_UP )
+    case KEY_S:
+    case KEY_DOWN: {
+        if ( headVel == VEC2I_UP || headVel == VEC2I_DOWN )
             return;
         anchorPoints.insert( snakePoints.front() );
+        anchorPointsList.push_back( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_DOWN;
         break;
     }
-    case KEY_D: {
-        if ( snakeVelocities.front() == VEC2I_LEFT )
+    case KEY_D:
+    case KEY_RIGHT: {
+        if ( headVel == VEC2I_LEFT || headVel == VEC2I_RIGHT )
             return;
         anchorPoints.insert( snakePoints.front() );
+        anchorPointsList.push_back( snakePoints.front() );
         anchorVelocities[ snakePoints.front() ] = VEC2I_RIGHT;
+        break;
+    }
+    case KEY_SPACE: {
+        GrowSnake();
+        break;
+    }
+    case KEY_P: {
+        pauseGame = !pauseGame;
         break;
     }
     }
@@ -142,6 +183,9 @@ void Render()
     static const char foodChar = '0';
     DrawUtils::DrawPixel( snakeFood, frame, foodChar );
 
+    for ( const Vec2I& anchorPoint : anchorPointsList )
+        DrawUtils::DrawPixel( anchorPoint, frame, 'A' );
+
     DrawUtils::Draw( frame );
 }
 
@@ -149,6 +193,7 @@ int main()
 {
     snakePoints.push_back( boardSize / 2 );
     snakeVelocities.push_back( { -1, 0 } );
+    anchorPointsList.push_back(snakePoints.front());
     kbd.Start();
 
     auto startTime = std::chrono::steady_clock::now();
@@ -163,6 +208,12 @@ int main()
         startTime += std::chrono::milliseconds( frameTimeMs );
 
         HandleUserInput();
+
+        if ( pauseGame )
+        {
+            continue;
+        }
+
         UpdateSnake();
         Render();
     }
