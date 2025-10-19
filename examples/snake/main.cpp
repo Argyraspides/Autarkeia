@@ -29,7 +29,6 @@ InputCommon::KeyboardInputHandler kbd;
 
 void UpdateSnake()
 {
-
     if ( snakePoints.front() == snakeFood )
     {
         snakeFood = { rand() % frame.Width(), rand() % frame.Height() };
@@ -55,17 +54,17 @@ void UpdateSnake()
 
         pt += snakeVelocities[ i ];
 
-        if ( pt.x > frame.Width() )
+        if ( pt.x >= frame.Width() )
             pt.x = 0;
 
         if ( pt.x < 0 )
-            pt.x = frame.Width();
+            pt.x = frame.Width() - 1;
 
-        if ( pt.y > frame.Height() )
+        if ( pt.y >= frame.Height() )
             pt.y = 0;
 
         if ( pt.y < 0 )
-            pt.y = frame.Height();
+            pt.y = frame.Height() - 1;
     }
 }
 
@@ -116,7 +115,6 @@ int main()
 {
     snakePoints.push_back( boardSize / 2 );
     snakeVelocities.push_back( { -1, 0 } );
-
     kbd.Start();
 
     auto startTime = std::chrono::steady_clock::now();
