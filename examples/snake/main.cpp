@@ -9,6 +9,7 @@
 #include <cassert>
 #include <chrono>
 #include <linux/input-event-codes.h>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -25,7 +26,7 @@ Vec2I snakeFood = { 20, 20 };
 std::vector< Vec2I > snakeVelocities;
 std::vector< Vec2I > snakePoints;
 
-size_t frameTimeMs = 100;
+size_t frameTimeMs = 75;
 Frame frame{ boardSize.x, boardSize.y };
 
 InputCommon::KeyboardInputHandler kbd;
@@ -41,7 +42,6 @@ void GrowSnake()
 
 void UpdateSnake()
 {
-
     // Update velocities based on the anchor points hit
     for ( int i = 0; i < snakePoints.size(); i++ )
     {
@@ -199,13 +199,16 @@ int main()
     auto startTime = std::chrono::steady_clock::now();
     while ( true )
     {
+        auto nextFrameTime = startTime + std::chrono::milliseconds(frameTimeMs - 1);
         auto now = std::chrono::steady_clock::now();
-        auto deltaTime = std::chrono::duration_cast< std::chrono::milliseconds >( now - startTime );
+        auto timeToWait = nextFrameTime - now;
 
-        if ( deltaTime < std::chrono::milliseconds( frameTimeMs ) )
-            continue;
+        std::this_thread::sleep_for(timeToWait);
 
-        startTime += std::chrono::milliseconds( frameTimeMs );
+        auto trueNextFrameTime = std::chrono::steady_clock::now() + std::chrono::milliseconds(1);
+        while(std::chrono::steady_clock::now() < trueNextFrameTime );
+
+        startTime = std::chrono::steady_clock::now();
 
         HandleUserInput();
 
@@ -216,5 +219,6 @@ int main()
 
         UpdateSnake();
         Render();
+
     }
 }
