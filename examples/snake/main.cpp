@@ -6,6 +6,7 @@
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
 #include "Vec2I.hpp"
+#include <cassert>
 #include <chrono>
 #include <linux/input-event-codes.h>
 #include <unordered_map>
@@ -14,6 +15,8 @@
 Vec2I boardSize = { 25, 25 };
 
 std::unordered_set< Vec2I, Vec2IHash > anchorPoints;
+std::vector< Vec2I > anchorPointsList;
+
 std::unordered_map< Vec2I, Vec2I, Vec2IHash, Vec2IEquality > anchorVelocities;
 std::unordered_map< Vec2I, int, Vec2IHash, Vec2IEquality > anchorPointHits;
 
@@ -47,6 +50,7 @@ void UpdateSnake()
             if ( ++anchorPointHits[ pt ] == snakePoints.size() )
             {
                 anchorPoints.erase( pt );
+                anchorPointsList.erase( anchorPointsList.begin() );
                 anchorVelocities.erase( pt );
                 anchorPointHits.erase( pt );
             }
@@ -65,6 +69,24 @@ void UpdateSnake()
 
         if ( pt.y < 0 )
             pt.y = frame.Height() - 1;
+    }
+
+    if ( anchorPointsList.size() >= 2 )
+    {
+        Vec2I snakeHead = snakePoints.front();
+
+        for ( int i = 0; i < anchorPointsList.size(); i += 2 )
+        {
+            Vec2I& p1 = anchorPointsList[ i ];
+            Vec2I& p2 = anchorPointsList[ i + 1 ];
+
+            bool lineVertical = p1.x == p2.x;
+
+            if ( lineVertical )
+                assert( snakeHead.x != p1.x && "YOU LOST!!!" );
+            else
+                assert( snakeHead.y != p1.y && "YOU LOST!!!" );
+        }
     }
 }
 
