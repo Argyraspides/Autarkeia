@@ -239,9 +239,7 @@ int main()
         HandleUserInput();
 
         if ( pauseGame )
-        {
             continue;
-        }
 
         UpdateSnake();
         Render();
