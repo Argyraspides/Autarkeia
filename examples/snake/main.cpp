@@ -111,7 +111,7 @@ void UpdateSnake()
     snakeHead.location += snakeHead.velocity;
     snakeTail.location += snakeTail.velocity;
 
-    // Collision detection
+    // Collision with wall 
     if ( snakeHead.location.x >= boardSize.x )
         gameRunning = false;
     else if ( snakeHead.location.x < 0 )
