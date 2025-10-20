@@ -254,13 +254,9 @@ int main()
     }
 
     if ( playerWon )
-    {
         std::cout << "YOU WON LETS FUCKING GO THAT'S BASICALLY IMPOSSIBLE" << std::endl;
-    }
     else
-    {
         std::cout << "YOU LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    }
 
     kbd.Stop();
 }
