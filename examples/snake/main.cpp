@@ -133,7 +133,8 @@ void HandleUserInput()
         anchorPoints.insert( anchorPoints.end() - 1, { snakeHead.location, VEC2I_RIGHT } );
         break;
     }
-    case KEY_SPACE: {
+    case KEY_GRAVE : {
+        GrowSnake();
         break;
     }
     case KEY_P: {
