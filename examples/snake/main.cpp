@@ -246,11 +246,11 @@ int main()
         UpdateSnake();
         Render();
 
-        // if ( .size() == boardSize.x * boardSize.y )
-        // {
-        //     playerWon = true;
-        //     gameRunning = false;
-        // }
+        if ( snakeSize == boardSize.x * boardSize.y )
+        {
+            playerWon = true;
+            gameRunning = false;
+        }
     }
 
     if ( playerWon )
