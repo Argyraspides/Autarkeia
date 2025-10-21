@@ -12,6 +12,7 @@
 #include <mutex>
 #include <optional>
 #include <queue>
+#include <semaphore>
 #include <thread>
 
 namespace InputCommon
@@ -71,6 +72,7 @@ class KeyboardInputHandler
 
   private:
     void ListenToKeyboard( InputCommon::KeyboardInfo ) noexcept;
+    void StopListeningThreads() noexcept;
     void DetectKeyboards() noexcept;
 
   private:
@@ -78,6 +80,9 @@ class KeyboardInputHandler
 
     std::vector< std::thread > m_keyboardInputThreads;
     std::thread m_keyboardDetectionThread;
+
+    std::thread m_terminationThread;
+    std::binary_semaphore m_terminationSemaphore;
 
     InputCommon::KeyboardHashSet m_connectedKeyboards;
 

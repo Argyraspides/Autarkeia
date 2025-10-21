@@ -3,10 +3,11 @@
 //
 #include "KeyboardInputHandler.hpp"
 #include "InputPeripheralDetection.hpp"
+#include <algorithm>
 #include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>
-#include <semaphore>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -18,10 +19,16 @@ static constexpr uint16_t KEY_HELD = 2;
 static constexpr uint16_t KEY_RELEASED = 0;
 static constexpr uint16_t KEY_PRESSED = 1;
 
+static constexpr int PIPE_READ_IDX = 0;
+static constexpr int PIPE_WRITE_IDX = 1;
+
+static int s_terminationPipeFds[ 2 ];
+
 namespace InputCommon
 {
 KeyboardInputHandler::KeyboardInputHandler() noexcept
-    : m_running( false )
+    : m_running{ false },
+      m_terminationSemaphore{ 0 }
 {
 }
 
@@ -58,6 +65,9 @@ void KeyboardInputHandler::Start() noexcept
 {
     m_running = true;
     m_keyboardDetectionThread = std::thread( &KeyboardInputHandler::DetectKeyboards, this );
+
+    int pipeCreateSuccess = pipe( s_terminationPipeFds );
+    m_terminationThread = std::thread( &KeyboardInputHandler::StopListeningThreads, this );
 }
 
 void KeyboardInputHandler::Stop() noexcept
@@ -66,10 +76,26 @@ void KeyboardInputHandler::Stop() noexcept
 
     m_keysAvailableCv.notify_all();
 
-    m_keyboardDetectionThread.join();
+    m_terminationSemaphore.release();
 
     for ( std::thread& thread : m_keyboardInputThreads )
+    {
+        if ( !thread.joinable() )
+        {
+            continue;
+        }
+
         thread.join();
+    }
+
+    if ( m_terminationThread.joinable() )
+        m_terminationThread.join();
+
+    if ( m_keyboardDetectionThread.joinable() )
+        m_keyboardDetectionThread.join();
+
+    close( s_terminationPipeFds[ PIPE_READ_IDX ] );
+    close( s_terminationPipeFds[ PIPE_WRITE_IDX ] );
 }
 
 void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardInfo ) noexcept
@@ -100,16 +126,33 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
         return;
     }
 
+    // nfds -> check man pages for select() syscall
+    int nfds = std::max( { keyboardFd, s_terminationPipeFds[ PIPE_READ_IDX ] } ) + 1;
+
+    fd_set fdSet;
+    FD_ZERO( &fdSet );
+    FD_SET( s_terminationPipeFds[ PIPE_READ_IDX ], &fdSet );
+    FD_SET( keyboardFd, &fdSet );
+
     struct input_event keyboardInputEvent{};
     while ( m_running )
     {
-        ssize_t bytesRead = read( keyboardFd, reinterpret_cast< void* >( &keyboardInputEvent ), sizeof( input_event ) );
+        // To prevent being blocked on read syscall forever, we will wait for both the keyboard and also the
+        // s_terminationPipe. A termination thread will write to the s_terminationPipe to artifically wake us up so we
+        // can exit the while loop
+        int selectSuccess = select( nfds, &fdSet, NULL, NULL, NULL );
+
+        if ( selectSuccess < 0 )
+            break;
+
+        ssize_t bytesRead = -1;
+        if ( FD_ISSET( keyboardFd, &fdSet ) )
+            bytesRead = read( keyboardFd, reinterpret_cast< void* >( &keyboardInputEvent ), sizeof( input_event ) );
+        else if ( FD_ISSET( s_terminationPipeFds[ PIPE_READ_IDX ], &fdSet ) )
+            break;
 
         if ( bytesRead < 0 && errno == ENODEV ) // Keyboard probs unplugged / dead
-        {
-            close( keyboardFd );
-            return;
-        }
+            break;
 
         if ( bytesRead != sizeof( input_event ) )
             continue;
@@ -134,6 +177,15 @@ void KeyboardInputHandler::ListenToKeyboard( InputCommon::KeyboardInfo keyboardI
     }
 
     close( keyboardFd );
+}
+
+void KeyboardInputHandler::StopListeningThreads() noexcept
+{
+    m_terminationSemaphore.acquire();
+    // We just need to write to the fd to unblock the other threads on their
+    // read() syscalls so we just need to write something, anything at all
+    char writeCancel = 'c';
+    write( s_terminationPipeFds[ PIPE_WRITE_IDX ], static_cast< void* >( &writeCancel ), 1 );
 }
 
 void KeyboardInputHandler::DetectKeyboards() noexcept
