@@ -11,6 +11,7 @@ set( DRAWING_INCLUDE_DIRS
 
 set ( DRAWING_SOURCE_CODE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/DrawUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TextDrawUtils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Vec2I.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Frame.cpp
 )
