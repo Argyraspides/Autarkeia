@@ -201,9 +201,9 @@ void Render()
     static const char foodChar = '0';
     DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar );
 
-    static const char anchorChar = 'A';
-    for ( const SnakePoint& anchor : anchorPoints )
-        DrawUtils::DrawPixel( anchor.location, frame, anchorChar );
+    // static const char anchorChar = 'A';
+    // for ( const SnakePoint& anchor : anchorPoints )
+    //     DrawUtils::DrawPixel( anchor.location, frame, anchorChar );
 
     DrawUtils::Draw( frame );
 }
