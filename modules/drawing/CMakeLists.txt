@@ -10,7 +10,7 @@ set( DRAWING_INCLUDE_DIRS
 )
 
 set ( DRAWING_SOURCE_CODE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/DrawUtils.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/DrawUtils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Vec2I.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Frame.cpp
 )
@@ -21,4 +21,8 @@ add_library( Drawing STATIC
 
 target_include_directories( Drawing PUBLIC
     ${DRAWING_INCLUDE_DIRS}
+)
+
+target_link_libraries( Drawing
+    PRIVATE Sprite
 )

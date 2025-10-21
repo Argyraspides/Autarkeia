@@ -6,19 +6,24 @@
 #define FRAMEBUFFER_HPP
 #include <string>
 
+struct Vec2I;
 class Frame
 {
   public:
+    Frame() = delete;
     Frame( int width, int height );
     ~Frame();
 
-    const bool Empty() const;
-    const int Width() const;
-    const int Height() const;
-    const int FlatSize() const;
+    [[nodiscard]] bool Empty() const;
+    [[nodiscard]] int Width() const;
+    [[nodiscard]] int Height() const;
+    [[nodiscard]] int FlatSize() const;
+    [[nodiscard]] char At( const int& x, const int& y ) const;
 
     bool Write( const int& x, const int& y, const char& dat );
-    const char At( const int& x, const int& y ) const;
+    bool Write( const Vec2I& point, const char& dat );
+
+
     std::string& Buffer();
 
   private:

@@ -3,6 +3,8 @@
 //
 
 #include "DrawUtils.hpp"
+#include "Vec2I.hpp"
+#include "Frame.hpp"
 #include <thread>
 
 constexpr size_t width = 40;

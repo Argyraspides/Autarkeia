@@ -3,6 +3,7 @@
 //
 
 #include "Frame.hpp"
+#include "Vec2I.hpp"
 #include <stdexcept>
 #define DEFAULT_INIT_CHAR '.'
 
@@ -32,7 +33,12 @@ bool Frame::Write( const int& x, const int& y, const char& dat )
     return true;
 }
 
-const char Frame::At( const int& x, const int& y ) const
+bool Frame::Write( const Vec2I& point, const char& dat )
+{
+    return Write(point.x, point.y, dat);
+}
+
+char Frame::At( const int& x, const int& y ) const
 {
     if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
         throw std::out_of_range( "Cannot access (x,y) coordinate -- out of bounds" );
@@ -46,21 +52,21 @@ std::string& Frame::Buffer()
     return m_buffer;
 }
 
-const bool Frame::Empty() const
+bool Frame::Empty() const
 {
     return m_buffer.empty();
 }
 
-const int Frame::Width() const
+int Frame::Width() const
 {
     return m_frameWidth;
 }
 
-const int Frame::Height() const
+int Frame::Height() const
 {
     return m_frameHeight;
 }
-const int Frame::FlatSize() const
+int Frame::FlatSize() const
 {
     return m_frameWidth * m_frameHeight;
 }
