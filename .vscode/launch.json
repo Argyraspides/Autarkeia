@@ -5,10 +5,10 @@
       "name": "gdb Launch",
       "type": "gdb",
       "request": "launch",
-      "target": "${workspaceFolder}/build/examples/snake/Snake",
+      "target": "${workspaceFolder}/build/examples/text_drawing/TextDrawing",
       "cwd": "${workspaceFolder}",
       // "valuesFormatting": "prettyPrinters",
-      "preLaunchTask": "CMake: Build",
+      "preLaunchTask": "CMake: build",
       "autorun": [
         "set print pretty on",
         "python import sys",
