@@ -2,8 +2,8 @@
 // Created by gaugamela on 10/18/25.
 //
 #include "DrawUtils.hpp"
-#include "Vec2I.hpp"
 #include "Frame.hpp"
+#include "Vec2I.hpp"
 #include <cmath>
 #include <iostream>
 #include <unistd.h>
@@ -12,12 +12,24 @@ namespace DrawUtils
 {
 
 void DrawLine( const Vec2I& p1, // Starting point
-                      const Vec2I& p2, // Ending point
-                      Frame& frameBuffer,
-                      const char& drawChar )
+               const Vec2I& p2, // Ending point
+               Frame& frameBuffer,
+               const char& drawChar )
 {
     if ( frameBuffer.Empty() )
         return;
+
+    if ( p1.x == p2.x )
+    {
+        DrawLineVertical( p1.y, p2.y, p1.x, frameBuffer, drawChar );
+        return;
+    }
+
+    if ( p1.y == p2.y )
+    {
+        DrawLineHorizontal( p1.x, p2.x, p1.y, frameBuffer, drawChar );
+        return;
+    }
 
     int dx = p2.x - p1.x;
     int dy = p2.y - p1.y;
@@ -82,9 +94,9 @@ void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, const char& drawCh
 }
 
 void QuickDrawLine( const Vec2I& p1, // Starting point
-                           const Vec2I& p2, // Ending point
-                           Frame& frame,
-                           const char& drawChar )
+                    const Vec2I& p2, // Ending point
+                    Frame& frame,
+                    const char& drawChar )
 {
 
     if ( p1.x == p2.x )
@@ -185,4 +197,4 @@ void Draw( Frame& frame )
     std::cout << frame.Buffer();
 }
 
-}
+} // namespace DrawUtils

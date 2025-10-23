@@ -4,6 +4,7 @@
 #include "LetterGlyphs.hpp"
 #include "Vec2I.hpp"
 #include <span>
+#include <cctype>
 
 namespace DrawUtils
 {
@@ -26,7 +27,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
     Vec2I LEFT_MIDDLE = { 0, dim.y / 2 };
     Vec2I RIGHT_MIDDLE = { dim.x, dim.y / 2 };
 
-    std::array< Vec2I, CharBoxPosition::MAX - 1 > realPositions = {
+    std::array< Vec2I, CharBoxPosition::MAX > realPositions = {
         { BOTTOM_LEFT, BOTTOM_RIGHT, TOP_LEFT, TOP_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE } };
 
     for ( const std::pair< CharBoxPosition, CharBoxPosition >& line : glyph )
