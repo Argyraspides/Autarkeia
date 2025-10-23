@@ -28,7 +28,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
     Vec2I RIGHT_MIDDLE = { dim.x, dim.y / 2 };
 
     std::array< Vec2I, CharBoxPosition::MAX > realPositions = {
-        { BOTTOM_LEFT, BOTTOM_RIGHT, TOP_LEFT, TOP_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE } };
+        {TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE} };
 
     for ( const std::pair< CharBoxPosition, CharBoxPosition >& line : glyph )
     {
