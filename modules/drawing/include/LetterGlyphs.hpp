@@ -3,7 +3,7 @@
 
 enum CharBoxPosition
 {
-    TOP_LEFT,
+    TOP_LEFT = 0,
     TOP_RIGHT,
 
     BOTTOM_LEFT,
@@ -14,6 +14,8 @@ enum CharBoxPosition
 
     LEFT_MIDDLE,
     RIGHT_MIDDLE,
+
+    MAX
 };
 
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_A = { {

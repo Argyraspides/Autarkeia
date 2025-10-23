@@ -4,7 +4,6 @@
 #include "LetterGlyphs.hpp"
 #include "Vec2I.hpp"
 #include <span>
-#include <unordered_map>
 
 namespace DrawUtils
 {
@@ -27,23 +26,13 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
     Vec2I LEFT_MIDDLE = { 0, dim.y / 2 };
     Vec2I RIGHT_MIDDLE = { dim.x, dim.y / 2 };
 
-    std::unordered_map< CharBoxPosition, Vec2I > charBoxToVec;
-    charBoxToVec[ CharBoxPosition::BOTTOM_LEFT ] = BOTTOM_LEFT;
-    charBoxToVec[ CharBoxPosition::BOTTOM_RIGHT ] = BOTTOM_RIGHT;
-
-    charBoxToVec[ CharBoxPosition::TOP_LEFT ] = TOP_LEFT;
-    charBoxToVec[ CharBoxPosition::TOP_RIGHT ] = TOP_RIGHT;
-
-    charBoxToVec[ CharBoxPosition::TOP_MIDDLE ] = TOP_MIDDLE;
-    charBoxToVec[ CharBoxPosition::BOTTOM_MIDDLE ] = BOTTOM_MIDDLE;
-
-    charBoxToVec[ CharBoxPosition::LEFT_MIDDLE ] = LEFT_MIDDLE;
-    charBoxToVec[ CharBoxPosition::RIGHT_MIDDLE ] = RIGHT_MIDDLE;
+    std::array< Vec2I, CharBoxPosition::MAX - 1 > realPositions = {
+        { BOTTOM_LEFT, BOTTOM_RIGHT, TOP_LEFT, TOP_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE } };
 
     for ( const std::pair< CharBoxPosition, CharBoxPosition >& line : glyph )
     {
-        const Vec2I p1 = charBoxToVec.at( line.first ) + offset;
-        const Vec2I p2 = charBoxToVec.at( line.second ) + offset;
+        const Vec2I p1 = realPositions[ line.first ] + offset;
+        const Vec2I p2 = realPositions[ line.second ] + offset;
 
         DrawUtils::QuickDrawLine( p1, p2, frame, drawChar );
     }
