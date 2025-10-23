@@ -23,45 +23,44 @@ const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_A = 
     { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
 } };
 
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > LETTER_B = { {
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 6 > LETTER_B = { {
     { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
     { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
-    { CharBoxPosition::TOP_RIGHT, CharBoxPosition::LEFT_MIDDLE },
-    { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
-    { CharBoxPosition::RIGHT_MIDDLE, CharBoxPosition::BOTTOM_LEFT },
-} };
-
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_G = { {
-    { CharBoxPosition::TOP_RIGHT, CharBoxPosition::TOP_LEFT },
-    { CharBoxPosition::TOP_LEFT, CharBoxPosition::BOTTOM_LEFT },
-    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT },
-    { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::RIGHT_MIDDLE },
-} };
-
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_E = { {
-    { CharBoxPosition::TOP_RIGHT, CharBoxPosition::TOP_LEFT },
-    { CharBoxPosition::TOP_LEFT, CharBoxPosition::BOTTOM_LEFT },
-    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT },
-    { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
-} };
-
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 3 > LETTER_N = { {
-    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
-    { CharBoxPosition::TOP_LEFT, CharBoxPosition::BOTTOM_RIGHT },
-    { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::TOP_RIGHT },
-} };
-
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_Y = { {
-    { CharBoxPosition::TOP_LEFT, CharBoxPosition::LEFT_MIDDLE },
-    { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::BOTTOM_MIDDLE },
     { CharBoxPosition::TOP_RIGHT, CharBoxPosition::RIGHT_MIDDLE },
-    { CharBoxPosition::RIGHT_MIDDLE, CharBoxPosition::BOTTOM_MIDDLE },
-} };
-
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > LETTER_S = { {
-    { CharBoxPosition::TOP_RIGHT, CharBoxPosition::TOP_LEFT },
-    { CharBoxPosition::TOP_LEFT, CharBoxPosition::LEFT_MIDDLE },
     { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
     { CharBoxPosition::RIGHT_MIDDLE, CharBoxPosition::BOTTOM_RIGHT },
     { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::BOTTOM_LEFT },
+} };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 3 > LETTER_C = { {
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
+    { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT },
+} };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_D = { {
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
+    { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT },
+    { CharBoxPosition::TOP_RIGHT, CharBoxPosition::BOTTOM_RIGHT },
+} };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_E = { {
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
+    { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
+    { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT },
+} };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 3 > LETTER_F = { {
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
+    { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
+    { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
+} };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_G = { {
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
+    { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT },
+    { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::RIGHT_MIDDLE },
 } };

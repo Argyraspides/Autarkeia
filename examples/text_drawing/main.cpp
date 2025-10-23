@@ -8,11 +8,11 @@
 
 int main()
 {
-    Frame f(50, 50);
+    Frame f(100 , 25);
 
     DrawUtils::Clear(f, '.');
     DrawUtils::ClearScreen();
-    DrawUtils::DrawText( "BENGAY", { 5, 5 }, f, 'x' );
+    DrawUtils::DrawText( "ABCDEFG", { 5, 5 }, f, 'x' );
     DrawUtils::Draw(f);
 
     std::cin.get();
