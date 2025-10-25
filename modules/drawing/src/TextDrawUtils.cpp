@@ -8,7 +8,6 @@
 
 namespace DrawUtils
 {
-
 void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition > > glyph,
                     Vec2I dim,
                     Vec2I offset,
@@ -27,8 +26,10 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
     Vec2I LEFT_MIDDLE = { 0, dim.y / 2 };
     Vec2I RIGHT_MIDDLE = { dim.x, dim.y / 2 };
 
+    Vec2I CENTER = { dim.x / 2, dim.y / 2 };
+
     std::array< Vec2I, CharBoxPosition::MAX > realPositions = {
-        { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE } };
+        { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE, CENTER } };
 
     for ( const std::pair< CharBoxPosition, CharBoxPosition >& line : glyph )
     {
@@ -41,6 +42,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
 
 void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, int spacing )
 {
+
     Vec2I currOffset = { 0, 0 };
     for ( const char c : txt )
     {
@@ -67,8 +69,17 @@ void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, i
         case 'G':
             DrawCharacter( LETTER_G, dim, currOffset, frame, drawChar );
             break;
+        case '0':
+            DrawCharacter( NUMBER_ZERO, dim, currOffset, frame, drawChar );
+            break;
         case '1':
             DrawCharacter( NUMBER_ONE, dim, currOffset, frame, drawChar );
+            break;
+        case '2':
+            DrawCharacter( NUMBER_TWO, dim, currOffset, frame, drawChar );
+            break;
+        case '3':
+            DrawCharacter( NUMBER_THREE, dim, currOffset, frame, drawChar );
             break;
         }
         currOffset.x += ( dim.x + spacing );

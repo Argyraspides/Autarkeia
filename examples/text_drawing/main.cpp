@@ -10,9 +10,9 @@ int main()
 {
     Frame f(25, 25);
 
-    DrawUtils::Clear(f, '-');
+    DrawUtils::Clear(f, ' ');
     DrawUtils::ClearScreen();
-    DrawUtils::DrawText( "1", {10, 10}, f, 'x' );
+    DrawUtils::DrawText( "2", {10, 10 }, f, 'x' );
     DrawUtils::Draw(f);
 
     std::cin.get();
