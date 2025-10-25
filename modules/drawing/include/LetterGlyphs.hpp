@@ -26,7 +26,7 @@ const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > NUMBER_ZERO
       { CharBoxPosition::BOTTOM_RIGHT, BOTTOM_LEFT },
       { CharBoxPosition::BOTTOM_LEFT, TOP_LEFT } } };
 
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > NUMBER_ONE = {
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 3 > NUMBER_ONE = {
     { { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::TOP_MIDDLE },
       { CharBoxPosition::TOP_MIDDLE, CharBoxPosition::BOTTOM_MIDDLE },
       { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT } } };
@@ -46,6 +46,20 @@ const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > NUMBER_THRE
       { CharBoxPosition::RIGHT_MIDDLE, CharBoxPosition::CENTER },
       { CharBoxPosition::RIGHT_MIDDLE, CharBoxPosition::BOTTOM_RIGHT },
       { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::BOTTOM_LEFT } } };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 3 > NUMBER_FOUR = {
+    { { CharBoxPosition::TOP_LEFT, CharBoxPosition::LEFT_MIDDLE },
+      { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
+      { CharBoxPosition::TOP_RIGHT, CharBoxPosition::BOTTOM_RIGHT } } };
+
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > NUMBER_FIVE = {
+    { { CharBoxPosition::TOP_RIGHT, CharBoxPosition::TOP_LEFT },
+      { CharBoxPosition::TOP_LEFT, CharBoxPosition::LEFT_MIDDLE },
+      { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE },
+      { CharBoxPosition::RIGHT_MIDDLE, CharBoxPosition::BOTTOM_RIGHT },
+      { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::BOTTOM_LEFT }
+
+    } };
 
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_A = { {
     { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },

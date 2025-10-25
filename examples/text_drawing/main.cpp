@@ -12,7 +12,7 @@ int main()
 
     DrawUtils::Clear(f, ' ');
     DrawUtils::ClearScreen();
-    DrawUtils::DrawText( "2", {10, 10 }, f, 'x' );
+    DrawUtils::DrawText( "5", {10, 10 }, f, 'x' );
     DrawUtils::Draw(f);
 
     std::cin.get();

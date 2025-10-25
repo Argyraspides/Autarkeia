@@ -81,6 +81,12 @@ void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, i
         case '3':
             DrawCharacter( NUMBER_THREE, dim, currOffset, frame, drawChar );
             break;
+        case '4':
+            DrawCharacter( NUMBER_FOUR, dim, currOffset, frame, drawChar );
+            break;
+        case '5':
+            DrawCharacter( NUMBER_FIVE, dim, currOffset, frame, drawChar );
+            break;
         }
         currOffset.x += ( dim.x + spacing );
     }
