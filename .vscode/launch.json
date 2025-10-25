@@ -5,7 +5,7 @@
       "name": "gdb Launch",
       "type": "gdb",
       "request": "launch",
-      "target": "${workspaceFolder}/build/examples/text_drawing/TextDrawing",
+      "target": "${workspaceFolder}/build/examples/snake/Snake",
       "cwd": "${workspaceFolder}",
       // "valuesFormatting": "prettyPrinters",
       "preLaunchTask": "CMake: build",

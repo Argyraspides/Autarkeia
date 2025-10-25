@@ -10,7 +10,7 @@ int main()
 {
     Frame f(100 , 25);
 
-    DrawUtils::Clear(f, '.');
+    DrawUtils::Clear(f, ' ');
     DrawUtils::ClearScreen();
     DrawUtils::DrawText( "ABCDEFG", { 5, 5 }, f, 'x' );
     DrawUtils::Draw(f);
