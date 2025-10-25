@@ -18,6 +18,12 @@ enum CharBoxPosition
     MAX
 };
 
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > NUMBER_ONE = { {
+    { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::TOP_MIDDLE },
+    { CharBoxPosition::TOP_MIDDLE, CharBoxPosition::BOTTOM_MIDDLE},
+    { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::BOTTOM_RIGHT}
+} };
+
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > LETTER_A = { {
     { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
     { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::TOP_RIGHT },

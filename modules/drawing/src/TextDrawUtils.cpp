@@ -3,8 +3,8 @@
 #include "Frame.hpp"
 #include "LetterGlyphs.hpp"
 #include "Vec2I.hpp"
-#include <span>
 #include <cctype>
+#include <span>
 
 namespace DrawUtils
 {
@@ -28,7 +28,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
     Vec2I RIGHT_MIDDLE = { dim.x, dim.y / 2 };
 
     std::array< Vec2I, CharBoxPosition::MAX > realPositions = {
-        {TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE} };
+        { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE } };
 
     for ( const std::pair< CharBoxPosition, CharBoxPosition >& line : glyph )
     {
@@ -66,6 +66,9 @@ void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, i
             break;
         case 'G':
             DrawCharacter( LETTER_G, dim, currOffset, frame, drawChar );
+            break;
+        case '1':
+            DrawCharacter( NUMBER_ONE, dim, currOffset, frame, drawChar );
             break;
         }
         currOffset.x += ( dim.x + spacing );
