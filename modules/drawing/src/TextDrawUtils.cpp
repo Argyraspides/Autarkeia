@@ -48,27 +48,6 @@ void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, i
     {
         switch ( c )
         {
-        case 'A':
-            DrawCharacter( LETTER_A, dim, currOffset, frame, drawChar );
-            break;
-        case 'B':
-            DrawCharacter( LETTER_B, dim, currOffset, frame, drawChar );
-            break;
-        case 'C':
-            DrawCharacter( LETTER_C, dim, currOffset, frame, drawChar );
-            break;
-        case 'D':
-            DrawCharacter( LETTER_D, dim, currOffset, frame, drawChar );
-            break;
-        case 'E':
-            DrawCharacter( LETTER_E, dim, currOffset, frame, drawChar );
-            break;
-        case 'F':
-            DrawCharacter( LETTER_F, dim, currOffset, frame, drawChar );
-            break;
-        case 'G':
-            DrawCharacter( LETTER_G, dim, currOffset, frame, drawChar );
-            break;
         case '0':
             DrawCharacter( NUMBER_ZERO, dim, currOffset, frame, drawChar );
             break;
