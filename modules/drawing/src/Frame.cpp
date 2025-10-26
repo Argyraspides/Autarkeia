@@ -45,19 +45,19 @@ bool Frame::Write( int x, int y, char dat, FrameSection section )
     {
         // m_frameWidth + 1 because the end of each row is a newline that we forbid writing to
         m_buffer[ y * ( m_frameWidth + 1 ) + x ] = dat;
+        return true;
     }
-    else
-    {
-        x += m_frameSectionOffsets[ static_cast< size_t >(section) ].x;
-        y += m_frameSectionOffsets[ static_cast< size_t >(section) ].y;
 
-        Vec2I maxFrameDim = Vec2I{ x, y } + m_frameSectionDimensions[ static_cast< size_t >( section ) ];
+    x += m_frameSectionOffsets[ static_cast< size_t >( section ) ].x;
+    y += m_frameSectionOffsets[ static_cast< size_t >( section ) ].y;
 
-        if ( x >= maxFrameDim.x || y >= maxFrameDim.y )
-            return false;
+    Vec2I maxFrameDim = Vec2I{ x, y } + m_frameSectionDimensions[ static_cast< size_t >( section ) ];
+    if ( x >= maxFrameDim.x || y >= maxFrameDim.y )
+        return false;
+    else if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
+        return false;
 
-        m_buffer[ y * ( m_frameWidth + 1 ) + x ] = dat;
-    }
+    m_buffer[ y * ( m_frameWidth + 1 ) + x ] = dat;
 
     return true;
 }
