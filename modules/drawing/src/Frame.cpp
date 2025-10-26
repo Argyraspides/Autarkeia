@@ -6,7 +6,6 @@
 #include "Vec2I.hpp"
 #include <cassert>
 #include <limits>
-#include <regex>
 #include <stdexcept>
 
 static constexpr char DEFAULT_INIT_CHAR = '.';
