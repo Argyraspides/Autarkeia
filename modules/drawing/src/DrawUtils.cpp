@@ -14,7 +14,8 @@ namespace DrawUtils
 void DrawLine( Vec2I p1, // Starting point
                Vec2I p2, // Ending point
                Frame& frameBuffer,
-               char drawChar )
+               char drawChar,
+               FrameSection section )
 {
     if ( frameBuffer.Empty() )
         return;
@@ -49,7 +50,7 @@ void DrawLine( Vec2I p1, // Starting point
     for ( int i = 0; i <= it; i++ )
     {
 
-        if ( !frameBuffer.Write( currPoint.x, currPoint.y, drawChar ) )
+        if ( !frameBuffer.Write( currPoint.x, currPoint.y, drawChar, section ) )
             break;
 
         Vec2I nextPoint{};
@@ -74,40 +75,41 @@ void DrawLine( Vec2I p1, // Starting point
     }
 }
 
-void DrawLineVertical( int y1, int y2, int x, Frame& frame, char drawChar )
+void DrawLineVertical( int y1, int y2, int x, Frame& frame, char drawChar, FrameSection section )
 {
     if ( y1 > y2 )
         std::swap( y1, y2 );
 
-    while ( y1 <= y2 && frame.Write( x, y1++, drawChar ) )
+    while ( y1 <= y2 && frame.Write( x, y1++, drawChar, section ) )
         ;
 }
 
-void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, char drawChar )
+void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, char drawChar, FrameSection section )
 {
 
     if ( x1 > x2 )
         std::swap( x1, x2 );
 
-    while ( x1 <= x2 && frame.Write( x1++, y, drawChar ) )
+    while ( x1 <= x2 && frame.Write( x1++, y, drawChar, section ) )
         ;
 }
 
 void QuickDrawLine( Vec2I p1, // Starting point
                     Vec2I p2, // Ending point
                     Frame& frame,
-                    char drawChar )
+                    char drawChar,
+                    FrameSection section )
 {
 
     if ( p1.x == p2.x )
     {
-        DrawLineVertical( p1.y, p2.y, p1.x, frame, drawChar );
+        DrawLineVertical( p1.y, p2.y, p1.x, frame, drawChar, section );
         return;
     }
 
     if ( p1.y == p2.y )
     {
-        DrawLineHorizontal( p1.x, p2.x, p1.y, frame, drawChar );
+        DrawLineHorizontal( p1.x, p2.x, p1.y, frame, drawChar, section );
         return;
     }
 
@@ -159,23 +161,23 @@ void QuickDrawLine( Vec2I p1, // Starting point
     }
 }
 
-void DrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar )
+void DrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar, FrameSection section )
 {
-    DrawLine( p1, p2, frame, drawChar );
-    DrawLine( p2, p3, frame, drawChar );
-    DrawLine( p3, p1, frame, drawChar );
+    DrawLine( p1, p2, frame, drawChar, section );
+    DrawLine( p2, p3, frame, drawChar, section );
+    DrawLine( p3, p1, frame, drawChar, section );
 }
 
-void QuickDrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar )
+void QuickDrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar, FrameSection section )
 {
-    QuickDrawLine( p1, p2, frame, drawChar );
-    QuickDrawLine( p2, p3, frame, drawChar );
-    QuickDrawLine( p3, p1, frame, drawChar );
+    QuickDrawLine( p1, p2, frame, drawChar, section );
+    QuickDrawLine( p2, p3, frame, drawChar, section );
+    QuickDrawLine( p3, p1, frame, drawChar, section );
 }
 
-void DrawPixel( Vec2I p, Frame& frame, char drawChar )
+void DrawPixel( Vec2I p, Frame& frame, char drawChar, FrameSection section )
 {
-    frame.Write( p.x, p.y, drawChar );
+    frame.Write( p.x, p.y, drawChar, section );
 }
 
 void Clear( Frame& frame, char clearChar )
