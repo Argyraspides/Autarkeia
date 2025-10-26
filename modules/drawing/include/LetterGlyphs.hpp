@@ -81,7 +81,7 @@ const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > NUMBER_EIGH
       { CharBoxPosition::BOTTOM_LEFT, TOP_LEFT },
       { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE } } };
 
-const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > NUMBER_NINE = {
+const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > NUMBER_NINE = {
     { { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
       { CharBoxPosition::TOP_RIGHT, CharBoxPosition::BOTTOM_RIGHT },
       { CharBoxPosition::TOP_LEFT, CharBoxPosition::LEFT_MIDDLE },
