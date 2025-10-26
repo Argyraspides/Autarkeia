@@ -4,6 +4,7 @@
 #include "DrawUtils.hpp"
 #include "TextDrawUtils.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -13,15 +14,16 @@ int main()
 {
     Frame f( 100, 25 );
 
-    DrawUtils::Clear( f, ' ' );
+    DrawUtils::Clear( f, '.' );
     DrawUtils::ClearScreen();
 
-    for ( int i = 0; i < 100; i++ )
+    for ( int i = 0; i < 1000; i++ )
     {
-        DrawUtils::DrawText( std::to_string( i ), { 10, 10 }, f, 'x' );
+        int randomDim = std::clamp( rand() % 21, 5, 20) ;
+        DrawUtils::DrawText( std::to_string( i ), { randomDim, randomDim}, f, 'x' );
         DrawUtils::Draw( f );
-        std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-        DrawUtils::Clear( f, ' ' );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
+        DrawUtils::Clear( f, '.' );
         DrawUtils::ClearScreen();
     }
 
