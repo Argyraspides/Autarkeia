@@ -5,6 +5,7 @@
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
+#include "TextDrawUtils.hpp"
 #include "Vec2I.hpp"
 #include <chrono>
 #include <iostream>
@@ -35,8 +36,17 @@ std::vector< SnakePoint > anchorPoints;
 
 size_t frameTimeMs = 75;
 Frame frame{ boardSize.x, boardSize.y };
+
 FrameSection scoreSection = FrameSection::ONE;
 FrameSection gameSection = FrameSection::TWO;
+
+// Game score section
+Vec2I scoreSectionOffset = { 0, 0 };
+Vec2I scoreSectionDimension = { boardSize.x, 10 };
+
+// Main game section
+Vec2I gameSectionOffset = { 0, scoreSectionDimension.y };
+Vec2I gameSectionDimension = { boardSize.x, boardSize.y - scoreSectionDimension.y };
 
 InputCommon::KeyboardInputHandler kbd;
 
@@ -47,14 +57,6 @@ size_t snakeSize = 0;
 
 void SetupSections()
 {
-    // Game score section
-    Vec2I scoreSectionOffset = { 0, 0 };
-    Vec2I scoreSectionDimension = { boardSize.x, 10 };
-
-    // Main game section
-    Vec2I gameSectionOffset = { 0, scoreSectionDimension.y };
-    Vec2I gameSectionDimension = { boardSize.x, boardSize.y - scoreSectionDimension.y };
-
     frame.SetSection( scoreSection, scoreSectionOffset, scoreSectionDimension );
     frame.SetSection( gameSection, gameSectionOffset, gameSectionDimension );
 }
@@ -64,7 +66,7 @@ void GrowSnake()
     Vec2I newPoint = snakeTail.location - snakeTail.velocity;
     snakeTail.location = newPoint;
     anchorPoints[ 0 ] = snakeTail;
-    nextSnakeFoodLocation = { rand() % boardSize.x, rand() % boardSize.y };
+    nextSnakeFoodLocation = { rand() % gameSectionDimension.x, rand() % gameSectionDimension.y };
     snakeSize++;
 }
 
@@ -204,12 +206,13 @@ void HandleUserInput()
 
 void RenderScore()
 {
-    DrawUtils::Clear( frame, 'S', scoreSection );
+    DrawUtils::Clear( frame, ' ', scoreSection );
+    DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 1 }, frame, '.' );
 }
 
 void RenderSnake()
 {
-    DrawUtils::Clear( frame, '.', gameSection );
+    DrawUtils::Clear( frame, ' ', gameSection );
     static const char snakeChar = 'x';
     for ( int i = 0; i < anchorPoints.size() - 1; i++ )
     {
@@ -221,9 +224,9 @@ void RenderSnake()
     static const char foodChar = '0';
     DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar, gameSection );
 
-    static const char anchorChar = 'A';
-    for ( const SnakePoint& anchor : anchorPoints )
-        DrawUtils::DrawPixel( anchor.location, frame, anchorChar, gameSection );
+    // static const char anchorChar = 'A';
+    // for ( const SnakePoint& anchor : anchorPoints )
+    //     DrawUtils::DrawPixel( anchor.location, frame, anchorChar, gameSection );
 }
 
 void Render()

@@ -12,7 +12,8 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
                     Vec2I dim,
                     Vec2I offset,
                     Frame& frame,
-                    char drawChar )
+                    char drawChar,
+                    FrameSection section )
 {
     Vec2I BOTTOM_LEFT = { 0, dim.y };
     Vec2I BOTTOM_RIGHT = { dim.x, dim.y };
@@ -36,11 +37,11 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
         const Vec2I p1 = realPositions[ static_cast< size_t >( line.first ) ] + offset;
         const Vec2I p2 = realPositions[ static_cast< size_t >( line.second ) ] + offset;
 
-        DrawUtils::QuickDrawLine( p1, p2, frame, drawChar );
+        DrawUtils::QuickDrawLine( p1, p2, frame, drawChar, section );
     }
 }
 
-void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, int spacing )
+void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, int spacing, FrameSection section )
 {
 
     Vec2I currOffset = { 0, 0 };
@@ -49,34 +50,34 @@ void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, i
         switch ( c )
         {
         case '0':
-            DrawCharacter( NUMBER_ZERO, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_ZERO, dim, currOffset, frame, drawChar, section );
             break;
         case '1':
-            DrawCharacter( NUMBER_ONE, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_ONE, dim, currOffset, frame, drawChar, section );
             break;
         case '2':
-            DrawCharacter( NUMBER_TWO, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_TWO, dim, currOffset, frame, drawChar, section );
             break;
         case '3':
-            DrawCharacter( NUMBER_THREE, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_THREE, dim, currOffset, frame, drawChar, section );
             break;
         case '4':
-            DrawCharacter( NUMBER_FOUR, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_FOUR, dim, currOffset, frame, drawChar, section );
             break;
         case '5':
-            DrawCharacter( NUMBER_FIVE, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_FIVE, dim, currOffset, frame, drawChar, section );
             break;
         case '6':
-            DrawCharacter( NUMBER_SIX, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_SIX, dim, currOffset, frame, drawChar, section );
             break;
         case '7':
-            DrawCharacter( NUMBER_SEVEN, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_SEVEN, dim, currOffset, frame, drawChar, section );
             break;
         case '8':
-            DrawCharacter( NUMBER_EIGHT, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_EIGHT, dim, currOffset, frame, drawChar, section );
             break;
         case '9':
-            DrawCharacter( NUMBER_NINE, dim, currOffset, frame, drawChar );
+            DrawCharacter( NUMBER_NINE, dim, currOffset, frame, drawChar, section );
             break;
         }
         currOffset.x += ( dim.x + spacing );

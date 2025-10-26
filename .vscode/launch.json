@@ -50,7 +50,7 @@
       "type": "command",
       "command": "shellCommand.execute",
       "args": {
-          "command": "ps axww --no-headers k comm -o '%p|%c|%p|%a' | sed -e 's/^\\s*//' -e 's/\\s*|\\s*/|/g'",
+          "command": "ps axww --no-headers -o pid,comm,pid,args --sort=comm | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]\\+/|/g'",
           "fieldSeparator": "|",
           "description": "Select the process to attach to"
       }
