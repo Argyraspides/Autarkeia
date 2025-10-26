@@ -8,7 +8,7 @@
       "target": "${workspaceFolder}/build/examples/snake/Snake",
       "cwd": "${workspaceFolder}",
       // "valuesFormatting": "prettyPrinters",
-      "preLaunchTask": "CMake: Build",
+      "preLaunchTask": "CMake: build",
       "autorun": [
         "set print pretty on",
         "python import sys",
