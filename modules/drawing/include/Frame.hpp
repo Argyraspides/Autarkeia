@@ -8,9 +8,9 @@
 #include <array>
 #include <string>
 
-enum FrameSection
+enum class FrameSection
 {
-    ZERO,
+    ZERO = 0,
     ONE,
     TWO,
     THREE,
@@ -48,8 +48,8 @@ class Frame
   private:
     std::string m_buffer;
 
-    std::array< Vec2I, FrameSection::MAX > m_frameSectionOffsets;
-    std::array< Vec2I, FrameSection::MAX > m_frameSectionDimensions;
+    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX )> m_frameSectionOffsets;
+    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX )> m_frameSectionDimensions;
 
     int m_frameWidth;
     int m_frameHeight;

@@ -41,17 +41,17 @@ bool Frame::Write( int x, int y, char dat, FrameSection section )
     if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
         return false;
 
-    if ( section == NONE )
+    if ( section == FrameSection::NONE )
     {
         // m_frameWidth + 1 because the end of each row is a newline that we forbid writing to
         m_buffer[ y * ( m_frameWidth + 1 ) + x ] = dat;
     }
     else
     {
-        x += m_frameSectionOffsets[ section ].x;
-        y += m_frameSectionOffsets[ section ].y;
+        x += m_frameSectionOffsets[ static_cast< size_t >(section) ].x;
+        y += m_frameSectionOffsets[ static_cast< size_t >(section) ].y;
 
-        Vec2I maxFrameDim = Vec2I{ x, y } + m_frameSectionDimensions[ section ];
+        Vec2I maxFrameDim = Vec2I{ x, y } + m_frameSectionDimensions[ static_cast< size_t >( section ) ];
 
         if ( x >= maxFrameDim.x || y >= maxFrameDim.y )
             return false;
@@ -81,14 +81,14 @@ void Frame::SetSection( FrameSection section, Vec2I offset, Vec2I dimension )
 {
     ValidateSection( section );
 
-    m_frameSectionDimensions[ section ] = dimension;
-    m_frameSectionOffsets[ section ] = offset;
+    m_frameSectionDimensions[ static_cast< size_t >( section ) ] = dimension;
+    m_frameSectionOffsets[ static_cast< size_t >( section ) ] = offset;
 }
 
 bool Frame::WriteSection( FrameSection writeSection, Vec2I point, char dat )
 {
     ValidateSection( writeSection );
-    Vec2I offset = m_frameSectionOffsets[ writeSection ];
+    Vec2I offset = m_frameSectionOffsets[ static_cast< size_t >( writeSection )];
 }
 
 std::string& Frame::Buffer()

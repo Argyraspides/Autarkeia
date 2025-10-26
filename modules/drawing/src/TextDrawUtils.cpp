@@ -28,13 +28,13 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
 
     Vec2I CENTER = { dim.x / 2, dim.y / 2 };
 
-    std::array< Vec2I, CharBoxPosition::MAX > realPositions = {
+    std::array< Vec2I, static_cast< size_t >( CharBoxPosition::MAX ) > realPositions = {
         { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP_MIDDLE, BOTTOM_MIDDLE, LEFT_MIDDLE, RIGHT_MIDDLE, CENTER } };
 
     for ( const std::pair< CharBoxPosition, CharBoxPosition >& line : glyph )
     {
-        const Vec2I p1 = realPositions[ line.first ] + offset;
-        const Vec2I p2 = realPositions[ line.second ] + offset;
+        const Vec2I p1 = realPositions[ static_cast< size_t >( line.first ) ] + offset;
+        const Vec2I p2 = realPositions[ static_cast< size_t >( line.second ) ] + offset;
 
         DrawUtils::QuickDrawLine( p1, p2, frame, drawChar );
     }

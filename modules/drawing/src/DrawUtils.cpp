@@ -180,11 +180,11 @@ void DrawPixel( Vec2I p, Frame& frame, char drawChar, FrameSection section )
     frame.Write( p.x, p.y, drawChar, section );
 }
 
-void Clear( Frame& frame, char clearChar )
+void Clear( Frame& frame, char clearChar, FrameSection section )
 {
     for ( int y = 0; y < frame.Height(); y++ )
         for ( int x = 0; x < frame.Width(); x++ )
-            frame.Write( x, y, clearChar );
+            frame.Write( x, y, clearChar, section );
 }
 
 void ClearScreen()
