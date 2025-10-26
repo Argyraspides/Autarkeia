@@ -39,7 +39,6 @@ class Frame
     bool Write( Vec2I point, char dat, FrameSection section = FrameSection::NONE );
 
     void SetSection( FrameSection section, Vec2I offset, Vec2I dimension );
-    bool WriteSection( FrameSection writeSection, Vec2I point, char dat );
 
     std::string& Buffer();
 

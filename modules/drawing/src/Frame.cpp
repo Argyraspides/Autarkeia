@@ -85,12 +85,6 @@ void Frame::SetSection( FrameSection section, Vec2I offset, Vec2I dimension )
     m_frameSectionOffsets[ static_cast< size_t >( section ) ] = offset;
 }
 
-bool Frame::WriteSection( FrameSection writeSection, Vec2I point, char dat )
-{
-    ValidateSection( writeSection );
-    Vec2I offset = m_frameSectionOffsets[ static_cast< size_t >( writeSection )];
-}
-
 std::string& Frame::Buffer()
 {
     return m_buffer;
