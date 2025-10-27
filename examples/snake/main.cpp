@@ -34,7 +34,7 @@ SnakePoint snakeHead;
 SnakePoint snakeTail;
 std::vector< SnakePoint > anchorPoints;
 
-size_t frameTimeMs = 75;
+size_t frameTimeMs = 50;
 Frame frame{ boardSize.x, boardSize.y };
 
 FrameSection scoreSection = FrameSection::ONE;
@@ -206,13 +206,15 @@ void HandleUserInput()
 
 void RenderScore()
 {
-    DrawUtils::Clear( frame, ' ', scoreSection );
-    DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 1 }, frame, '.' );
+    DrawUtils::Clear( frame, '.', scoreSection );
+    DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 2 }, frame, '@' );
+    DrawUtils::DrawLine( { 0, scoreSectionDimension.y - 1 },
+                         { scoreSectionDimension.x - 1, scoreSectionDimension.y - 1 }, frame, '_' );
 }
 
 void RenderSnake()
 {
-    DrawUtils::Clear( frame, ' ', gameSection );
+    DrawUtils::Clear( frame, '.', gameSection );
     static const char snakeChar = 'x';
     for ( int i = 0; i < anchorPoints.size() - 1; i++ )
     {
@@ -223,15 +225,11 @@ void RenderSnake()
 
     static const char foodChar = '0';
     DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar, gameSection );
-
-    // static const char anchorChar = 'A';
-    // for ( const SnakePoint& anchor : anchorPoints )
-    //     DrawUtils::DrawPixel( anchor.location, frame, anchorChar, gameSection );
 }
 
 void Render()
 {
-    DrawUtils::ClearScreen();
+    DrawUtils::ResetTerminalCursor();
     RenderScore();
     RenderSnake();
     DrawUtils::Draw( frame );
@@ -267,12 +265,11 @@ int main()
         startTime = std::chrono::steady_clock::now();
 
         HandleUserInput();
-
+        Render();
         if ( pauseGame )
             continue;
 
         UpdateSnake();
-        Render();
 
         if ( snakeSize == boardSize.x * boardSize.y )
         {

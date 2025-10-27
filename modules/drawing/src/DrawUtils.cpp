@@ -187,11 +187,9 @@ void Clear( Frame& frame, char clearChar, FrameSection section )
             frame.Write( x, y, clearChar, section );
 }
 
-void ClearScreen()
+void ResetTerminalCursor()
 {
-    // Run 'strace clear > /dev/null' to find out how this works.
-    // Check the write() syscall at the end
-    write( STDOUT_FILENO, "\33[H\33[2J\33[3J", 11 );
+    write( STDOUT_FILENO, "\33[H", 3 );
 }
 
 void Draw( Frame& frame )

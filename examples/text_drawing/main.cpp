@@ -15,7 +15,7 @@ int main()
     Frame f( 100, 25 );
 
     DrawUtils::Clear( f, '.' );
-    DrawUtils::ClearScreen();
+    DrawUtils::ResetTerminalCursor();
 
     for ( int i = 0; i < 1000; i++ )
     {
@@ -24,7 +24,7 @@ int main()
         DrawUtils::Draw( f );
         std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
         DrawUtils::Clear( f, '.' );
-        DrawUtils::ClearScreen();
+        DrawUtils::ResetTerminalCursor();
     }
 
     std::cin.get();

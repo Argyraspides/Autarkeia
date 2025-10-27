@@ -85,7 +85,7 @@ void Frame::SetSection( FrameSection section, Vec2I offset, Vec2I dimension )
     m_frameSectionOffsets[ static_cast< size_t >( section ) ] = offset;
 }
 
-std::string& Frame::Buffer()
+const std::string& Frame::Buffer()
 {
     return m_buffer;
 }

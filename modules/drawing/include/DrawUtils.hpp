@@ -33,7 +33,7 @@ void QuickDrawTriangle(
 void DrawPixel( Vec2I p, Frame& frame, char drawChar, FrameSection section = FrameSection::NONE );
 
 void Clear( Frame& frame, char clearChar, FrameSection section = FrameSection::NONE );
-void ClearScreen();
+void ResetTerminalCursor();
 void Draw( Frame& frame );
 
 } // namespace DrawUtils

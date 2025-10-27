@@ -40,7 +40,7 @@ class Frame
 
     void SetSection( FrameSection section, Vec2I offset, Vec2I dimension );
 
-    std::string& Buffer();
+    const std::string& Buffer();
 
   private:
     void ValidateSection( FrameSection section );
