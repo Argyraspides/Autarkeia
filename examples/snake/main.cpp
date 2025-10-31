@@ -5,13 +5,14 @@
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
+#include "TextDrawUtils.hpp"
 #include "Vec2I.hpp"
 #include <chrono>
 #include <iostream>
 #include <linux/input-event-codes.h>
 #include <thread>
 
-Vec2I boardSize = { 25, 25 };
+Vec2I boardSize = { 50, 35 };
 Vec2I nextSnakeFoodLocation = { 20, 20 };
 
 struct SnakePoint
@@ -36,6 +37,17 @@ std::vector< SnakePoint > anchorPoints;
 size_t frameTimeMs = 75;
 Frame frame{ boardSize.x, boardSize.y };
 
+FrameSection scoreSection = FrameSection::ONE;
+FrameSection gameSection = FrameSection::TWO;
+
+// Game score section
+Vec2I scoreSectionOffset = { 0, 0 };
+Vec2I scoreSectionDimension = { boardSize.x, 10 };
+
+// Main game section
+Vec2I gameSectionOffset = { 0, scoreSectionDimension.y };
+Vec2I gameSectionDimension = { boardSize.x, boardSize.y - scoreSectionDimension.y };
+
 InputCommon::KeyboardInputHandler kbd;
 
 bool pauseGame = false;
@@ -43,12 +55,18 @@ bool gameRunning = true;
 bool playerWon = false;
 size_t snakeSize = 0;
 
+void SetupSections()
+{
+    frame.SetSection( scoreSection, scoreSectionOffset, scoreSectionDimension );
+    frame.SetSection( gameSection, gameSectionOffset, gameSectionDimension );
+}
+
 void GrowSnake()
 {
     Vec2I newPoint = snakeTail.location - snakeTail.velocity;
     snakeTail.location = newPoint;
     anchorPoints[ 0 ] = snakeTail;
-    nextSnakeFoodLocation = { rand() % boardSize.x, rand() % boardSize.y };
+    nextSnakeFoodLocation = { rand() % gameSectionDimension.x, rand() % gameSectionDimension.y };
     snakeSize++;
 }
 
@@ -111,7 +129,7 @@ void UpdateSnake()
     snakeHead.location += snakeHead.velocity;
     snakeTail.location += snakeTail.velocity;
 
-    // Collision with wall 
+    // Collision with wall
     if ( snakeHead.location.x >= boardSize.x )
         gameRunning = false;
     else if ( snakeHead.location.x < 0 )
@@ -136,6 +154,12 @@ void UpdateSnake()
     anchorPoints[ anchorPoints.size() - 1 ] = snakeHead;
 
     CheckSnakeIntersection();
+}
+
+void UpdateSpeed()
+{
+    static int originalFrameTime = frameTimeMs;
+    frameTimeMs = originalFrameTime - snakeSize; 
 }
 
 void HandleUserInput()
@@ -186,28 +210,36 @@ void HandleUserInput()
     }
 }
 
-void Render()
+void RenderScore()
 {
-    DrawUtils::Clear( frame, '.' );
-    DrawUtils::ClearScreen();
+    DrawUtils::Clear( frame, '.', scoreSection );
+    DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 2 }, frame, '@' );
+    DrawUtils::DrawLine( { 0, scoreSectionDimension.y - 1 },
+                         { scoreSectionDimension.x - 1, scoreSectionDimension.y - 1 }, frame, '_' );
+}
+
+void RenderSnake()
+{
+    DrawUtils::Clear( frame, '.', gameSection );
     static const char snakeChar = 'x';
     for ( int i = 0; i < anchorPoints.size() - 1; i++ )
     {
-        const Vec2I& p1 = anchorPoints[ i ].location;
-        const Vec2I& p2 = anchorPoints[ i + 1 ].location;
-        DrawUtils::QuickDrawLine( p1, p2, frame, snakeChar );
+        Vec2I p1 = anchorPoints[ i ].location;
+        Vec2I p2 = anchorPoints[ i + 1 ].location;
+        DrawUtils::QuickDrawLine( p1, p2, frame, snakeChar, gameSection );
     }
 
     static const char foodChar = '0';
-    DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar );
-
-    // static const char anchorChar = 'A';
-    // for ( const SnakePoint& anchor : anchorPoints )
-    //     DrawUtils::DrawPixel( anchor.location, frame, anchorChar );
-
-    DrawUtils::Draw( frame );
+    DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar, gameSection );
 }
 
+void Render()
+{
+    DrawUtils::ResetTerminalCursor();
+    RenderScore();
+    RenderSnake();
+    DrawUtils::Draw( frame );
+}
 int main()
 {
     snakeHead.location = ( boardSize / 2 );
@@ -218,6 +250,8 @@ int main()
 
     anchorPoints.push_back( snakeTail );
     anchorPoints.push_back( snakeHead );
+
+    SetupSections();
 
     kbd.Start();
 
@@ -237,12 +271,12 @@ int main()
         startTime = std::chrono::steady_clock::now();
 
         HandleUserInput();
-
+        Render();
         if ( pauseGame )
             continue;
 
         UpdateSnake();
-        Render();
+        UpdateSpeed();
 
         if ( snakeSize == boardSize.x * boardSize.y )
         {

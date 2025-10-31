@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-enum CharBoxPosition
+enum class CharBoxPosition
 {
     TOP_LEFT = 0,
     TOP_RIGHT,
@@ -22,9 +22,9 @@ enum CharBoxPosition
 
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > NUMBER_ZERO = {
     { { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
-      { CharBoxPosition::TOP_RIGHT, BOTTOM_RIGHT },
-      { CharBoxPosition::BOTTOM_RIGHT, BOTTOM_LEFT },
-      { CharBoxPosition::BOTTOM_LEFT, TOP_LEFT } } };
+      { CharBoxPosition::TOP_RIGHT, CharBoxPosition::BOTTOM_RIGHT },
+      { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::BOTTOM_LEFT },
+      { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT } } };
 
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 3 > NUMBER_ONE = {
     { { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::TOP_MIDDLE },
@@ -76,9 +76,9 @@ const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 2 > NUMBER_SEVE
 
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 5 > NUMBER_EIGHT = {
     { { CharBoxPosition::TOP_LEFT, CharBoxPosition::TOP_RIGHT },
-      { CharBoxPosition::TOP_RIGHT, BOTTOM_RIGHT },
-      { CharBoxPosition::BOTTOM_RIGHT, BOTTOM_LEFT },
-      { CharBoxPosition::BOTTOM_LEFT, TOP_LEFT },
+      { CharBoxPosition::TOP_RIGHT, CharBoxPosition::BOTTOM_RIGHT },
+      { CharBoxPosition::BOTTOM_RIGHT, CharBoxPosition::BOTTOM_LEFT },
+      { CharBoxPosition::BOTTOM_LEFT, CharBoxPosition::TOP_LEFT },
       { CharBoxPosition::LEFT_MIDDLE, CharBoxPosition::RIGHT_MIDDLE } } };
 
 const std::array< std::pair< CharBoxPosition, CharBoxPosition >, 4 > NUMBER_NINE = {

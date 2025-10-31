@@ -34,6 +34,9 @@ KeyboardInputHandler::KeyboardInputHandler() noexcept
 
 KeyboardInputHandler::~KeyboardInputHandler() noexcept
 {
+    // Possible other threads will call GetNextKeyPress() in the middle of destruction -- wait
+    // before destroying
+    std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastPressedKeysMutex );
     Stop();
 }
 
@@ -72,6 +75,7 @@ void KeyboardInputHandler::Start() noexcept
 
 void KeyboardInputHandler::Stop() noexcept
 {
+
     m_running = false;
 
     m_keysAvailableCv.notify_all();
@@ -81,9 +85,7 @@ void KeyboardInputHandler::Stop() noexcept
     for ( std::thread& thread : m_keyboardInputThreads )
     {
         if ( !thread.joinable() )
-        {
             continue;
-        }
 
         thread.join();
     }

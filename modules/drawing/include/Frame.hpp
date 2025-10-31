@@ -4,9 +4,24 @@
 
 #ifndef FRAMEBUFFER_HPP
 #define FRAMEBUFFER_HPP
+#include "Vec2I.hpp"
+#include <array>
 #include <string>
 
-struct Vec2I;
+enum class FrameSection
+{
+    ZERO = 0,
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+
+    MAX,
+    NONE,
+    INVALID
+};
+
 class Frame
 {
   public:
@@ -18,16 +33,23 @@ class Frame
     [[nodiscard]] int Width() const;
     [[nodiscard]] int Height() const;
     [[nodiscard]] int FlatSize() const;
-    [[nodiscard]] char At( const int& x, const int& y ) const;
+    [[nodiscard]] char At( int x, int y ) const;
 
-    bool Write( const int& x, const int& y, const char& dat );
-    bool Write( const Vec2I& point, const char& dat );
+    bool Write( int x, int y, char dat, FrameSection section = FrameSection::NONE );
+    bool Write( Vec2I point, char dat, FrameSection section = FrameSection::NONE );
 
+    void SetSection( FrameSection section, Vec2I offset, Vec2I dimension );
 
-    std::string& Buffer();
+    const std::string& Buffer();
 
   private:
+    void ValidateSection( FrameSection section );
+  private:
     std::string m_buffer;
+
+    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX )> m_frameSectionOffsets;
+    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX )> m_frameSectionDimensions;
+
     int m_frameWidth;
     int m_frameHeight;
 };
