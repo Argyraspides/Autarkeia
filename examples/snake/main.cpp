@@ -59,8 +59,8 @@ void CheckSnakeIntersection()
 
     for ( int i = 0; i < anchorPoints.size() - 2; i++ )
     {
-        const Vec2I& p1 = anchorPoints[ i ].location;
-        const Vec2I& p2 = anchorPoints[ i + 1 ].location;
+        Vec2I p1 = anchorPoints[ i ].location;
+        Vec2I p2 = anchorPoints[ i + 1 ].location;
 
         bool lineVertical = p1.x == p2.x;
         bool headOnLine = false;
