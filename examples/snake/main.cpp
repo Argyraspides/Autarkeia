@@ -21,7 +21,7 @@ struct SnakePoint
     {
     }
 
-    SnakePoint( const Vec2I& loc, const Vec2I& vel )
+    SnakePoint( Vec2I loc, Vec2I vel )
         : location( loc ),
           velocity( vel )
     {
