@@ -18,7 +18,7 @@ struct Vec2I
     {
     }
 
-    Vec2I( int x, int y )
+    constexpr Vec2I( int x, int y )
         : x( x ),
           y( y )
     {

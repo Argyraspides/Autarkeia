@@ -28,7 +28,7 @@ int main()
 
     while ( true )
     {
-        DrawUtils::ClearScreen();
+        DrawUtils::ResetTerminalCursor();
         DrawUtils::Clear( frame, ' ' );
 
         DrawBorder( frame );
