@@ -34,7 +34,7 @@ SnakePoint snakeHead;
 SnakePoint snakeTail;
 std::vector< SnakePoint > anchorPoints;
 
-size_t frameTimeMs = 50;
+size_t frameTimeMs = 75;
 Frame frame{ boardSize.x, boardSize.y };
 
 FrameSection scoreSection = FrameSection::ONE;
@@ -156,6 +156,12 @@ void UpdateSnake()
     CheckSnakeIntersection();
 }
 
+void UpdateSpeed()
+{
+    static int originalFrameTime = frameTimeMs;
+    frameTimeMs = originalFrameTime - snakeSize; 
+}
+
 void HandleUserInput()
 {
     std::optional< InputCommon::KeyInputCode > keyPress = kbd.GetNextKeyPress();
@@ -270,6 +276,7 @@ int main()
             continue;
 
         UpdateSnake();
+        UpdateSpeed();
 
         if ( snakeSize == boardSize.x * boardSize.y )
         {
