@@ -4,7 +4,7 @@ project( DrawingTests )
 
 set( CMAKE_CXX_STANDARD 20 )
 
-message("Adding ${CMAKE_CURRENT_SOURCE_DIR} ... ")
+message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( DRAWING_TEST_SOURCE_CODE
     CatchConfig.cpp

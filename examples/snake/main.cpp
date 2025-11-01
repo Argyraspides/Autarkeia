@@ -35,7 +35,7 @@ SnakePoint snakeTail;
 std::vector< SnakePoint > anchorPoints;
 
 size_t frameTimeMs = 75;
-Frame frame{ boardSize.x, boardSize.y };
+Frame frame{ static_cast< size_t > ( boardSize.x ), static_cast< size_t > ( boardSize.y ) };
 
 FrameSection scoreSection = FrameSection::ONE;
 FrameSection gameSection = FrameSection::TWO;

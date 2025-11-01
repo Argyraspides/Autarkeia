@@ -7,6 +7,7 @@ option( BUILD_EXAMPLE_DVD "Builds bouncing DVD thingy example" ON )
 option( BUILD_EXAMPLE_MOVING_BALL "Builds moving ball example, keyboard inputs n shit" ON )
 option( BUILD_EXAMPLE_SNAKE "Builds snake example (literally just a game of snake)" ON )
 option( BUILD_EXAMPLE_TEXT_DRAWING "Builds text drawing example" ON )
+option( BUILD_EXAMPLE_ASTEROIDS "Builds asteroids example" ON )
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 set( CMAKE_BUILD_TYPE Debug )
@@ -35,6 +36,10 @@ endif()
 
 if( BUILD_EXAMPLE_TEXT_DRAWING )
     add_subdirectory( examples/text_drawing )
+endif()
+
+if( BUILD_EXAMPLE_ASTEROIDS )
+    add_subdirectory( examples/asteroids )
 endif()
 
 add_executable( Autarkeia

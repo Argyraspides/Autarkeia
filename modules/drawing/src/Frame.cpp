@@ -12,7 +12,7 @@ static constexpr char DEFAULT_INIT_CHAR = '.';
 static constexpr Vec2I INVALID_POINT = { std::numeric_limits< int >::quiet_NaN(),
                                          std::numeric_limits< int >::quiet_NaN() };
 
-Frame::Frame( int width, int height )
+Frame::Frame( size_t width, size_t height )
     : m_frameWidth( width ),
       m_frameHeight( height )
 {

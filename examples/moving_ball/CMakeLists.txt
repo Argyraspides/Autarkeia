@@ -2,7 +2,7 @@ cmake_minimum_required( VERSION 3.28 )
 
 project( MovingBall )
 
-message("Adding ${CMAKE_CURRENT_SOURCE_DIR}...")
+message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( MOVING_BALL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/MovingBall.cpp

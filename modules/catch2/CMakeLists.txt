@@ -4,7 +4,7 @@ project( Catch2 )
 
 set( CMAKE_CXX_STANDARD 20 )
 
-message("Adding ${CMAKE_CURRENT_SOURCE_DIR} ... ")
+message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( CATCH2_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include

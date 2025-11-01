@@ -3,6 +3,7 @@
 //
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
+#include "Sprite.hpp"
 #include "Vec2I.hpp"
 #include <cmath>
 #include <iostream>
@@ -195,6 +196,25 @@ void ResetTerminalCursor()
 void Draw( Frame& frame )
 {
     std::cout << frame.Buffer();
+}
+
+void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, FrameSection section )
+{
+    int spriteWidth = sprite.frame.Width();
+    int spriteHeight = sprite.frame.Height();
+
+    for ( int i = 0; i < spriteHeight; i++ )
+    {
+        int iidx = i + offset.x;
+        for ( int j = 0; j < spriteHeight; j++ )
+        {
+            if( sprite.frame.At(i, j) == TRANSPARENT_CHAR )
+                continue;
+
+            int iidy = j + offset.y;
+            frame.Write( iidx, iidy, sprite.frame.At( i, j ), section );
+        }
+    }
 }
 
 } // namespace DrawUtils

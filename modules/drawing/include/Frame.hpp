@@ -26,7 +26,7 @@ class Frame
 {
   public:
     Frame() = delete;
-    Frame( int width, int height );
+    Frame( size_t width, size_t height );
     ~Frame();
 
     [[nodiscard]] bool Empty() const;
@@ -44,14 +44,15 @@ class Frame
 
   private:
     void ValidateSection( FrameSection section );
+
   private:
     std::string m_buffer;
 
-    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX )> m_frameSectionOffsets;
-    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX )> m_frameSectionDimensions;
+    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > m_frameSectionOffsets;
+    std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > m_frameSectionDimensions;
 
-    int m_frameWidth;
-    int m_frameHeight;
+    size_t m_frameWidth;
+    size_t m_frameHeight;
 };
 
 #endif // FRAMEBUFFER_HPP
