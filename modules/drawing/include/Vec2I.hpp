@@ -24,36 +24,41 @@ struct Vec2I
     {
     }
 
-    Vec2I operator+( const Vec2I& other ) const
+    Vec2I operator+( Vec2I other ) const
     {
         return { x + other.x, y + other.y };
     }
 
-    Vec2I operator-( const Vec2I& other ) const
+    Vec2I operator-( Vec2I other ) const
     {
         return { x - other.x, y - other.y };
     }
 
-    void operator+=( const Vec2I& other )
+    void operator+=( Vec2I other )
     {
         x += other.x;
         y += other.y;
     }
 
-    Vec2I operator/( const int& other ) const
+    Vec2I operator/( int other ) const
     {
         return { x / other, y / other };
     }
 
-    void operator=( const Vec2I& other )
+    Vec2I operator*( int other ) const
+    {
+        return { x * other, y * other };
+    }
+
+    void operator=( Vec2I other )
     {
         x = other.x;
         y = other.y;
     }
 
-    bool operator==( const Vec2I& other ) const
+    bool operator==( Vec2I other ) const
     {
-        return ( x == other.x ) && ( y == other.y );
+        return ( x == other.x ) & ( y == other.y );
     }
 };
 

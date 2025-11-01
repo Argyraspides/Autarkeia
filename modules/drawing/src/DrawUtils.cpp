@@ -198,7 +198,7 @@ void Draw( Frame& frame )
     std::cout << frame.Buffer();
 }
 
-void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, FrameSection section )
+void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, float rotation, FrameSection section )
 {
     int spriteWidth = sprite.frame.Width();
     int spriteHeight = sprite.frame.Height();
@@ -208,13 +208,39 @@ void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, FrameSection 
         int iidx = i + offset.x;
         for ( int j = 0; j < spriteHeight; j++ )
         {
-            if( sprite.frame.At(i, j) == TRANSPARENT_CHAR )
+            if ( sprite.frame.At( i, j ) == TRANSPARENT_CHAR )
                 continue;
 
             int iidy = j + offset.y;
             frame.Write( iidx, iidy, sprite.frame.At( i, j ), section );
         }
     }
+}
+
+void RotateSprite( Sprite& sprite )
+{
+    Vec2I iHat = { 0, -1 };
+    Vec2I jHat = { 1, 0 };
+    Vec2I centerOffset = sprite.center;
+
+    Frame frameCpy = sprite.frame;
+    // DrawUtils::Clear( frameCpy, ' ' );
+
+    for ( int y = 0; y < sprite.frame.Height(); y++ )
+    {
+        int yVecOffset = y - sprite.center.y;
+
+        for ( int x = 0; x < sprite.frame.Width(); x++ )
+        {
+            int xVecOffset = x - sprite.center.x;
+            Vec2I newCoo = ( iHat * xVecOffset ) + ( jHat * yVecOffset ) + ( centerOffset );
+
+            char originalChar = sprite.frame.At( x, y );
+            frameCpy.Write( newCoo, originalChar );
+        }
+    }
+
+    sprite.frame = frameCpy;
 }
 
 } // namespace DrawUtils

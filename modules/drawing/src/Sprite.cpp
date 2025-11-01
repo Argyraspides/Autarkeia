@@ -10,6 +10,6 @@ Sprite::Sprite( size_t width, size_t height, Vec2I center )
     assert( defaultCenterX < std::numeric_limits< int >::max() && defaultCenterY < std::numeric_limits< int >::max() &&
             "Sprite too big" );
 
-    center.x = static_cast< int >( defaultCenterX );
-    center.y = static_cast< int >( defaultCenterY );
+    this->center.x = static_cast< int >( defaultCenterX );
+    this->center.y = static_cast< int >( defaultCenterY );
 }

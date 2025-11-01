@@ -51,6 +51,8 @@ void DrawSprite( const Sprite& sprite,
                  float rotation = 0.0,
                  FrameSection section = FrameSection::NONE );
 
+void RotateSprite( Sprite& sprite );
+
 } // namespace DrawUtils
 
 #endif // DRAWUTILS_HPP
