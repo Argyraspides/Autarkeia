@@ -219,12 +219,13 @@ void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, float rotatio
 
 void RotateSprite( Sprite& sprite )
 {
-    Vec2I iHat = { 0, -1 };
-    Vec2I jHat = { 1, 0 };
+    Vec2I iHat = { 0, 1 };
+    Vec2I jHat = { -1, 0 };
+
     Vec2I centerOffset = sprite.center;
 
     Frame frameCpy = sprite.frame;
-    // DrawUtils::Clear( frameCpy, ' ' );
+    DrawUtils::Clear( frameCpy, ' ' );
 
     for ( int y = 0; y < sprite.frame.Height(); y++ )
     {
