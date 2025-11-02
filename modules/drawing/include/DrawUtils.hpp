@@ -37,21 +37,24 @@ void DrawTriangle(
 void QuickDrawTriangle(
     Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar, FrameSection section = FrameSection::NONE );
 
-void DrawPixel( Vec2I p, Frame& frame, char drawChar, FrameSection section = FrameSection::NONE );
+void DrawPixelOnFrame( Vec2I p, Frame& frame, char drawChar, FrameSection section = FrameSection::NONE );
 
-void Clear( Frame& frame, char clearChar, FrameSection section = FrameSection::NONE );
+void ClearFrame( Frame& frame, char clearChar, FrameSection section = FrameSection::NONE );
 
 void ResetTerminalCursor();
 
-void Draw( Frame& frame );
+void DrawFrame( Frame& frame );
 
-void DrawSprite( const Sprite& sprite,
+void DrawSpriteOnFrame( const Sprite& sprite,
                  Frame& frame,
                  Vec2I offset = { 0, 0 },
                  float rotation = 0.0,
                  FrameSection section = FrameSection::NONE );
 
-void RotateSprite( Sprite& sprite );
+// Rotation in degrees not radians
+void RotateSprite( Sprite& sprite, float rotation = 0.0f );
+
+Matf< 2, 2 > GetRotationMat( float rotation );
 
 } // namespace DrawUtils
 

@@ -2,53 +2,40 @@
 #include "Frame.hpp"
 #include "ShipSprite.hpp"
 #include <chrono>
+#include <thread>
 
 Frame screen( 35, 35 );
+float frameTimeMs = 250;
 
 int main()
 {
-    DrawUtils::Clear( screen, ' ' );
+    Sprite sprite( 25, 25 );
+    DrawUtils::ClearFrame( sprite.frame, ' ' );
 
-    Sprite sprite( 20, 20 );
-    DrawUtils::Clear( sprite.frame, DrawUtils::TRANSPARENT_CHAR );
-
-    Vec2I p1, p2, p3;
-
-    p1 = { sprite.frame.Width() / 2, 0 };
-    p2 = { 1, sprite.frame.Height() - 1 };
-    p3 = { sprite.frame.Width() - 2, sprite.frame.Height() - 1 };
+    Vec2I p1 = { sprite.frame.Width() / 2, 0 };
+    Vec2I p2 = { 1, sprite.frame.Height() - 1 };
+    Vec2I p3 = { sprite.frame.Width() - 2, sprite.frame.Height() - 1 };
 
     DrawUtils::QuickDrawTriangle( p1, p2, p3, sprite.frame, '.' );
 
-    // No rotation (north)
-    DrawUtils::DrawSprite( sprite, screen, { 10, 10 } );
-    DrawUtils::Draw( screen );
-    DrawUtils::Clear( screen, ' ' );
+    std::chrono::time_point< std::chrono::steady_clock, std::chrono::nanoseconds > lastFrameTime =
+        std::chrono::steady_clock::now();
 
-    // Rotation 1 (east)
-    DrawUtils::RotateSprite( sprite );
-    DrawUtils::DrawSprite( sprite, screen, { 10, 10 } );
+    while ( true )
+    {
+        std::chrono::time_point< std::chrono::steady_clock, std::chrono::nanoseconds > endFrameTime =
+            lastFrameTime + std::chrono::milliseconds( static_cast< int >( frameTimeMs ) );
 
-    DrawUtils::Draw( screen );
-    DrawUtils::Clear( screen, ' ' );
+        std::this_thread::sleep_for( std::chrono::milliseconds( static_cast< int >( frameTimeMs - 1 ) ) );
 
-    // Rotation 2 (south)
-    DrawUtils::RotateSprite( sprite );
-    DrawUtils::DrawSprite( sprite, screen, { 10, 10 } );
+        while ( std::chrono::steady_clock::now() < endFrameTime )
+            ;
+        lastFrameTime = std::chrono::steady_clock::now();
 
-    DrawUtils::Draw( screen );
-    DrawUtils::Clear( screen, ' ' );
-
-    // Rotation 3 (west)
-    DrawUtils::RotateSprite( sprite );
-    DrawUtils::DrawSprite( sprite, screen, { 10, 10 } );
-
-    DrawUtils::Draw( screen );
-    DrawUtils::Clear( screen, ' ' );
-
-    // Rotation 4 (north)
-    DrawUtils::RotateSprite( sprite );
-    DrawUtils::DrawSprite( sprite, screen, { 10, 10 } );
-
-    DrawUtils::Draw( screen );
+        DrawUtils::ClearFrame( screen, ' ' );
+        DrawUtils::RotateSprite( sprite, 90 );
+        DrawUtils::DrawSpriteOnFrame( sprite, screen, { 10, 10 } );
+        DrawUtils::DrawFrame( screen );
+        DrawUtils::ResetTerminalCursor();
+    }
 }

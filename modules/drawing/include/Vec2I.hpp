@@ -7,6 +7,8 @@
 
 #include <cstdint>
 #include <cstring>
+#include <cwchar>
+#include "Matf.hpp"
 
 struct Vec2I
 {
@@ -48,6 +50,17 @@ struct Vec2I
     Vec2I operator*( int other ) const
     {
         return { x * other, y * other };
+    }
+
+    Vec2I operator*( Matf<2, 2> matrix2by2 ) const
+    {
+        std::pair<float, float > iHat = { matrix2by2.At(0, 0), matrix2by2.At(1, 0) };
+        std::pair<float, float > jHat = { matrix2by2.At(0, 1), matrix2by2.At(1, 1) };
+
+        Vec2I iHatScaled = { static_cast < int > ( iHat.first * x ), static_cast< int > ( iHat.second * x ) };
+        Vec2I jHatScaled = { static_cast < int > ( jHat.first * y ), static_cast< int > ( jHat.second * y ) };
+
+        return iHatScaled + jHatScaled;
     }
 
     void operator=( Vec2I other )

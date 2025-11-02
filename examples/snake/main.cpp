@@ -212,7 +212,7 @@ void HandleUserInput()
 
 void RenderScore()
 {
-    DrawUtils::Clear( frame, '.', scoreSection );
+    DrawUtils::ClearFrame( frame, '.', scoreSection );
     DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 2 }, frame, '@' );
     DrawUtils::DrawLine( { 0, scoreSectionDimension.y - 1 },
                          { scoreSectionDimension.x - 1, scoreSectionDimension.y - 1 }, frame, '_' );
@@ -220,7 +220,7 @@ void RenderScore()
 
 void RenderSnake()
 {
-    DrawUtils::Clear( frame, '.', gameSection );
+    DrawUtils::ClearFrame( frame, '.', gameSection );
     static const char snakeChar = 'x';
     for ( int i = 0; i < anchorPoints.size() - 1; i++ )
     {
@@ -230,7 +230,7 @@ void RenderSnake()
     }
 
     static const char foodChar = '0';
-    DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar, gameSection );
+    DrawUtils::DrawPixelOnFrame( nextSnakeFoodLocation, frame, foodChar, gameSection );
 }
 
 void Render()
@@ -238,7 +238,7 @@ void Render()
     DrawUtils::ResetTerminalCursor();
     RenderScore();
     RenderSnake();
-    DrawUtils::Draw( frame );
+    DrawUtils::DrawFrame( frame );
 }
 int main()
 {

@@ -29,11 +29,11 @@ int main()
     while ( true )
     {
         DrawUtils::ResetTerminalCursor();
-        DrawUtils::Clear( frame, ' ' );
+        DrawUtils::ClearFrame( frame, ' ' );
 
         DrawBorder( frame );
 
-        DrawUtils::DrawPixel( dvd, frame, 'D' );
+        DrawUtils::DrawPixelOnFrame( dvd, frame, 'D' );
 
         Vec2I nextDvdPos = dvd + dvdTrajectory;
         if ( nextDvdPos.x >= frame.Width() - 1 || nextDvdPos.x <= 0 )
@@ -43,7 +43,7 @@ int main()
 
         dvd = dvd + dvdTrajectory;
 
-        DrawUtils::Draw( frame );
+        DrawUtils::DrawFrame( frame );
 
         std::this_thread::sleep_for( std::chrono::milliseconds( 150 ) );
     }

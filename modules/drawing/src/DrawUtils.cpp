@@ -176,12 +176,12 @@ void QuickDrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawCha
     QuickDrawLine( p3, p1, frame, drawChar, section );
 }
 
-void DrawPixel( Vec2I p, Frame& frame, char drawChar, FrameSection section )
+void DrawPixelOnFrame( Vec2I p, Frame& frame, char drawChar, FrameSection section )
 {
     frame.Write( p.x, p.y, drawChar, section );
 }
 
-void Clear( Frame& frame, char clearChar, FrameSection section )
+void ClearFrame( Frame& frame, char clearChar, FrameSection section )
 {
     for ( int y = 0; y < frame.Height(); y++ )
         for ( int x = 0; x < frame.Width(); x++ )
@@ -193,12 +193,12 @@ void ResetTerminalCursor()
     write( STDOUT_FILENO, "\33[H", 3 );
 }
 
-void Draw( Frame& frame )
+void DrawFrame( Frame& frame )
 {
     std::cout << frame.Buffer();
 }
 
-void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, float rotation, FrameSection section )
+void DrawSpriteOnFrame( const Sprite& sprite, Frame& frame, Vec2I offset, float rotation, FrameSection section )
 {
     int spriteWidth = sprite.frame.Width();
     int spriteHeight = sprite.frame.Height();
@@ -217,24 +217,26 @@ void DrawSprite( const Sprite& sprite, Frame& frame, Vec2I offset, float rotatio
     }
 }
 
-void RotateSprite( Sprite& sprite )
+void RotateSprite( Sprite& sprite, float rotation )
 {
-    Vec2I iHat = { 0, 1 };
-    Vec2I jHat = { -1, 0 };
-
     Vec2I centerOffset = sprite.center;
 
+    // Any way we can do this without needing a copy?
     Frame frameCpy = sprite.frame;
-    DrawUtils::Clear( frameCpy, ' ' );
+    Matf< 2, 2 > rotMatrix = GetRotationMat( rotation );
+
+    DrawUtils::ClearFrame( frameCpy, ' ' );
 
     for ( int y = 0; y < sprite.frame.Height(); y++ )
     {
-        int yVecOffset = y - sprite.center.y;
+        Vec2I offsetCoo;
+        offsetCoo.y = y - sprite.center.y;
 
         for ( int x = 0; x < sprite.frame.Width(); x++ )
         {
-            int xVecOffset = x - sprite.center.x;
-            Vec2I newCoo = ( iHat * xVecOffset ) + ( jHat * yVecOffset ) + ( centerOffset );
+            offsetCoo.x = x - sprite.center.x;
+
+            Vec2I newCoo = ( offsetCoo * rotMatrix ) + ( centerOffset );
 
             char originalChar = sprite.frame.At( x, y );
             frameCpy.Write( newCoo, originalChar );
@@ -242,6 +244,19 @@ void RotateSprite( Sprite& sprite )
     }
 
     sprite.frame = frameCpy;
+}
+
+Matf< 2, 2 > GetRotationMat( float rotation )
+{
+    float rotRad = rotation * ( M_PI / 180.0f );
+
+    Matf< 2, 2 > rotMatrix;
+    rotMatrix[ 0 ][ 0 ] = std::cos( rotRad );
+    rotMatrix[ 0 ][ 1 ] = -std::sin( rotRad );
+    rotMatrix[ 1 ][ 0 ] = std::sin( rotRad );
+    rotMatrix[ 1 ][ 1 ] = std::cos( rotRad );
+
+    return rotMatrix;
 }
 
 } // namespace DrawUtils
