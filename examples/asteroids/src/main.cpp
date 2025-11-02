@@ -5,7 +5,7 @@
 #include <thread>
 
 Frame screen( 35, 35 );
-float frameTimeMs = 250;
+float frameTimeMs = 2000;
 
 int main()
 {
@@ -17,6 +17,7 @@ int main()
     Vec2I p3 = { sprite.frame.Width() - 2, sprite.frame.Height() - 1 };
 
     DrawUtils::QuickDrawTriangle( p1, p2, p3, sprite.frame, '.' );
+    DrawUtils::QuickDrawLine(p1, (p1 + p2 + p3) / 3, sprite.frame, 'l');
 
     std::chrono::time_point< std::chrono::steady_clock, std::chrono::nanoseconds > lastFrameTime =
         std::chrono::steady_clock::now();
@@ -33,7 +34,7 @@ int main()
         lastFrameTime = std::chrono::steady_clock::now();
 
         DrawUtils::ClearFrame( screen, ' ' );
-        DrawUtils::RotateSprite( sprite, 90 );
+        DrawUtils::RotateSprite( sprite, 45);
         DrawUtils::DrawSpriteOnFrame( sprite, screen, { 10, 10 } );
         DrawUtils::DrawFrame( screen );
         DrawUtils::ResetTerminalCursor();
