@@ -13,10 +13,10 @@ constexpr size_t height = 20;
 
 void DrawBorder(Frame& f)
 {
-    DrawUtils::QuickDrawLine( { 0, 0 }, { width - 1, 0 }, f, '-' );
-    DrawUtils::QuickDrawLine( { 0, height - 1 }, { width - 1, height - 1 }, f, '-' );
-    DrawUtils::QuickDrawLine( { 0, 0 }, { 0, height - 1 }, f, '|' );
-    DrawUtils::QuickDrawLine( { width - 1, 0 }, { width - 1, height - 1 }, f, '|' );
+    DrawUtils::DrawLineOnFrame( { 0, 0 }, { width - 1, 0 }, f, '-' );
+    DrawUtils::DrawLineOnFrame( { 0, height - 1 }, { width - 1, height - 1 }, f, '-' );
+    DrawUtils::DrawLineOnFrame( { 0, 0 }, { 0, height - 1 }, f, '|' );
+    DrawUtils::DrawLineOnFrame( { width - 1, 0 }, { width - 1, height - 1 }, f, '|' );
 }
 
 int main()

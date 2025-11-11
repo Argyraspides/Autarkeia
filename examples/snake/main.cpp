@@ -1,7 +1,6 @@
 //
-// Created by gaugamela on 9/24/25.
-//
 
+#include "Characters.hpp"
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
@@ -66,7 +65,7 @@ void GrowSnake()
     Vec2I newPoint = snakeTail.location - snakeTail.velocity;
     snakeTail.location = newPoint;
     anchorPoints[ 0 ] = snakeTail;
-    nextSnakeFoodLocation = { rand() % gameSectionDimension.x, rand() % gameSectionDimension.y };
+    nextSnakeFoodLocation = { rand() % gameSectionDimension.x - 1, rand() % gameSectionDimension.y - 1 };
     snakeSize++;
 }
 
@@ -130,24 +129,24 @@ void UpdateSnake()
     snakeTail.location += snakeTail.velocity;
 
     // Collision with wall
-    if ( snakeHead.location.x >= boardSize.x )
+    if ( snakeHead.location.x >= boardSize.x - 1 )
         gameRunning = false;
-    else if ( snakeHead.location.x < 0 )
-        gameRunning = false;
-
-    if ( snakeHead.location.y >= boardSize.y )
-        gameRunning = false;
-    else if ( snakeHead.location.y < 0 )
+    else if ( snakeHead.location.x <= 0 )
         gameRunning = false;
 
-    if ( snakeTail.location.x >= boardSize.x )
+    if ( snakeHead.location.y >= boardSize.y - 1 )
         gameRunning = false;
-    else if ( snakeTail.location.x < 0 )
+    else if ( snakeHead.location.y <= 0 )
         gameRunning = false;
 
-    if ( snakeTail.location.y >= boardSize.y )
+    if ( snakeTail.location.x >= boardSize.x - 1 )
         gameRunning = false;
-    else if ( snakeTail.location.y < 0 )
+    else if ( snakeTail.location.x <= 0 )
+        gameRunning = false;
+
+    if ( snakeTail.location.y >= boardSize.y - 1 )
+        gameRunning = false;
+    else if ( snakeTail.location.y <= 0 )
         gameRunning = false;
 
     anchorPoints[ 0 ] = snakeTail;
@@ -212,24 +211,22 @@ void HandleUserInput()
 
 void RenderScore()
 {
-    DrawUtils::ClearFrame( frame, '.', scoreSection );
-    DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 2 }, frame, '@' );
-    DrawUtils::DrawLine( { 0, scoreSectionDimension.y - 1 },
-                         { scoreSectionDimension.x - 1, scoreSectionDimension.y - 1 }, frame, '_' );
+    DrawUtils::ClearFrame( frame, SHADE_1, scoreSection );
+    DrawUtils::DrawText( std::to_string( snakeSize ), Vec2I{ 10, scoreSectionDimension.y - 2 }, frame, SHADE_4 );
 }
 
 void RenderSnake()
 {
-    DrawUtils::ClearFrame( frame, '.', gameSection );
-    static const char snakeChar = 'x';
+    DrawUtils::ClearFrame( frame, SHADE_0, gameSection );
+    static const wchar_t snakeChar = SHADE_4;
     for ( int i = 0; i < anchorPoints.size() - 1; i++ )
     {
         Vec2I p1 = anchorPoints[ i ].location;
         Vec2I p2 = anchorPoints[ i + 1 ].location;
-        DrawUtils::QuickDrawLine( p1, p2, frame, snakeChar, gameSection );
+        DrawUtils::DrawLineOnFrame( p1, p2, frame, snakeChar, gameSection );
     }
 
-    static const char foodChar = '0';
+    static const wchar_t foodChar = STIPPLE_HEAVY;
     DrawUtils::DrawPixelOnFrame( nextSnakeFoodLocation, frame, foodChar, gameSection );
 }
 
@@ -238,6 +235,7 @@ void Render()
     DrawUtils::ResetTerminalCursor();
     RenderScore();
     RenderSnake();
+    DrawUtils::DrawBorderOnFrame( frame, gameSection );
     DrawUtils::DrawFrame( frame );
 }
 int main()
@@ -252,6 +250,7 @@ int main()
     anchorPoints.push_back( snakeHead );
 
     SetupSections();
+    DrawUtils::SetToSystemLocale();
 
     kbd.Start();
 
@@ -286,9 +285,9 @@ int main()
     }
 
     if ( playerWon )
-        std::cout << "YOU WON LETS FUCKING GO THAT'S BASICALLY IMPOSSIBLE" << std::endl;
+        std::wcout << "YOU WON LETS FUCKING GO THAT'S BASICALLY IMPOSSIBLE" << std::endl;
     else
-        std::cout << "YOU LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+        std::wcout << "YOU LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 
     kbd.Stop();
 }

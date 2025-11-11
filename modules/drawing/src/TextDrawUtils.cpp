@@ -1,10 +1,6 @@
 #include "TextDrawUtils.hpp"
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
-#include "LetterGlyphs.hpp"
-#include "Vec2I.hpp"
-#include <cctype>
-#include <span>
 
 namespace DrawUtils
 {
@@ -12,7 +8,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
                     Vec2I dim,
                     Vec2I offset,
                     Frame& frame,
-                    char drawChar,
+                    wchar_t drawChar,
                     FrameSection section )
 {
     Vec2I BOTTOM_LEFT = { 0, dim.y };
@@ -37,15 +33,15 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
         const Vec2I p1 = realPositions[ static_cast< size_t >( line.first ) ] + offset;
         const Vec2I p2 = realPositions[ static_cast< size_t >( line.second ) ] + offset;
 
-        DrawUtils::QuickDrawLine( p1, p2, frame, drawChar, section );
+        DrawUtils::DrawLineOnFrame( p1, p2, frame, drawChar, section );
     }
 }
 
-void DrawText( const std::string& txt, Vec2I dim, Frame& frame, char drawChar, int spacing, FrameSection section )
+void DrawText( const std::string& txt, Vec2I dim, Frame& frame, wchar_t drawChar, int spacing, FrameSection section )
 {
 
     Vec2I currOffset = { 0, 0 };
-    for ( const char c : txt )
+    for ( const wchar_t c : txt )
     {
         switch ( c )
         {

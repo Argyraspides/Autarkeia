@@ -2,11 +2,13 @@
 // Created by gaugamela on 10/18/25.
 //
 #include "DrawUtils.hpp"
+#include "Characters.hpp"
 #include "Frame.hpp"
 #include "Sprite.hpp"
 #include "Vec2I.hpp"
 #include <cmath>
 #include <iostream>
+#include <locale>
 #include <unistd.h>
 
 namespace DrawUtils
@@ -15,7 +17,7 @@ namespace DrawUtils
 void DrawLine( Vec2I p1, // Starting point
                Vec2I p2, // Ending point
                Frame& frameBuffer,
-               char drawChar,
+               wchar_t drawChar,
                FrameSection section )
 {
     if ( frameBuffer.Empty() )
@@ -76,7 +78,7 @@ void DrawLine( Vec2I p1, // Starting point
     }
 }
 
-void DrawLineVertical( int y1, int y2, int x, Frame& frame, char drawChar, FrameSection section )
+void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, FrameSection section )
 {
     if ( y1 > y2 )
         std::swap( y1, y2 );
@@ -85,7 +87,7 @@ void DrawLineVertical( int y1, int y2, int x, Frame& frame, char drawChar, Frame
         ;
 }
 
-void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, char drawChar, FrameSection section )
+void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, wchar_t drawChar, FrameSection section )
 {
 
     if ( x1 > x2 )
@@ -95,11 +97,11 @@ void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, char drawChar, Fra
         ;
 }
 
-void QuickDrawLine( Vec2I p1, // Starting point
-                    Vec2I p2, // Ending point
-                    Frame& frame,
-                    char drawChar,
-                    FrameSection section )
+void DrawLineOnFrame( Vec2I p1, // Starting point
+                      Vec2I p2, // Ending point
+                      Frame& frame,
+                      wchar_t drawChar,
+                      FrameSection section )
 {
 
     if ( p1.x == p2.x )
@@ -162,26 +164,19 @@ void QuickDrawLine( Vec2I p1, // Starting point
     }
 }
 
-void DrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar, FrameSection section )
+void DrawTriangleOnFrame( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, wchar_t drawChar, FrameSection section )
 {
-    DrawLine( p1, p2, frame, drawChar, section );
-    DrawLine( p2, p3, frame, drawChar, section );
-    DrawLine( p3, p1, frame, drawChar, section );
+    DrawLineOnFrame( p1, p2, frame, drawChar, section );
+    DrawLineOnFrame( p2, p3, frame, drawChar, section );
+    DrawLineOnFrame( p3, p1, frame, drawChar, section );
 }
 
-void QuickDrawTriangle( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, char drawChar, FrameSection section )
-{
-    QuickDrawLine( p1, p2, frame, drawChar, section );
-    QuickDrawLine( p2, p3, frame, drawChar, section );
-    QuickDrawLine( p3, p1, frame, drawChar, section );
-}
-
-void DrawPixelOnFrame( Vec2I p, Frame& frame, char drawChar, FrameSection section )
+void DrawPixelOnFrame( Vec2I p, Frame& frame, wchar_t drawChar, FrameSection section )
 {
     frame.Write( p.x, p.y, drawChar, section );
 }
 
-void ClearFrame( Frame& frame, char clearChar, FrameSection section )
+void ClearFrame( Frame& frame, wchar_t clearChar, FrameSection section )
 {
     for ( int y = 0; y < frame.Height(); y++ )
         for ( int x = 0; x < frame.Width(); x++ )
@@ -193,57 +188,142 @@ void ResetTerminalCursor()
     write( STDOUT_FILENO, "\33[H", 3 );
 }
 
+void SetToSystemLocale()
+{
+    std::locale::global( std::locale( "" ) );
+    std::wcout.imbue( std::locale() );
+}
+
 void DrawFrame( Frame& frame )
 {
-    std::cout << frame.Buffer();
+    for ( int y = 0; y < frame.Height(); y++ )
+    {
+        for ( int x = 0; x < frame.Width(); x++ )
+        {
+            std::wcout << frame.At( x, y );
+        }
+        std::wcout << "\n";
+    }
+}
+
+void DrawBorderOnFrame( Frame& frame, FrameSection section )
+{
+    Vec2I startIdx = frame.GetSectionOffset( section );
+    Vec2I dimension = frame.GetSectionDimension( section );
+    Vec2I endIdx = startIdx + dimension;
+
+    // Top
+    frame.Write( startIdx.x, startIdx.y, TOP_LEFT_CORNER );
+    for ( int i = startIdx.x + 1; i < endIdx.x - 1; i++ )
+        frame.Write( i, startIdx.y, HORIZONTAL_LINE );
+
+    frame.Write( endIdx.x - 1, startIdx.y, TOP_RIGHT_CORNER );
+
+    // Sides
+    for ( int i = startIdx.y + 1; i < endIdx.y - 1; i++ )
+    {
+        frame.Write( startIdx.x, i, VERTICAL_LINE );
+        frame.Write( endIdx.x - 1, i, VERTICAL_LINE );
+    }
+
+    // Bottom
+    frame.Write( startIdx.x, endIdx.y - 1, BOTTOM_LEFT_CORNER );
+    for ( int i = startIdx.x + 1; i < endIdx.x; i++ )
+        frame.Write( i, endIdx.y - 1, HORIZONTAL_LINE );
+
+    frame.Write( endIdx.x - 1, endIdx.y - 1, BOTTOM_RIGHT_CORNER );
 }
 
 void DrawSpriteOnFrame( const Sprite& sprite, Frame& frame, Vec2I offset, float rotation, FrameSection section )
 {
-    int spriteWidth = sprite.frame.Width();
-    int spriteHeight = sprite.frame.Height();
+    int spriteWidth = sprite.GetFrameC().Width();
+    int spriteHeight = sprite.GetFrameC().Height();
+
+    Frame rotatedSpriteFrame = DrawUtils::RotateSprite( sprite, rotation );
 
     for ( int i = 0; i < spriteHeight; i++ )
     {
         int iidx = i + offset.x;
         for ( int j = 0; j < spriteHeight; j++ )
         {
-            if ( sprite.frame.At( i, j ) == TRANSPARENT_CHAR )
+            if ( rotatedSpriteFrame.At( i, j ) == TRANSPARENT_CHAR )
                 continue;
 
             int iidy = j + offset.y;
-            frame.Write( iidx, iidy, sprite.frame.At( i, j ), section );
+            frame.Write( iidx, iidy, rotatedSpriteFrame.At( i, j ), section );
         }
     }
 }
 
-void RotateSprite( Sprite& sprite, float rotation )
+wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
 {
-    Vec2I centerOffset = sprite.center;
+    wchar_t surroundingChars[ 4 ] = { s1, s2, s3, s4 };
+    wchar_t shadeMap[ 5 ] = { SHADE_0, SHADE_1, SHADE_2, SHADE_3, SHADE_4 };
+    int avg = 0;
 
-    // Any way we can do this without needing a copy?
-    Frame frameCpy = sprite.frame;
-    Matf< 2, 2 > rotMatrix = GetRotationMat( rotation );
-
-    DrawUtils::ClearFrame( frameCpy, ' ' );
-
-    for ( int y = 0; y < sprite.frame.Height(); y++ )
+    for ( int i = 0; i < 4; i++ )
     {
-        Vec2I offsetCoo;
-        offsetCoo.y = y - sprite.center.y;
-
-        for ( int x = 0; x < sprite.frame.Width(); x++ )
+        switch ( surroundingChars[ i ] )
         {
-            offsetCoo.x = x - sprite.center.x;
-
-            Vec2I newCoo = ( offsetCoo * rotMatrix ) + ( centerOffset );
-
-            char originalChar = sprite.frame.At( x, y );
-            frameCpy.Write( newCoo, originalChar );
+        case INVALID_CHAR:
+            break;
+        case SHADE_0:
+            avg++;
+            break;
+        case SHADE_1:
+            avg += 2;
+            break;
+        case SHADE_2:
+            avg += 3;
+            break;
+        case SHADE_3:
+            avg += 4;
+            break;
+        case SHADE_4:
+            avg += 5;
+            break;
         }
     }
 
-    sprite.frame = frameCpy;
+    avg /= 5;
+
+    return shadeMap[ avg ];
+}
+
+Frame&& RotateSprite( const Sprite& sprite, float rotation )
+{
+    Vec2I centerOffset = sprite.GetCenter();
+
+    Frame* frameCpy = new Frame( sprite.GetFrameC().Width(), sprite.GetFrameC().Height() );
+
+    ClearFrame( *frameCpy, SHADE_0 );
+
+    Matf< 2, 2 > rotMat = GetRotationMat( -rotation );
+
+    for ( int y = 0; y < sprite.GetFrameC().Height(); y++ )
+    {
+        Vec2I offsetCoo;
+        offsetCoo.y = y - sprite.GetCenter().y;
+
+        for ( int x = 0; x < sprite.GetFrameC().Height(); x++ )
+        {
+            offsetCoo.x = x - sprite.GetCenter().x;
+
+            Vec2I inverseRotatedPixel = ( offsetCoo * rotMat ) + centerOffset;
+
+            Vec2I up = { inverseRotatedPixel.x, inverseRotatedPixel.y - 1 };
+            Vec2I down = { inverseRotatedPixel.x, inverseRotatedPixel.y + 1 };
+            Vec2I left = { inverseRotatedPixel.x - 1, inverseRotatedPixel.y };
+            Vec2I right = { inverseRotatedPixel.x + 1, inverseRotatedPixel.y };
+
+            wchar_t avgShade = GetAverageShade( sprite.GetFrameC().At( up ), sprite.GetFrameC().At( down ),
+                                                sprite.GetFrameC().At( left ), sprite.GetFrameC().At( right ) );
+
+            frameCpy->Write( x, y, avgShade );
+        }
+    }
+
+    return std::move( *frameCpy );
 }
 
 Matf< 2, 2 > GetRotationMat( float rotation )
