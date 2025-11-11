@@ -5,10 +5,13 @@
 #include "Characters.hpp"
 #include "Frame.hpp"
 #include "Sprite.hpp"
+#include "SpritePC.hpp"
 #include "Vec2I.hpp"
+#include <cassert>
 #include <cmath>
 #include <iostream>
 #include <locale>
+#include <numeric>
 #include <unistd.h>
 
 namespace DrawUtils
@@ -208,8 +211,17 @@ void DrawFrame( Frame& frame )
 
 void DrawBorderOnFrame( Frame& frame, FrameSection section )
 {
-    Vec2I startIdx = frame.GetSectionOffset( section );
-    Vec2I dimension = frame.GetSectionDimension( section );
+    Vec2I startIdx, dimension;
+    if ( section == FrameSection::NONE )
+    {
+        startIdx = { 0, 0 };
+        dimension = { frame.Width(), frame.Height() };
+    }
+    else
+    {
+        startIdx = frame.GetSectionOffset( section );
+        dimension = frame.GetSectionDimension( section );
+    }
     Vec2I endIdx = startIdx + dimension;
 
     // Top
@@ -255,6 +267,8 @@ void DrawSpriteOnFrame( const Sprite& sprite, Frame& frame, Vec2I offset, float 
     }
 }
 
+// I don't really like this coz it assumes the characters are gonna be like the shading ones
+// zzz
 wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
 {
     wchar_t surroundingChars[ 4 ] = { s1, s2, s3, s4 };
@@ -282,6 +296,8 @@ wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
         case SHADE_4:
             avg += 5;
             break;
+        default:
+            assert( false && "GetAverageShade() MUST be called with a proper shading character!" );
         }
     }
 
@@ -324,6 +340,23 @@ Frame&& RotateSprite( const Sprite& sprite, float rotation )
     }
 
     return std::move( *frameCpy );
+}
+
+void RotateSprite( SpritePC& sprite, float rotation )
+{
+    Matf< 2, 2 > rotMat = GetRotationMat( rotation );
+
+    Vec2I center = std::accumulate( sprite.points.begin(), sprite.points.end(), Vec2I{ 0, 0 } );
+    center = center / sprite.points.size();
+
+    sprite.rotatedPoints.clear();
+
+    for ( int i = 0; i < sprite.points.size(); i++ )
+    {
+        Vec2I transformedPt = sprite.points[i] - center;
+        Vec2I rotatedPt = ( transformedPt * rotMat ) + center;
+        sprite.rotatedPoints.push_back(rotatedPt);
+    }
 }
 
 Matf< 2, 2 > GetRotationMat( float rotation )
