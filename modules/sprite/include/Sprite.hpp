@@ -1,10 +1,13 @@
+#pragma once
+
 #include "Vec2I.hpp"
 #include <vector>
 
 struct Sprite
 {
   public:
-    Sprite() = delete;
+    Sprite();
+    Sprite( Sprite&& sprite );
     Sprite( const std::vector< Vec2I >& points );
 
     ~Sprite() = default;

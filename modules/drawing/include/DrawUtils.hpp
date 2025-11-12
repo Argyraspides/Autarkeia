@@ -56,9 +56,9 @@ void DrawSpriteOnFrame( const Sprite& sprite,
                         FrameSection section = FrameSection::NONE );
 
 // Rotation in degrees not radians
-Frame&& RotateFrame( const Frame& frame, float rotation );
+Frame&& RotateFrame( const Frame& frame, int rotation );
 
-void RotateSprite( Sprite& sprite, float rotation );
+void RotateSprite( Sprite& sprite, int rotation );
 
 Matf< 2, 2 > GetRotationMat( float rotation );
 

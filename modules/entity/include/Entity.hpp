@@ -6,6 +6,9 @@ public:
     Entity();
     ~Entity() = default;
 
-private:
+    void SetSprite( Sprite&& m_sprite );
+
+protected:
     std::optional< Sprite > m_sprite;
+    std::optional< Vec2I > m_position;
 };

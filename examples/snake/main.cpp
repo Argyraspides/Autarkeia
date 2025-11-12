@@ -230,7 +230,7 @@ void RenderSnake()
     DrawUtils::DrawPixelOnFrame( nextSnakeFoodLocation, frame, foodChar, gameSection );
 }
 
-void Render()
+void RenderLoop()
 {
     DrawUtils::ResetTerminalCursor();
     RenderScore();
@@ -270,7 +270,7 @@ int main()
         startTime = std::chrono::steady_clock::now();
 
         HandleUserInput();
-        Render();
+        RenderLoop();
         if ( pauseGame )
             continue;
 

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <locale>
 #include <numeric>
+#include <sstream>
 #include <unistd.h>
 
 namespace DrawUtils
@@ -295,7 +296,7 @@ wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
 }
 
 // Rotate frame around center
-Frame&& RotateFrame( const Frame& frame, float rotation )
+Frame&& RotateFrame( const Frame& frame, int rotation )
 {
     Vec2I centerOffset = { frame.Width() / 2, frame.Height() / 2 };
 
@@ -329,7 +330,7 @@ Frame&& RotateFrame( const Frame& frame, float rotation )
     return std::move( *newFrame );
 }
 
-void RotateSprite( Sprite& sprite, float rotation )
+void RotateSprite( Sprite& sprite, int rotation )
 {
     Matf< 2, 2 > rotMat = GetRotationMat( rotation );
     const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudOriginal();
