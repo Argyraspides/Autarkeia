@@ -50,14 +50,13 @@ void DrawBorderOnFrame( Frame& frame, FrameSection section = FrameSection::NONE 
 
 void DrawSpriteOnFrame( const Sprite& sprite,
                         Frame& frame,
+                        wchar_t drawChar,
                         Vec2I offset = { 0, 0 },
                         float rotation = 0.0,
                         FrameSection section = FrameSection::NONE );
 
 // Rotation in degrees not radians
-Frame&& RotateSprite( const Sprite& sprite, float rotation = 0.0f );
-
-void RotateSprite( SpritePC& sprite, float rotation = 0.0f );
+Frame&& RotateFrame( const Frame& frame, float rotation );
 
 Matf< 2, 2 > GetRotationMat( float rotation );
 

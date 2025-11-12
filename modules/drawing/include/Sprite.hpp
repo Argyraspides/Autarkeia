@@ -1,16 +1,19 @@
-#include "Frame.hpp"
+#include "Vec2I.hpp"
+#include <vector>
 
 struct Sprite
 {
-public:
-    Sprite( size_t width, size_t height, Vec2I center = {});
+  public:
+    Sprite() = delete;
+    Sprite( const std::vector< Vec2I >& points );
+
     ~Sprite() = default;
 
-    const Frame& GetFrameC() const;
-    Frame& GetFrame();
-    Vec2I GetCenter() const;
+    const std::vector< Vec2I >& GetPointCloudOriginal() const;
 
-private:
-    Frame m_frame;     
-    Vec2I m_center;
+    void ChangePoint( size_t idx, Vec2I newPt );
+
+  private:
+    std::vector< Vec2I > m_originalPoints; // Original points used to construct the sprite
+    std::vector< Vec2I > m_modifiedPoints; // What is actually displayed
 };

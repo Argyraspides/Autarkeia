@@ -1,30 +1,21 @@
 #include "Sprite.hpp"
+#include <iostream>
 #include <cassert>
-#include <limits>
 
-Sprite::Sprite( size_t width, size_t height, Vec2I center )
-    : m_frame{ width, height }
+Sprite::Sprite( const std::vector< Vec2I >& points )
+    : m_originalPoints( points )
 {
-    size_t defaultCenterX = width / 2;
-    size_t defaultCenterY = height / 2;
-    assert( defaultCenterX < std::numeric_limits< int >::max() && defaultCenterY < std::numeric_limits< int >::max() &&
-            "Sprite too big" );
-
-    this->m_center.x = static_cast< int >( defaultCenterX );
-    this->m_center.y = static_cast< int >( defaultCenterY );
 }
 
-const Frame& Sprite::GetFrameC() const
+const std::vector< Vec2I >& Sprite::GetPointCloudOriginal() const
 {
-    return m_frame;
+    return m_originalPoints;
 }
 
-Frame& Sprite::GetFrame() 
+void Sprite::ChangePoint( size_t idx, Vec2I newPoint )
 {
-    return m_frame;
-}
+    if ( idx >= m_modifiedPoints.size() )
+        std::cout << "Sprite::ChangePoint(size_t, Vec2I) - ATTEMPT TO WRITE OUT OF BOUNDS" << std::endl;
 
-Vec2I Sprite::GetCenter() const
-{
-    return m_center;
+    m_modifiedPoints[ idx ] = newPoint;
 }

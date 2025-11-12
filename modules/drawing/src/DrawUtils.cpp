@@ -5,10 +5,10 @@
 #include "Characters.hpp"
 #include "Frame.hpp"
 #include "Sprite.hpp"
-#include "SpritePC.hpp"
 #include "Vec2I.hpp"
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 #include <locale>
 #include <numeric>
@@ -246,25 +246,12 @@ void DrawBorderOnFrame( Frame& frame, FrameSection section )
     frame.Write( endIdx.x - 1, endIdx.y - 1, BOTTOM_RIGHT_CORNER );
 }
 
-void DrawSpriteOnFrame( const Sprite& sprite, Frame& frame, Vec2I offset, float rotation, FrameSection section )
+void DrawSpriteOnFrame(
+    const Sprite& sprite, Frame& frame, wchar_t drawChar, Vec2I offset, float rotation, FrameSection section )
 {
-    int spriteWidth = sprite.GetFrameC().Width();
-    int spriteHeight = sprite.GetFrameC().Height();
-
-    Frame rotatedSpriteFrame = DrawUtils::RotateSprite( sprite, rotation );
-
-    for ( int i = 0; i < spriteHeight; i++ )
-    {
-        int iidx = i + offset.x;
-        for ( int j = 0; j < spriteHeight; j++ )
-        {
-            if ( rotatedSpriteFrame.At( i, j ) == TRANSPARENT_CHAR )
-                continue;
-
-            int iidy = j + offset.y;
-            frame.Write( iidx, iidy, rotatedSpriteFrame.At( i, j ), section );
-        }
-    }
+    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudOriginal();
+    for ( int i = 0; i < spritePoints.size(); i++ )
+        DrawLineOnFrame( spritePoints[ i ], spritePoints[ ( i + 1 ) % spritePoints.size() ], frame, drawChar );
 }
 
 // I don't really like this coz it assumes the characters are gonna be like the shading ones
@@ -306,24 +293,24 @@ wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
     return shadeMap[ avg ];
 }
 
-Frame&& RotateSprite( const Sprite& sprite, float rotation )
+// Rotate frame around center
+Frame&& RotateFrame( const Frame& frame, float rotation )
 {
-    Vec2I centerOffset = sprite.GetCenter();
+    Vec2I centerOffset = { frame.Width() / 2, frame.Height() / 2 };
 
-    Frame* frameCpy = new Frame( sprite.GetFrameC().Width(), sprite.GetFrameC().Height() );
-
-    ClearFrame( *frameCpy, SHADE_0 );
+    Frame* newFrame = new Frame( frame.Width(), frame.Height() );
+    ClearFrame( *newFrame, SHADE_0 );
 
     Matf< 2, 2 > rotMat = GetRotationMat( -rotation );
 
-    for ( int y = 0; y < sprite.GetFrameC().Height(); y++ )
+    for ( int y = 0; y < frame.Height(); y++ )
     {
         Vec2I offsetCoo;
-        offsetCoo.y = y - sprite.GetCenter().y;
+        offsetCoo.y = y - centerOffset.y;
 
-        for ( int x = 0; x < sprite.GetFrameC().Height(); x++ )
+        for ( int x = 0; x < frame.Height(); x++ )
         {
-            offsetCoo.x = x - sprite.GetCenter().x;
+            offsetCoo.x = x - centerOffset.x;
 
             Vec2I inverseRotatedPixel = ( offsetCoo * rotMat ) + centerOffset;
 
@@ -332,30 +319,28 @@ Frame&& RotateSprite( const Sprite& sprite, float rotation )
             Vec2I left = { inverseRotatedPixel.x - 1, inverseRotatedPixel.y };
             Vec2I right = { inverseRotatedPixel.x + 1, inverseRotatedPixel.y };
 
-            wchar_t avgShade = GetAverageShade( sprite.GetFrameC().At( up ), sprite.GetFrameC().At( down ),
-                                                sprite.GetFrameC().At( left ), sprite.GetFrameC().At( right ) );
+            wchar_t avgShade = GetAverageShade( frame.At( up ), frame.At( down ), frame.At( left ), frame.At( right ) );
 
-            frameCpy->Write( x, y, avgShade );
+            newFrame->Write( x, y, avgShade );
         }
     }
 
-    return std::move( *frameCpy );
+    return std::move( *newFrame );
 }
 
-void RotateSprite( SpritePC& sprite, float rotation )
+void RotateSprite( Sprite& sprite, float rotation )
 {
     Matf< 2, 2 > rotMat = GetRotationMat( rotation );
+    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudOriginal();
 
-    Vec2I center = std::accumulate( sprite.points.begin(), sprite.points.end(), Vec2I{ 0, 0 } );
-    center = center / sprite.points.size();
+    Vec2I center = std::accumulate( spritePoints.begin(), spritePoints.end(), Vec2I{ 0, 0 } );
+    center = center / spritePoints.size();
 
-    sprite.rotatedPoints.clear();
-
-    for ( int i = 0; i < sprite.points.size(); i++ )
+    for ( size_t i = 0; i < spritePoints.size(); i++ )
     {
-        Vec2I transformedPt = sprite.points[i] - center;
+        Vec2I transformedPt = spritePoints[ i ] - center;
         Vec2I rotatedPt = ( transformedPt * rotMat ) + center;
-        sprite.rotatedPoints.push_back(rotatedPt);
+        sprite.ChangePoint( i, rotatedPt );
     }
 }
 
