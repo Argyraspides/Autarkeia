@@ -1,37 +1,65 @@
 #include "Characters.hpp"
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
-#include "Sprite.hpp"
+#include "KeyboardInputHandler.hpp"
+#include "ShipSprite.hpp"
+
 #include <chrono>
+#include <linux/input-event-codes.h>
+#include <optional>
 #include <thread>
 
-Frame screen( 500, 200 );
-int sideOffset = 10;
-int triWidth = 50;
-int triHeight = 50;
+// Max size I can fit on a 1080p display max zoom
+Frame screen( 500, 140 );
+long frameTimeMs = 16;
 
-Vec2I p1 = { triWidth / 2, sideOffset };
-Vec2I p2 = { sideOffset, triHeight - sideOffset };
-Vec2I p3 = { triWidth - sideOffset, triHeight - sideOffset };
+InputCommon::KeyboardInputHandler kbd;
 
-Sprite triangle{ {p1, p2, p3} };
+std::vector< Sprite > bullets;
+
+void Render()
+{
+    DrawUtils::ClearFrame( screen, SHADE_0 );
+
+    DrawUtils::DrawSpriteOnFrame( spaceShip, screen, 'x', { 50, 50 } );
+
+    DrawUtils::ResetTerminalCursor();
+    DrawUtils::DrawFrame( screen );
+}
+
+void HandleShoot()
+{
+    std::optional< InputCommon::KeyInputCode > userInput = kbd.GetNextKeyPress();
+    if ( !userInput )
+        return;
+
+    if ( userInput.value() != KEY_SPACE )
+        return;
+
+    bullets.push_back( Sprite{ spaceShip } );
+}
+
+void UpdateBullets()
+{
+    // for( Sprite& )
+}
+
+void Update()
+{
+    HandleShoot();
+}
 
 int main()
 {
     DrawUtils::SetToSystemLocale();
+    kbd.Start();
 
-
+    auto lastFrameTime = std::chrono::steady_clock::now();
     int rotation = 0;
     while ( true )
     {
-        DrawUtils::ResetTerminalCursor();
-        DrawUtils::ClearFrame( screen, SHADE_0 );
-        DrawUtils::DrawBorderOnFrame( screen );
-
-        rotation = ( rotation + 10 ) % 360;
-
-        DrawUtils::DrawFrame( screen );
-
-        std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( frameTimeMs ) );
+        Update();
+        Render();
     }
 }

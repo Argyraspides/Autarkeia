@@ -58,6 +58,8 @@ void DrawSpriteOnFrame( const Sprite& sprite,
 // Rotation in degrees not radians
 Frame&& RotateFrame( const Frame& frame, float rotation );
 
+void RotateSprite( Sprite& sprite, float rotation );
+
 Matf< 2, 2 > GetRotationMat( float rotation );
 
 } // namespace DrawUtils

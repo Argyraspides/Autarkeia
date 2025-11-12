@@ -1,19 +1,20 @@
-//
-// Created by gaugamela on 9/28/25.
-//
-
-#ifndef SPRITE_HPP
-#define SPRITE_HPP
 #include "Vec2I.hpp"
 #include <vector>
+
 struct Sprite
 {
   public:
     Sprite() = delete;
-    ~Sprite();
-    void AddPixel( Vec2I );
-  private:
-    std::vector<Vec2I> m_spritePixels;
-};
+    Sprite( const std::vector< Vec2I >& points );
 
-#endif // SPRITE_HPP
+    ~Sprite() = default;
+
+    const std::vector< Vec2I >& GetPointCloudOriginal() const;
+    const std::vector< Vec2I >& GetPointCloudModified() const;
+
+    void ChangePoint( size_t idx, Vec2I newPt );
+
+  private:
+    std::vector< Vec2I > m_originalPoints; // Original points used to construct the sprite
+    std::vector< Vec2I > m_modifiedPoints; // What is actually displayed
+};

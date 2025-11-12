@@ -249,9 +249,10 @@ void DrawBorderOnFrame( Frame& frame, FrameSection section )
 void DrawSpriteOnFrame(
     const Sprite& sprite, Frame& frame, wchar_t drawChar, Vec2I offset, float rotation, FrameSection section )
 {
-    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudOriginal();
+    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudModified();
     for ( int i = 0; i < spritePoints.size(); i++ )
-        DrawLineOnFrame( spritePoints[ i ], spritePoints[ ( i + 1 ) % spritePoints.size() ], frame, drawChar );
+        DrawLineOnFrame( spritePoints[ i ] + offset, spritePoints[ ( i + 1 ) % spritePoints.size() ] + offset, frame,
+                         drawChar, section );
 }
 
 // I don't really like this coz it assumes the characters are gonna be like the shading ones

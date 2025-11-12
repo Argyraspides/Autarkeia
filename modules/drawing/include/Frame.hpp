@@ -1,9 +1,8 @@
 //
 // Created by Argyraspides on 9/7/25.
 //
+#pragma once
 
-#ifndef FRAMEBUFFER_HPP
-#define FRAMEBUFFER_HPP
 #include "Vec2I.hpp"
 #include <array>
 #include <memory>
@@ -59,5 +58,3 @@ class Frame
     size_t m_frameWidth;
     size_t m_frameHeight;
 };
-
-#endif // FRAMEBUFFER_HPP

@@ -2,8 +2,12 @@ project( Asteroids )
 
 message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_executable( Asteroids
+set( ASTEROIDS_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ShipSprite.hpp
+)
+add_executable( Asteroids
+    ${ASTEROIDS_SOURCES}
 )
 
 target_include_directories( Asteroids PRIVATE 
@@ -12,4 +16,5 @@ target_include_directories( Asteroids PRIVATE
 
 target_link_libraries( Asteroids PRIVATE
     Drawing
+    InputCommon
 )

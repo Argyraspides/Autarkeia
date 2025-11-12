@@ -13,9 +13,12 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 set( CMAKE_BUILD_TYPE Debug )
 set( CMAKE_CXX_STANDARD 20 )
 
-add_subdirectory( modules/drawing )
 add_subdirectory( modules/input )
+add_subdirectory( modules/math )
+add_subdirectory( modules/cartesian )
 add_subdirectory( modules/sprite )
+add_subdirectory( modules/drawing )
+add_subdirectory( modules/entity )
 
 if( BUILD_TESTS )
     add_subdirectory( modules/catch2 )
