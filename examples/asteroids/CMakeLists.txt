@@ -3,8 +3,10 @@ project( Asteroids )
 message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( ASTEROIDS_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Ship.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Bullet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Asteroid.cpp
 )
 add_executable( Asteroids
     ${ASTEROIDS_SOURCES}

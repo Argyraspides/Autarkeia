@@ -6,14 +6,15 @@
 struct Sprite
 {
   public:
-    Sprite();
-    Sprite( Sprite&& sprite );
+    Sprite() = default;
     Sprite( const std::vector< Vec2I >& points );
 
     ~Sprite() = default;
 
     const std::vector< Vec2I >& GetPointCloudOriginal() const;
     const std::vector< Vec2I >& GetPointCloudModified() const;
+
+    Vec2I GetCentroidModified() const;
 
     void ChangePoint( size_t idx, Vec2I newPt );
 

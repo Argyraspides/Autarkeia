@@ -1,14 +1,32 @@
-#include <optional>
+#pragma once
 #include "Sprite.hpp"
+#include "Vec2F.hpp" 
 
-class Entity {
-public:
+class Entity
+{
+  public:
     Entity();
     ~Entity() = default;
 
-    void SetSprite( Sprite&& m_sprite );
+    void SetSprite( Sprite&& sprite );
+    void SetSprite( const Sprite& sprite );
+    const Sprite& GetSprite() const;
 
-protected:
-    std::optional< Sprite > m_sprite;
-    std::optional< Vec2I > m_position;
+    void SetPosition( Vec2F position );
+    Vec2F GetPosition() const;
+
+    void SetVelocity( Vec2F velocity );
+    Vec2F GetVelocity() const;
+
+    void Move( Vec2F vector );
+
+    void Rotate( int deg );
+    int GetRotation();
+
+  protected:
+    Sprite m_sprite;
+    int m_rotation;
+
+    Vec2F m_position;
+    Vec2F m_velocity;
 };

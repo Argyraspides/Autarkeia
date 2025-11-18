@@ -18,4 +18,5 @@ target_include_directories( Entity PUBLIC
 
 target_link_libraries( Entity PRIVATE
     Sprite
+    Drawing 
 )

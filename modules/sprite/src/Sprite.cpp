@@ -1,23 +1,11 @@
 #include "Sprite.hpp"
 #include <iostream>
-#include <utility>
-
-Sprite::Sprite()
-    : m_originalPoints{},
-      m_modifiedPoints{}
-{
-}
+#include <numeric>
 
 Sprite::Sprite( const std::vector< Vec2I >& points )
     : m_originalPoints( points ),
       m_modifiedPoints( points )
 {
-}
-
-Sprite::Sprite( Sprite&& sprite )
-{
-    m_originalPoints = std::move( sprite.m_originalPoints );
-    m_modifiedPoints = std::move( sprite.m_modifiedPoints );
 }
 
 const std::vector< Vec2I >& Sprite::GetPointCloudOriginal() const
@@ -28,6 +16,11 @@ const std::vector< Vec2I >& Sprite::GetPointCloudOriginal() const
 const std::vector< Vec2I >& Sprite::GetPointCloudModified() const
 {
     return m_modifiedPoints;
+}
+
+Vec2I Sprite::GetCentroidModified() const
+{
+    return std::accumulate( m_modifiedPoints.begin(), m_modifiedPoints.end(), Vec2I{ 0, 0 } ) / m_modifiedPoints.size();
 }
 
 void Sprite::ChangePoint( size_t idx, Vec2I newPoint )

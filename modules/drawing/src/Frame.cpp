@@ -12,14 +12,16 @@
 #include <utility>
 
 static constexpr wchar_t DEFAULT_INIT_CHAR = '.';
-static constexpr Vec2I INVALID_POINT = { std::numeric_limits< int >::quiet_NaN(),
-                                         std::numeric_limits< int >::quiet_NaN() };
 
 Frame::Frame( size_t width, size_t height )
     : m_frameWidth( width ),
       m_frameHeight( height )
 {
+
     m_buffer = std::make_unique< std::vector< std::vector< wchar_t > > >( height, std::vector< wchar_t >( width ) );
+
+    const Vec2I INVALID_POINT = { std::numeric_limits< int >::quiet_NaN(),
+                                         std::numeric_limits< int >::quiet_NaN() };
 
     m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > >();
     for ( Vec2I& v : *m_frameSectionOffsets )
@@ -65,7 +67,7 @@ bool Frame::Write( int x, int y, wchar_t dat, FrameSection section )
 
     if ( Empty() )
         return false;
-    if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
+    if ( !InFrame( { x, y } ) )
         return false;
 
     if ( section == FrameSection::NONE )
@@ -79,8 +81,6 @@ bool Frame::Write( int x, int y, wchar_t dat, FrameSection section )
 
     Vec2I maxFrameDim = Vec2I{ x, y } + ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
     if ( x >= maxFrameDim.x || y >= maxFrameDim.y )
-        return false;
-    else if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
         return false;
 
     ( *m_buffer )[ y ][ x ] = dat;
@@ -122,6 +122,13 @@ Vec2I Frame::GetSectionOffset( FrameSection section )
 Vec2I Frame::GetSectionDimension( FrameSection section )
 {
     return ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
+}
+
+bool Frame::InFrame( Vec2I screenPos )
+{
+    bool outOfBounds =
+        screenPos.x < 0 || screenPos.x >= m_frameWidth || screenPos.y < 0 || screenPos.y >= m_frameHeight;
+    return !outOfBounds;
 }
 
 void Frame::ValidateSection( FrameSection section )

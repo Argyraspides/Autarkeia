@@ -5,12 +5,15 @@ message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
 project( Cartesian )
 
-add_library( Cartesian INTERFACE )
+add_library( Cartesian 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Vec2F.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Vec2I.cpp
+)
 
-target_include_directories( Cartesian INTERFACE 
+target_include_directories( Cartesian PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries( Cartesian INTERFACE 
+target_link_libraries( Cartesian PUBLIC 
     Math
 )

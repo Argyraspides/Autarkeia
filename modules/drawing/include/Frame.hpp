@@ -46,10 +46,15 @@ class Frame
     Vec2I GetSectionOffset( FrameSection section );
     Vec2I GetSectionDimension( FrameSection section );
 
+    bool InFrame( Vec2I screenPos );
+
   private:
     void ValidateSection( FrameSection section );
 
   private:
+    // TODO::ARGYRASPIDES() { You did this for move semantics but you're a dummy and these already have move constructors.
+    // Also there's no reason for this shit to be unique ptr bruh ... please understand and benchmark shit before you 
+    // pull theories out of your ass on what should be more efficient } 
     std::unique_ptr< std::vector< std::vector< wchar_t > > > m_buffer;
 
     std::unique_ptr< std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > > m_frameSectionOffsets;

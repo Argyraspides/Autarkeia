@@ -1,6 +1,10 @@
 #include "Entity.hpp"
+#include "DrawUtils.hpp"
 
 Entity::Entity()
+    : m_position{ 0, 0 },
+      m_sprite{},
+      m_rotation{ 0 }
 {
 }
 
@@ -11,5 +15,51 @@ void Entity::SetSprite( Sprite&& sprite )
     // So we have to explicitly say "no really, please treat it like an r-value reference!".
     //
     // Bruh.
-    m_sprite.emplace( std::move( sprite ) );
+    m_sprite = std::move( sprite );
+}
+
+void Entity::SetSprite( const Sprite& sprite )
+{
+    m_sprite = sprite;
+}
+
+const Sprite& Entity::GetSprite() const
+{
+    return m_sprite;
+}
+
+void Entity::SetPosition( Vec2F position )
+{
+    m_position = position;
+}
+
+Vec2F Entity::GetPosition() const
+{
+    return m_position;
+}
+
+void Entity::SetVelocity( Vec2F velocity )
+{
+    m_velocity = velocity;
+}
+
+Vec2F Entity::GetVelocity() const
+{
+    return m_velocity;
+}
+
+void Entity::Move( Vec2F vector )
+{
+    m_position = m_position + vector;
+}
+
+void Entity::Rotate( int deg )
+{
+    DrawUtils::RotateSprite( m_sprite, deg );
+    m_rotation = deg;
+}
+
+int Entity::GetRotation()
+{
+    return m_rotation;
 }
