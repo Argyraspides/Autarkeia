@@ -55,13 +55,19 @@ Asteroid::Asteroid()
 
     // Final vertices in order of drawing that will result in a closed polygon
     std::vector< Vec2I > finalVertices;
-    for ( auto& [ circleVeci, asteroidVertexi ] : asteroidVectors )
+    for ( auto it_i = asteroidVectors.begin(); it_i != asteroidVectors.end(); ++it_i )
     {
         std::pair< Vec2I, Vec2I > next;
         int closestToOne = std::numeric_limits< int >::max();
-        for ( auto& [ circleVecj, asteroidVertexj ] : asteroidVectors )
+        Vec2I circleVeci = ( *it_i ).first;
+        int li = std::hypot( circleVeci.x, circleVeci.y );
+        for ( auto it_j = asteroidVectors.begin(); it_j != asteroidVectors.end(); ++it_j )
         {
-            int distFromOne = abs( circleVeci.DotProd( circleVecj ) - 1 );
+            Vec2I circleVecj = ( *it_j ).first;
+            Vec2I asteroidVertexj = ( *it_j ).second;
+
+            int lj = std::hypot( circleVecj.x, circleVecj.y );
+            int distFromOne = abs( circleVeci.DotProd( circleVecj ) - (li * lj) );
 
             if ( distFromOne < closestToOne )
             {
@@ -74,6 +80,7 @@ Asteroid::Asteroid()
         auto removes = std::remove_if( asteroidVectors.begin(), asteroidVectors.end(),
                                        [ next ]( std::pair< Vec2I, Vec2I > p ) { return p == next; } );
         asteroidVectors.erase( removes, asteroidVectors.end() );
+        it_i = asteroidVectors.begin();
     }
 
     finalVertices.push_back( asteroidVectors.front().second );
