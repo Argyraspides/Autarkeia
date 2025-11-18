@@ -29,6 +29,7 @@ struct Vec2I
     bool IsBelow(Vec2I other);
     bool IsLeftOf(Vec2I other);
     bool IsRightOf(Vec2I other);
+    int DotProd(Vec2I other);
 
 };
 

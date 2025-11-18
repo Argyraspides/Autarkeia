@@ -71,7 +71,7 @@ void Vec2I::operator=( Vec2I other )
 
 bool Vec2I::operator==( Vec2I other ) const
 {
-    return ( x == other.x ) & ( y == other.y );
+    return ( x == other.x ) && ( y == other.y );
 }
 
 bool Vec2I::IsAbove( Vec2I other )
@@ -92,4 +92,9 @@ bool Vec2I::IsLeftOf( Vec2I other )
 bool Vec2I::IsRightOf( Vec2I other )
 {
     return !IsLeftOf( other );
+}
+
+int Vec2I::DotProd( Vec2I other )
+{
+    return ( x * other.x ) + ( y * other.y );
 }

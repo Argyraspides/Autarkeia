@@ -145,13 +145,13 @@ int main()
     ship.SetPosition( Vec2F( screen.Width() / 2, screen.Height() / 2 ) );
 
     Asteroid a;
-    a.SetPosition( { 20, 20 } );
+    a.SetPosition( { 50, 50 } );
     asteroids.push_back( a );
 
     auto lastFrameTime = std::chrono::steady_clock::now();
-    while ( true )
+    // while ( true )
     {
-        std::this_thread::sleep_for( std::chrono::milliseconds( frameTimeMs ) );
+        // std::this_thread::sleep_for( std::chrono::milliseconds( frameTimeMs ) );
         UpdateLoop();
         RenderLoop();
     }
