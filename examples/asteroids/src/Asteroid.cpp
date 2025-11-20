@@ -12,7 +12,7 @@
 Asteroid::Asteroid()
     : Entity{}
 {
-    int randVertexCount = ( rand() % 6 ) + 3;
+    int randVertexCount = ( rand() % 6 ) + 10;
 
     auto GenerateRandomVertex = []() -> Vec2I {
         srand( std::chrono::system_clock::now().time_since_epoch().count() );
@@ -24,65 +24,47 @@ Asteroid::Asteroid()
     };
 
     std::unordered_set< Vec2I, Vec2IHash, Vec2IEquality > asteroidVertices;
-    int circleStartX, circleEndY;
-    circleStartX = circleEndY = std::numeric_limits< int >::max();
-
-    int circleEndX, circleStartY;
-    circleEndX = circleStartY = std::numeric_limits< int >::min();
-
+    Vec2I circleCenter;
     for ( int i = 0; i < randVertexCount; i++ )
     {
         Vec2I randomVertex = GenerateRandomVertex();
-
-        circleStartX = std::min( randomVertex.x, circleStartX );
-        circleEndY = std::min( randomVertex.y, circleEndY );
-
-        circleEndX = std::max( randomVertex.x, circleEndX );
-        circleStartY = std::max( randomVertex.y, circleStartY );
-
         asteroidVertices.insert( randomVertex );
+        circleCenter = circleCenter + randomVertex;
+    }
+    circleCenter = circleCenter / randVertexCount;
+
+    // Generate that circle based on number of points
+    float degreeIncrement = 360.0F / static_cast< float >( randVertexCount );
+    std::vector< Vec2I > circlePoints;
+    for ( float deg = 0; deg <= 360; deg += degreeIncrement )
+    {
+        constexpr float DEG_TO_RAD = M_PI / 180;
+        float x = std::cos( deg * DEG_TO_RAD ) * 45;
+        float y = std::sin( deg * DEG_TO_RAD ) * 45;
+        Vec2I finalPt = Vec2I( x, y ) + circleCenter;
+        circlePoints.push_back( finalPt );
     }
 
-    Vec2I circleCenter = { ( circleStartX + circleEndX ) / 2, ( circleStartY + circleEndY ) / 2 };
-
-    std::vector< std::pair< Vec2I, Vec2I > > asteroidVectors;
-    for ( auto it = asteroidVertices.begin(); it != asteroidVertices.end(); ++it )
+    std::vector< Vec2I > finalPoints;
+    for ( auto circlePt = circlePoints.begin(); circlePt != circlePoints.end(); ++circlePt )
     {
-        const Vec2I asteroidVertex = *it;
-        Vec2I circleVec = asteroidVertex - circleCenter;
-        asteroidVectors.push_back( { circleVec, asteroidVertex } );
-    }
-
-    // Final vertices in order of drawing that will result in a closed polygon
-    std::vector< Vec2I > finalVertices;
-    for ( auto it_i = asteroidVectors.begin(); it_i != asteroidVectors.end(); ++it_i )
-    {
-        std::pair< Vec2I, Vec2I > next;
-        int closestToOne = std::numeric_limits< int >::max();
-        Vec2I circleVeci = ( *it_i ).first;
-        int li = std::hypot( circleVeci.x, circleVeci.y );
-        for ( auto it_j = asteroidVectors.begin(); it_j != asteroidVectors.end(); ++it_j )
+        Vec2I nextVertex;
+        int minDist = std::numeric_limits< int >::max();
+        for ( auto asteroidVertex = asteroidVertices.begin(); asteroidVertex != asteroidVertices.end();
+              ++asteroidVertex )
         {
-            Vec2I circleVecj = ( *it_j ).first;
-            Vec2I asteroidVertexj = ( *it_j ).second;
-
-            int lj = std::hypot( circleVecj.x, circleVecj.y );
-            int distFromOne = abs( circleVeci.DotProd( circleVecj ) - (li * lj) );
-
-            if ( distFromOne < closestToOne )
+            int xDist = std::abs( ( *asteroidVertex ).x - ( *circlePt ).x );
+            int yDist = std::abs( ( *asteroidVertex ).y - ( *circlePt ).y );
+            int dist = std::hypot( xDist, yDist );
+            if ( dist < minDist )
             {
-                next = { circleVecj, asteroidVertexj };
-                closestToOne = distFromOne;
+                minDist = dist;
+                nextVertex = *asteroidVertex;
             }
         }
-        finalVertices.push_back( next.second );
 
-        auto removes = std::remove_if( asteroidVectors.begin(), asteroidVectors.end(),
-                                       [ next ]( std::pair< Vec2I, Vec2I > p ) { return p == next; } );
-        asteroidVectors.erase( removes, asteroidVectors.end() );
-        it_i = asteroidVectors.begin();
+        finalPoints.push_back( nextVertex );
     }
 
-    finalVertices.push_back( asteroidVectors.front().second );
-    SetSprite( Sprite{ finalVertices } );
+    SetSprite( Sprite{ finalPoints } );
 }
