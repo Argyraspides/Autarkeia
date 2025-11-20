@@ -1,46 +1,50 @@
 #include "Asteroid.hpp"
 #include "Vec2I.hpp"
-#include <algorithm>
-#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
-#include <stdlib.h>
-#include <unordered_set>
 
-Asteroid::Asteroid()
+Asteroid::Asteroid( size_t vertexCt )
     : Entity{}
 {
-    int randVertexCount = ( rand() % 6 ) + 10;
+    assert( vertexCt >= 3 && "A polygon needs 3 or more sides you moron" );
 
-    auto GenerateRandomVertex = []() -> Vec2I {
+    constexpr int minimumXVertex = 25;
+    constexpr int randXVertexRange = 25;
+    constexpr int maxXVertex = minimumXVertex + randXVertexRange;
+
+    constexpr int minimumYVertex = 25;
+    constexpr int randYVertexRange = 25;
+    constexpr int maxYVertex = minimumYVertex + randYVertexRange;
+
+    auto GenerateRandomVertex = [ & ]() -> Vec2I {
         srand( std::chrono::system_clock::now().time_since_epoch().count() );
-        int randX = ( rand() % 25 ) + 20;
-        int randY = ( rand() % 25 ) + 20;
-        Vec2I randPos = { randX, randY };
-        randPos = randPos * 3;
-        return randPos;
+        int randX = ( rand() % randXVertexRange ) + minimumXVertex;
+        int randY = ( rand() % randYVertexRange ) + minimumYVertex;
+
+        constexpr int asteroidSizeScalar = 3;
+        return Vec2I{ randX, randY } * asteroidSizeScalar;
     };
 
-    std::unordered_set< Vec2I, Vec2IHash, Vec2IEquality > asteroidVertices;
+    std::vector< Vec2I > asteroidVertices;
     Vec2I circleCenter;
-    for ( int i = 0; i < randVertexCount; i++ )
+    for ( int i = 0; i < vertexCt; i++ )
     {
         Vec2I randomVertex = GenerateRandomVertex();
-        asteroidVertices.insert( randomVertex );
+        asteroidVertices.push_back( randomVertex );
         circleCenter = circleCenter + randomVertex;
     }
-    circleCenter = circleCenter / randVertexCount;
+    circleCenter = circleCenter / vertexCt;
 
-    // Generate that circle based on number of points
-    float degreeIncrement = 360.0F / static_cast< float >( randVertexCount );
+    float degreeIncrement = 360.0F / static_cast< float >( vertexCt );
     std::vector< Vec2I > circlePoints;
     for ( float deg = 0; deg <= 360; deg += degreeIncrement )
     {
         constexpr float DEG_TO_RAD = M_PI / 180;
-        float x = std::cos( deg * DEG_TO_RAD ) * 45;
-        float y = std::sin( deg * DEG_TO_RAD ) * 45;
+
+        float x = std::cos( deg * DEG_TO_RAD ) * maxXVertex;
+        float y = std::sin( deg * DEG_TO_RAD ) * maxYVertex;
         Vec2I finalPt = Vec2I( x, y ) + circleCenter;
         circlePoints.push_back( finalPt );
     }

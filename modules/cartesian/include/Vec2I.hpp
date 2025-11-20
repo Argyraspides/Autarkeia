@@ -25,12 +25,11 @@ struct Vec2I
     Vec2I operator*( Matf< 2, 2 > matrix2by2 ) const;
     void operator=( Vec2I other );
     bool operator==( Vec2I other ) const;
-    bool IsAbove(Vec2I other);
-    bool IsBelow(Vec2I other);
-    bool IsLeftOf(Vec2I other);
-    bool IsRightOf(Vec2I other);
-    int DotProd(Vec2I other);
-
+    bool IsAbove( Vec2I other );
+    bool IsBelow( Vec2I other );
+    bool IsLeftOf( Vec2I other );
+    bool IsRightOf( Vec2I other );
+    int DotProd( Vec2I other );
 };
 
 const inline Vec2I VEC2I_UP = Vec2I{ 0, -1 };

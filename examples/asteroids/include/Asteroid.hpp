@@ -5,6 +5,6 @@
 class Asteroid : public Entity
 {
   public:
-    Asteroid();
+    Asteroid(size_t sideCt = 3);
     ~Asteroid() = default;
 };

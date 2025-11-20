@@ -17,6 +17,7 @@
 
 Frame screen( 500, 200 );
 long frameTimeMs = 16;
+long asteroidGenerationPeriodMs = 500;
 
 InputCommon::KeyboardInputHandler kbd;
 
@@ -35,7 +36,7 @@ void RenderBullets()
 
 void RenderAsteroids()
 {
-    for ( Asteroid& asteroid: asteroids )
+    for ( Asteroid& asteroid : asteroids )
         DrawUtils::DrawSpriteOnFrame( asteroid.GetSprite(), screen, SHADE_4, asteroid.GetPosition() );
 }
 
@@ -132,10 +133,22 @@ void UpdateBullets()
             ++it;
     }
 }
+void UpdateAsteroids()
+{
+    for ( auto asteroid = asteroids.begin(); asteroid != asteroids.end(); ++asteroid )
+    {
+        if ( !screen.InFrame( ( *asteroid ).GetSprite().GetCentroidModified() ) )
+            asteroids.erase( asteroid );
+
+        ( *asteroid ).Move( ( *asteroid ).GetVelocity() );
+    }
+}
+
 void UpdateLoop()
 {
     HandleInput();
     UpdateBullets();
+    UpdateAsteroids();
 }
 
 int main()
@@ -144,14 +157,22 @@ int main()
     kbd.Start();
     ship.SetPosition( Vec2F( screen.Width() / 2, screen.Height() / 2 ) );
 
-    Asteroid a;
-    a.SetPosition( { 50, 50 } );
-    asteroids.push_back( a );
-
     auto lastFrameTime = std::chrono::steady_clock::now();
-    // while ( true )
+    long framesForOneAsteroid = asteroidGenerationPeriodMs / frameTimeMs;
+    long elapsedFrames = 0;
+    while ( true )
     {
-        // std::this_thread::sleep_for( std::chrono::milliseconds( frameTimeMs ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( frameTimeMs ) );
+
+        if ( ++elapsedFrames == framesForOneAsteroid )
+        {
+            elapsedFrames = 0;
+            Asteroid a{ static_cast< size_t >( ( rand() % 10 ) + 3 ) };
+            a.SetPosition( { 0, 0 } );
+            a.SetVelocity( Vec2I( VEC2I_DOWN ) );
+            asteroids.push_back( a );
+        }
+
         UpdateLoop();
         RenderLoop();
     }
