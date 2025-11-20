@@ -80,7 +80,7 @@ bool Frame::Write( int x, int y, wchar_t dat, FrameSection section )
     y += ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ].y;
 
     Vec2I maxFrameDim = Vec2I{ x, y } + ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
-    if ( x >= maxFrameDim.x || y >= maxFrameDim.y )
+    if ( !InFrame( { x, y } ) )
         return false;
 
     ( *m_buffer )[ y ][ x ] = dat;
