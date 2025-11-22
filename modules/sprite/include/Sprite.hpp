@@ -12,12 +12,14 @@ struct Sprite
     ~Sprite() = default;
 
     const std::vector< Vec2I >& GetPointCloud() const;
-
-    Vec2I GetCentroid() const;
+    const std::vector< Vec2I >& GetBasePointCloud() const;
 
     void ChangePoint( size_t idx, Vec2I newPt );
 
   private:
-    std::vector< Vec2I > m_points; // Original points used to construct the sprite
+    // We always perform rotations based on the original points to prevent precision loss over time.
+    // Thus we keep track of the original sprite and modified sprite separately. 
+    std::vector< Vec2I > m_originalPoints;
+    std::vector< Vec2I > m_modifiedPoints; 
     Vec2I m_centroid;
 };

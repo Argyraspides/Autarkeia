@@ -3,36 +3,40 @@
 #include <numeric>
 
 Sprite::Sprite( const std::vector< Vec2I >& points )
-    : m_points( points ),
-      m_centroid( GetCentroid() )
+    : m_originalPoints( points ),
+      m_modifiedPoints( points )
 {
-    bool centroidZero = m_centroid == Vec2I{ 0, 0 };
+    Vec2I centroid =
+        std::accumulate( m_originalPoints.begin(), m_originalPoints.end(), Vec2I{ 0, 0 } ) / m_originalPoints.size();
+    bool centroidZero = centroid == Vec2I{ 0, 0 };
 
     if ( !centroidZero )
     {
-        for ( Vec2I& v : m_points )
-            v = v - m_centroid;
+        for ( Vec2I& v : m_originalPoints )
+            v = v - centroid;
+
+        for ( Vec2I& v : m_modifiedPoints )
+            v = v - centroid;
     }
 }
 
 const std::vector< Vec2I >& Sprite::GetPointCloud() const
 {
-    return m_points;
+    return m_modifiedPoints;
 }
 
-Vec2I Sprite::GetCentroid() const
+const std::vector< Vec2I >& Sprite::GetBasePointCloud() const
 {
-    Vec2I centroid = std::accumulate( m_points.begin(), m_points.end(), Vec2I{ 0, 0 } ) / m_points.size();
-    return centroid;
+    return m_originalPoints;
 }
 
 void Sprite::ChangePoint( size_t idx, Vec2I newPoint )
 {
-    if ( idx >= m_points.size() )
+    if ( idx >= m_modifiedPoints.size() )
     {
         std::cout << "Sprite::ChangePoint(size_t, Vec2I) - ATTEMPT TO WRITE OUT OF BOUNDS" << std::endl;
         return;
     }
 
-    m_points[ idx ] = newPoint;
+    m_modifiedPoints[ idx ] = newPoint;
 }

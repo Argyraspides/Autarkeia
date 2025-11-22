@@ -308,53 +308,15 @@ wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
     return shadeMap[ avg ];
 }
 
-// Rotate frame around center
-Frame&& RotateFrame( const Frame& frame, int rotation )
-{
-    Vec2I centerOffset = { frame.Width() / 2, frame.Height() / 2 };
-
-    Frame* newFrame = new Frame( frame.Width(), frame.Height() );
-    ClearFrame( *newFrame, SHADE_0 );
-
-    Matf< 2, 2 > rotMat = GetRotationMat( -rotation );
-
-    for ( int y = 0; y < frame.Height(); y++ )
-    {
-        Vec2I offsetCoo;
-        offsetCoo.y = y - centerOffset.y;
-
-        for ( int x = 0; x < frame.Height(); x++ )
-        {
-            offsetCoo.x = x - centerOffset.x;
-
-            Vec2I inverseRotatedPixel = ( offsetCoo * rotMat ) + centerOffset;
-
-            Vec2I up = { inverseRotatedPixel.x, inverseRotatedPixel.y - 1 };
-            Vec2I down = { inverseRotatedPixel.x, inverseRotatedPixel.y + 1 };
-            Vec2I left = { inverseRotatedPixel.x - 1, inverseRotatedPixel.y };
-            Vec2I right = { inverseRotatedPixel.x + 1, inverseRotatedPixel.y };
-
-            wchar_t avgShade = GetAverageShade( frame.At( up ), frame.At( down ), frame.At( left ), frame.At( right ) );
-
-            newFrame->Write( x, y, avgShade );
-        }
-    }
-
-    return std::move( *newFrame );
-}
-
 void RotateSprite( Sprite& sprite, int rotation )
 {
     Matf< 2, 2 > rotMat = GetRotationMat( rotation );
-    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloud();
-
-    Vec2I center = std::accumulate( spritePoints.begin(), spritePoints.end(), Vec2I{ 0, 0 } );
-    center = center / spritePoints.size();
+    const std::vector< Vec2I >& spritePoints = sprite.GetBasePointCloud();
 
     for ( size_t i = 0; i < spritePoints.size(); i++ )
     {
-        Vec2I transformedPt = spritePoints[ i ] - center;
-        Vec2I rotatedPt = ( transformedPt * rotMat ) + center;
+        Vec2I transformedPt = spritePoints[ i ];
+        Vec2I rotatedPt = ( transformedPt * rotMat );
         sprite.ChangePoint( i, rotatedPt );
     }
 }

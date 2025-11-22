@@ -26,7 +26,7 @@ std::list< Asteroid > asteroids;
 
 Ship ship;
 
-int rotationSpeed = 10;
+int rotationSpeed = 5;
 
 bool paused = false;
 
@@ -48,6 +48,12 @@ void RenderAsteroids()
 void RenderShip()
 {
     DrawUtils::DrawSpriteOnFrame( ship.GetSprite(), screen, SHADE_4, ship.GetPosition() );
+    auto v = ship.GetSprite().GetPointCloud();
+    for ( auto vec : v )
+    {
+        DrawUtils::DrawPixelOnFrame( vec + ship.GetPosition(), screen, 'V' );
+    }
+    DrawUtils::DrawPixelOnFrame( ship.GetPosition(), screen, 'C' );
 }
 
 void RenderLoop()
@@ -70,9 +76,8 @@ void HandleInput()
         return;
 
     auto RotateShip = []( int direction ) {
-        static int currentRotation = 0;
-        currentRotation = ( currentRotation + ( rotationSpeed * direction ) ) % 360;
-        ship.Rotate( currentRotation );
+        int newRotation = ( ship.GetRotation() + ( rotationSpeed * direction ) ) % 360;
+        ship.Rotate( newRotation );
     };
 
     switch ( userInput.value() )
@@ -141,26 +146,6 @@ void UpdateBullets()
             ++it;
     }
 }
-void UpdateAsteroids()
-{
-    for ( auto asteroid = asteroids.begin(); asteroid != asteroids.end(); ++asteroid )
-    {
-        if ( !screen.InFrame( ( *asteroid ).GetPosition() ) )
-        {
-            asteroid = asteroids.erase( asteroid );
-            continue;
-        }
-
-        ( *asteroid ).Move( ( *asteroid ).GetVelocity() );
-    }
-}
-
-void UpdateLoop()
-{
-    HandleInput();
-    UpdateBullets();
-    UpdateAsteroids();
-}
 
 void MakeRandomAsteroid()
 {
@@ -199,6 +184,7 @@ void MakeRandomAsteroid()
         case Frame::Border::RIGHT:
             asteroidSpawnPos = Vec2F( screen.Width() - 1, rand() % screen.Height() );
             break;
+        default:;
         }
 
         asteroid.SetPosition( asteroidSpawnPos );
@@ -209,6 +195,30 @@ void MakeRandomAsteroid()
         asteroid.SetVelocity( centerVec.Normalized() * 5 );
         asteroids.push_back( asteroid );
     }
+}
+
+void UpdateAsteroids()
+{
+    MakeRandomAsteroid();
+
+    for ( auto asteroid = asteroids.begin(); asteroid != asteroids.end(); )
+    {
+        if ( !screen.InFrame( ( *asteroid ).GetPosition() ) )
+        {
+            asteroid = asteroids.erase( asteroid );
+            continue;
+        }
+
+        ( *asteroid ).Move( ( *asteroid ).GetVelocity() );
+        ++asteroid;
+    }
+}
+
+void UpdateLoop()
+{
+    HandleInput();
+    UpdateBullets();
+    UpdateAsteroids();
 }
 
 int main()
