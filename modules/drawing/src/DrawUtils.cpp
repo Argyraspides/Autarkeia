@@ -10,7 +10,6 @@
 #include <cmath>
 #include <iostream>
 #include <locale>
-#include <numeric>
 #include <string>
 #include <unistd.h>
 

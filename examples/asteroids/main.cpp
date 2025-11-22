@@ -80,6 +80,22 @@ void HandleInput()
         ship.Rotate( newRotation );
     };
 
+    auto SpawnBullet = []() {
+        Bullet newBullet = Bullet{};
+        newBullet.SetPosition( ship.GetPosition() );
+        int shipRotation = ship.GetRotation();
+        float shipRotationRad = static_cast< float >( shipRotation ) * ( M_PI / 180.0f );
+        Vec2F bulletVelocity = { std::cos( shipRotationRad ), std::sin( shipRotationRad ) };
+        newBullet.SetVelocity( bulletVelocity );
+        bullets.push_back( newBullet );
+    };
+
+    auto MoveShip = []() {
+        float heading = ( M_PI / 180.0F ) * ship.GetRotation();
+        Vec2F shipDir = { std::cos( heading ), std::sin( heading ) };
+        ship.Move( shipDir );
+    };
+
     switch ( userInput.value() )
     {
     case KEY_LEFT:
@@ -88,45 +104,15 @@ void HandleInput()
     case KEY_RIGHT:
         RotateShip( -1 );
         break;
-    case KEY_W:
-        ship.Move( VEC2F_UP );
-        break;
-    case KEY_A:
-        ship.Move( VEC2F_LEFT );
-        break;
-    case KEY_S:
-        ship.Move( VEC2F_DOWN );
-        break;
-    case KEY_D:
-        ship.Move( VEC2F_RIGHT );
-        break;
-    case KEY_E:
-        ship.Move( VEC2F_RIGHT );
-        ship.Move( VEC2F_UP );
-        break;
-    case KEY_Q:
-        ship.Move( VEC2F_LEFT );
-        ship.Move( VEC2F_UP );
-        break;
-    case KEY_C:
-        ship.Move( VEC2F_RIGHT );
-        ship.Move( VEC2F_DOWN );
-        break;
-    case KEY_LEFTSHIFT:
-        ship.Move( VEC2F_LEFT );
-        ship.Move( VEC2F_DOWN );
-        break;
     case KEY_P:
         paused = !paused;
         break;
+    case KEY_RIGHTALT:
+    case KEY_LEFTALT:
+        MoveShip();
+        break;
     case KEY_SPACE:
-        Bullet newBullet = Bullet{};
-        newBullet.SetPosition( ship.GetPosition() );
-        int shipRotation = ship.GetRotation();
-        float shipRotationRad = static_cast< float >( shipRotation ) * ( M_PI / 180.0f );
-        Vec2F bulletVelocity = { std::cos( shipRotationRad ), std::sin( shipRotationRad ) };
-        newBullet.SetVelocity( bulletVelocity );
-        bullets.push_back( newBullet );
+        SpawnBullet();
         break;
     }
 }
@@ -226,8 +212,6 @@ int main()
     DrawUtils::SetToSystemLocale();
     kbd.Start();
     ship.SetPosition( Vec2F( screen.Width() / 2, screen.Height() / 2 ) );
-
-    auto lastFrameTime = std::chrono::steady_clock::now();
 
     while ( true )
     {
