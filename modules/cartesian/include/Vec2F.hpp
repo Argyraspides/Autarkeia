@@ -20,10 +20,9 @@ struct Vec2F
     Vec2F operator/( float other ) const;
     Vec2F operator*( float other ) const;
     Vec2F operator*( Matf< 2, 2 > matrix2by2 ) const;
-
     void operator=( Vec2F other );
-
     bool operator==( Vec2F other ) const;
+    Vec2F Normalized() const;
 };
 
 const inline Vec2F VEC2F_UP = Vec2F{ 0, -1 };

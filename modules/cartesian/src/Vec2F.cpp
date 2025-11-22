@@ -3,6 +3,7 @@
 //
 #include "Vec2F.hpp"
 #include "Vec2I.hpp"
+#include <math.h>
 
 Vec2F::Vec2F()
     : x( 0 ),
@@ -68,4 +69,11 @@ void Vec2F::operator=( Vec2F other )
 bool Vec2F::operator==( Vec2F other ) const
 {
     return ( x == other.x ) & ( y == other.y );
+}
+
+Vec2F Vec2F::Normalized() const
+{
+    // return ( *this ) / std::hypot( x, y );
+    float div = std::hypot( x, y );
+    return { x / div, y / div };
 }

@@ -9,7 +9,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
                     Vec2I offset,
                     Frame& frame,
                     wchar_t drawChar,
-                    FrameSection section )
+                    Frame::Section section )
 {
     Vec2I BOTTOM_LEFT = { 0, dim.y };
     Vec2I BOTTOM_RIGHT = { dim.x, dim.y };
@@ -37,7 +37,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
     }
 }
 
-void DrawText( const std::string& txt, Vec2I dim, Frame& frame, wchar_t drawChar, int spacing, FrameSection section )
+void DrawText( const std::string& txt, Vec2I dim, Frame& frame, wchar_t drawChar, int spacing, Frame::Section section )
 {
 
     Vec2I currOffset = { 0, 0 };

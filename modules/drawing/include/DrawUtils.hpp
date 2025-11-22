@@ -19,26 +19,33 @@ void DrawLine( Vec2I p1, // Starting point
                Vec2I p2, // Ending point
                Frame& frameBuffer,
                wchar_t drawChar,
-               FrameSection section = FrameSection::NONE );
+               Frame::Section section = Frame::Section::NONE );
 
 void DrawLineVertical(
-    int y1, int y2, int x, Frame& frame, wchar_t drawChar, FrameSection section = FrameSection::NONE );
+    int y1, int y2, int x, Frame& frame, wchar_t drawChar, Frame::Section section = Frame::Section::NONE );
 
 void DrawLineHorizontal(
-    int x1, int x2, int y, Frame& frame, wchar_t drawChar, FrameSection section = FrameSection::NONE );
+    int x1, int x2, int y, Frame& frame, wchar_t drawChar, Frame::Section section = Frame::Section::NONE );
 
 void DrawLineOnFrame( Vec2I p1, // Starting point
                       Vec2I p2, // Ending point
                       Frame& frame,
                       wchar_t drawChar,
-                      FrameSection section = FrameSection::NONE );
+                      Frame::Section section = Frame::Section::NONE );
 
-void DrawTriangleOnFrame(
-    Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, wchar_t drawChar, FrameSection section = FrameSection::NONE );
+void DrawTriangleOnFrame( Vec2I p1,
+                          Vec2I p2,
+                          Vec2I p3,
+                          Frame& frame,
+                          wchar_t drawChar,
+                          Frame::Section section = Frame::Section::NONE );
 
-void DrawPixelOnFrame( Vec2I p, Frame& frame, wchar_t drawChar, FrameSection section = FrameSection::NONE );
+void DrawPixelOnFrame( Vec2I p,
+                       Frame& frame,
+                       wchar_t drawChar,
+                       Frame::Section section = Frame::Section::NONE );
 
-void ClearFrame( Frame& frame, wchar_t clearChar, FrameSection section = FrameSection::NONE );
+void ClearFrame( Frame& frame, wchar_t clearChar, Frame::Section section = Frame::Section::NONE );
 
 void ResetTerminalCursor();
 
@@ -46,14 +53,17 @@ void SetToSystemLocale();
 
 void DrawFrame( Frame& frame );
 
-void DrawBorderOnFrame( Frame& frame, FrameSection section = FrameSection::NONE );
+void DrawBorderOnFrame( Frame& frame, Frame::Section section = Frame::Section::NONE );
+
+void DrawSetGreen();
+void DrawSetWhite();
 
 void DrawSpriteOnFrame( const Sprite& sprite,
                         Frame& frame,
                         wchar_t drawChar,
                         Vec2I offset = { 0, 0 },
                         float rotation = 0.0,
-                        FrameSection section = FrameSection::NONE );
+                        Frame::Section section = Frame::Section::NONE );
 
 // Rotation in degrees not radians
 Frame&& RotateFrame( const Frame& frame, int rotation );

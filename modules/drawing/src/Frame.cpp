@@ -23,11 +23,11 @@ Frame::Frame( size_t width, size_t height )
     const Vec2I INVALID_POINT = { std::numeric_limits< int >::quiet_NaN(),
                                          std::numeric_limits< int >::quiet_NaN() };
 
-    m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > >();
+    m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >();
     for ( Vec2I& v : *m_frameSectionOffsets )
         v = INVALID_POINT;
 
-    m_frameSectionDimensions = std::make_unique< std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > >();
+    m_frameSectionDimensions = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >();
     for ( Vec2I& v : *m_frameSectionDimensions )
         v = INVALID_POINT;
 }
@@ -50,10 +50,10 @@ Frame::Frame( const Frame& otherFrame )
 
     m_buffer = std::make_unique< std::vector< std::vector< wchar_t > > >( *otherFrame.m_buffer );
 
-    m_frameSectionDimensions = std::make_unique< std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > >(
+    m_frameSectionDimensions = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >(
         *otherFrame.m_frameSectionDimensions );
 
-    m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( FrameSection::MAX ) > >(
+    m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >(
         *otherFrame.m_frameSectionOffsets );
 }
 
@@ -61,7 +61,7 @@ Frame::~Frame()
 {
 }
 
-bool Frame::Write( int x, int y, wchar_t dat, FrameSection section )
+bool Frame::Write( int x, int y, wchar_t dat, Frame::Section section )
 {
     ValidateSection( section );
 
@@ -70,7 +70,7 @@ bool Frame::Write( int x, int y, wchar_t dat, FrameSection section )
     if ( !InFrame( { x, y } ) )
         return false;
 
-    if ( section == FrameSection::NONE )
+    if ( section == Frame::Section::NONE )
     {
         ( *m_buffer )[ y ][ x ] = dat;
         return true;
@@ -87,7 +87,7 @@ bool Frame::Write( int x, int y, wchar_t dat, FrameSection section )
     return true;
 }
 
-bool Frame::Write( Vec2I point, wchar_t dat, FrameSection section )
+bool Frame::Write( Vec2I point, wchar_t dat, Frame::Section section )
 {
     ValidateSection( section );
     return Write( point.x, point.y, dat, section );
@@ -106,7 +106,7 @@ wchar_t Frame::At( Vec2I pos ) const
     return At( pos.x, pos.y );
 }
 
-void Frame::SetSection( FrameSection section, Vec2I offset, Vec2I dimension )
+void Frame::SetSection( Frame::Section section, Vec2I offset, Vec2I dimension )
 {
     ValidateSection( section );
 
@@ -114,12 +114,12 @@ void Frame::SetSection( FrameSection section, Vec2I offset, Vec2I dimension )
     ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ] = offset;
 }
 
-Vec2I Frame::GetSectionOffset( FrameSection section )
+Vec2I Frame::GetSectionOffset( Frame::Section section )
 {
     return ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ];
 }
 
-Vec2I Frame::GetSectionDimension( FrameSection section )
+Vec2I Frame::GetSectionDimension( Frame::Section section )
 {
     return ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
 }
@@ -131,9 +131,9 @@ bool Frame::InFrame( Vec2I screenPos )
     return !outOfBounds;
 }
 
-void Frame::ValidateSection( FrameSection section )
+void Frame::ValidateSection( Frame::Section section )
 {
-    assert( section != FrameSection::MAX && section != FrameSection::INVALID );
+    assert( section != Frame::Section::MAX && section != Frame::Section::INVALID );
 }
 
 bool Frame::Empty() const

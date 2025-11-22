@@ -11,14 +11,13 @@ struct Sprite
 
     ~Sprite() = default;
 
-    const std::vector< Vec2I >& GetPointCloudOriginal() const;
-    const std::vector< Vec2I >& GetPointCloudModified() const;
+    const std::vector< Vec2I >& GetPointCloud() const;
 
-    Vec2I GetCentroidModified() const;
+    Vec2I GetCentroid() const;
 
     void ChangePoint( size_t idx, Vec2I newPt );
 
   private:
-    std::vector< Vec2I > m_originalPoints; // Original points used to construct the sprite
-    std::vector< Vec2I > m_modifiedPoints; // What is actually displayed
+    std::vector< Vec2I > m_points; // Original points used to construct the sprite
+    Vec2I m_centroid;
 };

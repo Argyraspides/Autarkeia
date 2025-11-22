@@ -8,12 +8,13 @@
 #include "Vec2I.hpp"
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <iostream>
 #include <locale>
 #include <numeric>
-#include <sstream>
+#include <string>
 #include <unistd.h>
+
+static const inline std::string ANSI_RED = "\033[31m";
 
 namespace DrawUtils
 {
@@ -22,7 +23,7 @@ void DrawLine( Vec2I p1, // Starting point
                Vec2I p2, // Ending point
                Frame& frameBuffer,
                wchar_t drawChar,
-               FrameSection section )
+               Frame::Section section )
 {
     if ( frameBuffer.Empty() )
         return;
@@ -82,7 +83,7 @@ void DrawLine( Vec2I p1, // Starting point
     }
 }
 
-void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, FrameSection section )
+void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, Frame::Section section )
 {
     if ( y1 > y2 )
         std::swap( y1, y2 );
@@ -91,7 +92,7 @@ void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, Fr
         ;
 }
 
-void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, wchar_t drawChar, FrameSection section )
+void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, wchar_t drawChar, Frame::Section section )
 {
 
     if ( x1 > x2 )
@@ -105,7 +106,7 @@ void DrawLineOnFrame( Vec2I p1, // Starting point
                       Vec2I p2, // Ending point
                       Frame& frame,
                       wchar_t drawChar,
-                      FrameSection section )
+                      Frame::Section section )
 {
 
     if ( p1.x == p2.x )
@@ -168,19 +169,19 @@ void DrawLineOnFrame( Vec2I p1, // Starting point
     }
 }
 
-void DrawTriangleOnFrame( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, wchar_t drawChar, FrameSection section )
+void DrawTriangleOnFrame( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, wchar_t drawChar, Frame::Section section )
 {
     DrawLineOnFrame( p1, p2, frame, drawChar, section );
     DrawLineOnFrame( p2, p3, frame, drawChar, section );
     DrawLineOnFrame( p3, p1, frame, drawChar, section );
 }
 
-void DrawPixelOnFrame( Vec2I p, Frame& frame, wchar_t drawChar, FrameSection section )
+void DrawPixelOnFrame( Vec2I p, Frame& frame, wchar_t drawChar, Frame::Section section )
 {
     frame.Write( p.x, p.y, drawChar, section );
 }
 
-void ClearFrame( Frame& frame, wchar_t clearChar, FrameSection section )
+void ClearFrame( Frame& frame, wchar_t clearChar, Frame::Section section )
 {
     for ( int y = 0; y < frame.Height(); y++ )
         for ( int x = 0; x < frame.Width(); x++ )
@@ -210,10 +211,10 @@ void DrawFrame( Frame& frame )
     }
 }
 
-void DrawBorderOnFrame( Frame& frame, FrameSection section )
+void DrawBorderOnFrame( Frame& frame, Frame::Section section )
 {
     Vec2I startIdx, dimension;
-    if ( section == FrameSection::NONE )
+    if ( section == Frame::Section::NONE )
     {
         startIdx = { 0, 0 };
         dimension = { frame.Width(), frame.Height() };
@@ -247,10 +248,22 @@ void DrawBorderOnFrame( Frame& frame, FrameSection section )
     frame.Write( endIdx.x - 1, endIdx.y - 1, BOTTOM_RIGHT_CORNER );
 }
 
-void DrawSpriteOnFrame(
-    const Sprite& sprite, Frame& frame, wchar_t drawChar, Vec2I offset, float rotation, FrameSection section )
+void DrawSetGreen()
 {
-    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudModified();
+    const std::string ANSI_GREEN = "\033[32m";
+    std::wcout << ANSI_GREEN.c_str();
+}
+
+void DrawSetWhite()
+{
+    const std::string ANSI_WHITE = "\033[37m";
+    std::wcout << ANSI_WHITE.c_str();
+}
+
+void DrawSpriteOnFrame(
+    const Sprite& sprite, Frame& frame, wchar_t drawChar, Vec2I offset, float rotation, Frame::Section section )
+{
+    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloud();
     for ( int i = 0; i < spritePoints.size(); i++ )
         DrawLineOnFrame( spritePoints[ i ] + offset, spritePoints[ ( i + 1 ) % spritePoints.size() ] + offset, frame,
                          drawChar, section );
@@ -333,7 +346,7 @@ Frame&& RotateFrame( const Frame& frame, int rotation )
 void RotateSprite( Sprite& sprite, int rotation )
 {
     Matf< 2, 2 > rotMat = GetRotationMat( rotation );
-    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloudOriginal();
+    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloud();
 
     Vec2I center = std::accumulate( spritePoints.begin(), spritePoints.end(), Vec2I{ 0, 0 } );
     center = center / spritePoints.size();

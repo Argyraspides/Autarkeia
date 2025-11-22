@@ -18,12 +18,12 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
                     Vec2I offset,
                     Frame& frame,
                     wchar_t drawChar,
-                    FrameSection section = FrameSection::NONE );
+                    Frame::Section section = Frame::Section::NONE );
 
 void DrawText( const std::string& txt,
                Vec2I dim,
                Frame& frame,
                wchar_t drawChar,
                int spacing = 2,
-               FrameSection section = FrameSection::NONE );
+               Frame::Section section = Frame::Section::NONE );
 }

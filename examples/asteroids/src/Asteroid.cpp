@@ -5,10 +5,21 @@
 #include <cstdlib>
 #include <limits>
 
+
 Asteroid::Asteroid( size_t vertexCt )
     : Entity{}
 {
     assert( vertexCt >= 3 && "A polygon needs 3 or more sides you moron" );
+
+    // Algorithm: Determine the geometric center of the point cloud
+    // Draw a bunch of vectors from the geometric center to each of the points in the point cloud
+    // If we then iterate through these vectors in a circular fashion, we will always end up with a
+    // closed polygon. 
+    // 
+    // To find the right order, create multiple points on a circle, and find the closest
+    // point from that circle to a point in the point cloud. That will be the next point to draw a line to
+
+    // Lemma 1: Any polygon whose centroid is the origin must have points in at least three quadrants?
 
     constexpr int minimumXVertex = 25;
     constexpr int randXVertexRange = 25;
@@ -27,6 +38,7 @@ Asteroid::Asteroid( size_t vertexCt )
         return Vec2I{ randX, randY } * asteroidSizeScalar;
     };
 
+    // Might contain duplicates zzz
     std::vector< Vec2I > asteroidVertices;
     Vec2I circleCenter;
     for ( int i = 0; i < vertexCt; i++ )

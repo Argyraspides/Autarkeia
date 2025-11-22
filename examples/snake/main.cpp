@@ -36,8 +36,8 @@ std::vector< SnakePoint > anchorPoints;
 size_t frameTimeMs = 75;
 Frame frame{ static_cast< size_t > ( boardSize.x ), static_cast< size_t > ( boardSize.y ) };
 
-FrameSection scoreSection = FrameSection::ONE;
-FrameSection gameSection = FrameSection::TWO;
+Frame::Section scoreSection = Frame::Section::ONE;
+Frame::Section gameSection = Frame::Section::TWO;
 
 // Game score section
 Vec2I scoreSectionOffset = { 0, 0 };
