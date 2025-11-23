@@ -2,8 +2,24 @@
 
 struct LineI
 {
-    LineI();
+    LineI() = delete;
     LineI( Vec2I p1, Vec2I p2 );
+
+    // p2.x is guaranteed to be in front of p1.x
     Vec2I p1, p2;
-    int c;
+
+    int dx; // dist from p1.x to p2.x
+    int dy; // dist from p1.y to p2.y 
+
+    float slope;
+    float yIntercept;
+    
+    enum Orientation 
+    {
+        HORIZONTAL,
+        VERTICAL,
+        SLOPED_POSITIVE,
+        SLOPED_NEGATIVE
+    } orientation;
+
 };
