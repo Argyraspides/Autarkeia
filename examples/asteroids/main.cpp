@@ -48,12 +48,6 @@ void RenderAsteroids()
 void RenderShip()
 {
     DrawUtils::DrawSpriteOnFrame( ship.GetSprite(), screen, SHADE_4, ship.GetPosition() );
-    auto v = ship.GetSprite().GetPointCloud();
-    for ( auto vec : v )
-    {
-        DrawUtils::DrawPixelOnFrame( vec + ship.GetPosition(), screen, 'V' );
-    }
-    DrawUtils::DrawPixelOnFrame( ship.GetPosition(), screen, 'C' );
 }
 
 void RenderLoop()

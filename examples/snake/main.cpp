@@ -1,5 +1,3 @@
-//
-
 #include "Characters.hpp"
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
