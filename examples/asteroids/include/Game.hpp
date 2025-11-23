@@ -1,8 +1,24 @@
+#pragma once
 #include "DrawUtils.hpp"
 #include "Entity.hpp"
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
 #include <functional>
+
+#include "Asteroid.hpp"
+#include "Bullet.hpp"
+#include "Ship.hpp"
+#include <list>
+
+struct GameWorld
+{
+    long asteroidGenerationPeriodMs = 5000;
+
+    std::list< Bullet > bullets;
+    std::list< Asteroid > asteroids;
+
+    Ship ship;
+} inline gameWorld;
 
 struct Game
 {
@@ -13,12 +29,15 @@ struct Game
     long frameTimeMs = 16; // Approx 60fps
 
     std::vector< Entity > entities;
+
     std::vector< std::function< void( std::vector< Entity >& ) > > updateFuncs;
+    std::vector< std::function< void( InputCommon::KeyboardInputHandler& ) > > inputHandlerFuncs;
     std::vector< std::function< void( std::vector< Entity >&, Frame& frame ) > > renderFuncs;
+
+    InputCommon::KeyboardInputHandler kbd;
 
     void Start()
     {
-        InputCommon::KeyboardInputHandler kbd;
         DrawUtils::SetToSystemLocale();
         kbd.Start();
 
@@ -28,6 +47,9 @@ struct Game
 
             if ( gamePaused )
                 continue;
+
+            for ( auto& inputHandlerFunc : inputHandlerFuncs )
+                inputHandlerFunc( kbd );
 
             for ( auto& updateFunc : updateFuncs )
                 updateFunc( entities );
@@ -41,4 +63,4 @@ struct Game
     {
         gameRunning = false;
     }
-};
+} inline game;
