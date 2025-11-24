@@ -12,7 +12,6 @@
 
 struct GameWorld
 {
-
     std::list< Bullet > bullets;
     std::list< Asteroid > asteroids;
 
