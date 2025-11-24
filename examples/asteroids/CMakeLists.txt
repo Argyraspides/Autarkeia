@@ -12,6 +12,7 @@ set( ASTEROIDS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidUpdates.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidUtils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidInputs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidInit.cpp
 )
 
 add_executable( Asteroids

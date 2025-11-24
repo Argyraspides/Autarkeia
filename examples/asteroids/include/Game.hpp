@@ -12,7 +12,6 @@
 
 struct GameWorld
 {
-    long asteroidGenerationPeriodMs = 5000;
 
     std::list< Bullet > bullets;
     std::list< Asteroid > asteroids;
@@ -28,6 +27,7 @@ struct GameSettings
     long frameTimeMs = 16; // Approx 60fps
 
     int shipRotSpeed = 10;
+    long asteroidGenerationPeriodMs = 5000;
 };
 
 struct Game
@@ -44,13 +44,16 @@ struct Game
     std::vector< std::function< void( GameWorld&, GameSettings&, InputCommon::KeyboardInputHandler& ) > >
         inputHandlerFuncs;
     std::vector< std::function< void( GameWorld&, Frame& ) > > renderFuncs;
-    std::vector< std::function< void( GameWorld&, Frame& ) > > updateFuncs;
+    std::vector< std::function< void( GameWorld&, GameSettings&, Frame& ) > > updateFuncs;
+
+    std::function< void( GameWorld&, Frame& ) > initFunc;
 
     void Start()
     {
         DrawUtils::SetToSystemLocale();
         kbd.Start();
 
+        initFunc( gameWorld, screen );
         while ( gameSettings.gameRunning )
         {
             std::this_thread::sleep_for( std::chrono::milliseconds( gameSettings.frameTimeMs ) );
@@ -62,7 +65,7 @@ struct Game
                 inputHandlerFunc( gameWorld, gameSettings, kbd );
 
             for ( auto& updateFunc : updateFuncs )
-                updateFunc( gameWorld, screen );
+                updateFunc( gameWorld, gameSettings, screen );
 
             DrawUtils::ClearFrame( screen, SHADE_0 );
             DrawUtils::DrawBorderOnFrame( screen );

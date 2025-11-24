@@ -1,10 +1,21 @@
 #include "AsteroidUtils.hpp"
 #include "Game.hpp"
+#include <chrono>
 #include <cmath>
 
-void UpdateAsteroids( GameWorld& gameWorld, Frame& screen )
+void UpdateAsteroids( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen )
 {
-    Asteroid asteroid = MakeRandomAsteroid( screen ); 
+    static auto anchorTime = std::chrono::system_clock::now();
+    auto now = std::chrono::system_clock::now();
+
+    auto timeSinceLastUpdateMs = std::chrono::duration_cast< std::chrono::milliseconds >( now - anchorTime );
+    if ( timeSinceLastUpdateMs.count() >= gameSettings.asteroidGenerationPeriodMs )
+    {
+        Asteroid asteroid = MakeRandomAsteroid( screen );
+        gameWorld.asteroids.push_back( asteroid );
+        anchorTime = std::chrono::system_clock::now();
+    }
+
     for ( auto asteroid = gameWorld.asteroids.begin(); asteroid != gameWorld.asteroids.end(); )
     {
         if ( !screen.InFrame( ( *asteroid ).GetPosition() ) )
@@ -18,7 +29,7 @@ void UpdateAsteroids( GameWorld& gameWorld, Frame& screen )
     }
 }
 
-void UpdateBullets( GameWorld& gameWorld, Frame& screen )
+void UpdateBullets( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen )
 {
     for ( auto it = gameWorld.bullets.begin(); it != gameWorld.bullets.end(); )
     {
