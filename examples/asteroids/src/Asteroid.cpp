@@ -5,7 +5,8 @@
 #include <cstdlib>
 #include <limits>
 
-
+// ARGYRASPIDES::OPTIMIZATION() { This fucking O(n^2) shit sucks ass think of a better way to do it
+//  for now its fine tho because vertexCt shouldn't be too large (maybe 10 absolute max so we get 100 operations) }
 Asteroid::Asteroid( size_t vertexCt )
     : Entity{}
 {
@@ -14,12 +15,10 @@ Asteroid::Asteroid( size_t vertexCt )
     // Algorithm: Determine the geometric center of the point cloud
     // Draw a bunch of vectors from the geometric center to each of the points in the point cloud
     // If we then iterate through these vectors in a circular fashion, we will always end up with a
-    // closed polygon. 
-    // 
+    // closed polygon.
+    //
     // To find the right order, create multiple points on a circle, and find the closest
     // point from that circle to a point in the point cloud. That will be the next point to draw a line to
-
-    // Lemma 1: Any polygon whose centroid is the origin must have points in at least three quadrants?
 
     constexpr int minimumXVertex = 25;
     constexpr int randXVertexRange = 25;

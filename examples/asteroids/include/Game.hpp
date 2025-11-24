@@ -1,14 +1,14 @@
 #pragma once
 #include "DrawUtils.hpp"
-#include "Entity.hpp"
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
 #include <functional>
+#include <list>
 
 #include "Asteroid.hpp"
 #include "Bullet.hpp"
+#include "Characters.hpp"
 #include "Ship.hpp"
-#include <list>
 
 struct GameWorld
 {
@@ -18,49 +18,65 @@ struct GameWorld
     std::list< Asteroid > asteroids;
 
     Ship ship;
-} inline gameWorld;
+};
 
-struct Game
+struct GameSettings
 {
-    Frame screen = Frame{ 500, 200 };
     bool gameRunning = true;
     bool gamePaused = false;
 
     long frameTimeMs = 16; // Approx 60fps
 
-    std::vector< Entity > entities;
+    int shipRotSpeed = 10;
+};
 
-    std::vector< std::function< void( std::vector< Entity >& ) > > updateFuncs;
-    std::vector< std::function< void( InputCommon::KeyboardInputHandler& ) > > inputHandlerFuncs;
-    std::vector< std::function< void( std::vector< Entity >&, Frame& frame ) > > renderFuncs;
+struct Game
+{
+  private:
+    GameWorld gameWorld;
+    GameSettings gameSettings;
+
+    Frame screen = Frame{ 500, 200 };
+
+    std::vector< std::function< void( GameWorld&, GameSettings&, InputCommon::KeyboardInputHandler& ) > >
+        inputHandlerFuncs;
+    std::vector< std::function< void( GameWorld&, Frame& ) > > renderFuncs;
+    std::vector< std::function< void( GameWorld&, Frame& ) > > updateFuncs;
 
     InputCommon::KeyboardInputHandler kbd;
 
+  public:
     void Start()
     {
         DrawUtils::SetToSystemLocale();
         kbd.Start();
 
-        while ( gameRunning )
+        while ( gameSettings.gameRunning )
         {
-            std::this_thread::sleep_for( std::chrono::milliseconds( frameTimeMs ) );
+            std::this_thread::sleep_for( std::chrono::milliseconds( gameSettings.frameTimeMs ) );
 
-            if ( gamePaused )
+            if ( gameSettings.gamePaused )
                 continue;
 
             for ( auto& inputHandlerFunc : inputHandlerFuncs )
-                inputHandlerFunc( kbd );
+                inputHandlerFunc( gameWorld, gameSettings, kbd );
 
             for ( auto& updateFunc : updateFuncs )
-                updateFunc( entities );
+                updateFunc( gameWorld, screen );
+
+            DrawUtils::ClearFrame( screen, SHADE_0 );
+            DrawUtils::DrawBorderOnFrame( screen );
 
             for ( auto& renderFunc : renderFuncs )
-                renderFunc( entities, screen );
+                renderFunc( gameWorld, screen );
+
+            DrawUtils::ResetTerminalCursor();
+            DrawUtils::DrawFrame( screen );
         }
     }
 
     void Stop()
     {
-        gameRunning = false;
+        gameSettings.gameRunning = false;
     }
 } inline game;

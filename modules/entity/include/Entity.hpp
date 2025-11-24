@@ -21,7 +21,7 @@ class Entity
     void Move( Vec2F vector );
 
     void Rotate( int deg );
-    int GetRotation();
+    int GetRotation() const;
 
   protected:
     Sprite m_sprite;

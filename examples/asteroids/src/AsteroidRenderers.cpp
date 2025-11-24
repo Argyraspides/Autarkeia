@@ -1,14 +1,13 @@
 #include "Characters.hpp"
 #include "Game.hpp"
 
-// TODO:: MAKE SURE TO INJECT ALL THAT SHIT PLS
 void RenderBullets( GameWorld& gameWorld, Frame& screen )
 {
     for ( Bullet& bullet : gameWorld.bullets )
         DrawUtils::DrawSpriteOnFrame( bullet.GetSprite(), screen, SHADE_4, bullet.GetPosition() );
 }
 
-void RenderAsteroids( Frame& screen )
+void RenderAsteroids( GameWorld& gameWorld, Frame& screen )
 {
     for ( Asteroid& asteroid : gameWorld.asteroids )
     {
@@ -17,7 +16,7 @@ void RenderAsteroids( Frame& screen )
     }
 }
 
-void RenderShip( Frame& screen )
+void RenderShip( GameWorld& gameWorld, Frame& screen )
 {
     DrawUtils::DrawSpriteOnFrame( gameWorld.ship.GetSprite(), screen, SHADE_4, gameWorld.ship.GetPosition() );
 }

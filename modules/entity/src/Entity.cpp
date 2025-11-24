@@ -59,7 +59,7 @@ void Entity::Rotate( int deg )
     m_rotation = deg;
 }
 
-int Entity::GetRotation()
+int Entity::GetRotation() const
 {
     return m_rotation;
 }

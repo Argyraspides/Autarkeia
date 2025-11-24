@@ -1,16 +1,15 @@
-
-#include "KeyboardInputHandler.hpp"
+#include "AsteroidUtils.hpp"
 #include "Game.hpp"
+#include <cmath>
 
-void UpdateAsteroids()
+void UpdateAsteroids( GameWorld& gameWorld, Frame& screen )
 {
-    MakeRandomAsteroid();
-
-    for ( auto asteroid = asteroids.begin(); asteroid != asteroids.end(); )
+    Asteroid asteroid = MakeRandomAsteroid( screen ); 
+    for ( auto asteroid = gameWorld.asteroids.begin(); asteroid != gameWorld.asteroids.end(); )
     {
         if ( !screen.InFrame( ( *asteroid ).GetPosition() ) )
         {
-            asteroid = asteroids.erase( asteroid );
+            asteroid = gameWorld.asteroids.erase( asteroid );
             continue;
         }
 
@@ -19,10 +18,9 @@ void UpdateAsteroids()
     }
 }
 
-
-void UpdateBullets()
+void UpdateBullets( GameWorld& gameWorld, Frame& screen )
 {
-    for ( auto it = bullets.begin(); it != bullets.end(); )
+    for ( auto it = gameWorld.bullets.begin(); it != gameWorld.bullets.end(); )
     {
         Bullet& bullet = *it;
 
@@ -30,57 +28,8 @@ void UpdateBullets()
 
         Vec2I bulletPos = bullet.GetPosition();
         if ( !screen.InFrame( bulletPos ) )
-            it = bullets.erase( it );
+            it = gameWorld.bullets.erase( it );
         else
             ++it;
-    }
-}
-
-
-void HandleInput( InputCommon::KeyboardInputHandler& kbd )
-{
-    std::optional< InputCommon::KeyInputCode > userInput = kbd.GetNextKeyPress();
-    if ( !userInput )
-        return;
-
-    auto RotateShip = []( int direction ) {
-        int newRotation = ( ship.GetRotation() + ( rotationSpeed * direction ) ) % 360;
-        ship.Rotate( newRotation );
-    };
-
-    auto SpawnBullet = []() {
-        Bullet newBullet = Bullet{};
-        newBullet.SetPosition( ship.GetPosition() );
-        int shipRotation = ship.GetRotation();
-        float shipRotationRad = static_cast< float >( shipRotation ) * ( M_PI / 180.0f );
-        Vec2F bulletVelocity = { std::cos( shipRotationRad ), std::sin( shipRotationRad ) };
-        newBullet.SetVelocity( bulletVelocity );
-        bullets.push_back( newBullet );
-    };
-
-    auto MoveShip = []() {
-        float heading = ( M_PI / 180.0F ) * ship.GetRotation();
-        Vec2F shipDir = { std::cos( heading ), std::sin( heading ) };
-        ship.Move( shipDir );
-    };
-
-    switch ( userInput.value() )
-    {
-    case KEY_LEFT:
-        RotateShip( 1 );
-        break;
-    case KEY_RIGHT:
-        RotateShip( -1 );
-        break;
-    case KEY_P:
-        paused = !paused;
-        break;
-    case KEY_RIGHTALT:
-    case KEY_LEFTALT:
-        MoveShip();
-        break;
-    case KEY_SPACE:
-        SpawnBullet();
-        break;
     }
 }

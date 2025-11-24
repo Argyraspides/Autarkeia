@@ -8,8 +8,12 @@ set( ASTEROIDS_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Bullet.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Asteroid.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Game.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/GameState.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidRenderers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidUpdates.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/AsteroidInputs.cpp
 )
+
 add_executable( Asteroids
     ${ASTEROIDS_SOURCES}
 )
