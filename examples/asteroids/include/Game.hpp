@@ -38,14 +38,14 @@ struct Game
 
     Frame screen = Frame{ 500, 200 };
 
+    InputCommon::KeyboardInputHandler kbd;
+
+  public:
     std::vector< std::function< void( GameWorld&, GameSettings&, InputCommon::KeyboardInputHandler& ) > >
         inputHandlerFuncs;
     std::vector< std::function< void( GameWorld&, Frame& ) > > renderFuncs;
     std::vector< std::function< void( GameWorld&, Frame& ) > > updateFuncs;
 
-    InputCommon::KeyboardInputHandler kbd;
-
-  public:
     void Start()
     {
         DrawUtils::SetToSystemLocale();
