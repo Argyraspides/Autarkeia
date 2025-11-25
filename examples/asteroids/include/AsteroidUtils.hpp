@@ -1,3 +1,5 @@
+#pragma once
+
 class Frame;
 class Asteroid;
 

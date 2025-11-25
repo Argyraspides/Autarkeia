@@ -1,4 +1,5 @@
+#pragma once
 class Frame;
 struct GameWorld;
 
-void InitializeAsteroidGame( GameWorld& gameWorld, Frame& screen );
+void InitializeGame( GameWorld& gameWorld, Frame& screen );

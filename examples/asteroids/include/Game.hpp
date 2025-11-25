@@ -2,13 +2,17 @@
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
 #include "KeyboardInputHandler.hpp"
-#include <functional>
 #include <list>
 
 #include "Asteroid.hpp"
 #include "Bullet.hpp"
 #include "Characters.hpp"
 #include "Ship.hpp"
+
+#include "AsteroidInit.hpp"
+#include "AsteroidRenderers.hpp"
+#include "AsteroidUpdates.hpp"
+#include "AsteroidInputs.hpp"
 
 struct GameWorld
 {
@@ -40,19 +44,12 @@ struct Game
     InputCommon::KeyboardInputHandler kbd;
 
   public:
-    std::vector< std::function< void( GameWorld&, GameSettings&, InputCommon::KeyboardInputHandler& ) > >
-        inputHandlerFuncs;
-    std::vector< std::function< void( GameWorld&, Frame& ) > > renderFuncs;
-    std::vector< std::function< void( GameWorld&, GameSettings&, Frame& ) > > updateFuncs;
-
-    std::function< void( GameWorld&, Frame& ) > initFunc;
-
     void Start()
     {
         DrawUtils::SetToSystemLocale();
         kbd.Start();
 
-        initFunc( gameWorld, screen );
+        InitializeGame( gameWorld, screen );
         while ( gameSettings.gameRunning )
         {
             std::this_thread::sleep_for( std::chrono::milliseconds( gameSettings.frameTimeMs ) );
@@ -60,16 +57,16 @@ struct Game
             if ( gameSettings.gamePaused )
                 continue;
 
-            for ( auto& inputHandlerFunc : inputHandlerFuncs )
+            for ( auto& inputHandlerFunc : inputTable )
                 inputHandlerFunc( gameWorld, gameSettings, kbd );
 
-            for ( auto& updateFunc : updateFuncs )
+            for ( auto& updateFunc : updateTable )
                 updateFunc( gameWorld, gameSettings, screen );
 
             DrawUtils::ClearFrame( screen, SHADE_0 );
             DrawUtils::DrawBorderOnFrame( screen );
 
-            for ( auto& renderFunc : renderFuncs )
+            for ( auto& renderFunc : renderTable )
                 renderFunc( gameWorld, screen );
 
             DrawUtils::ResetTerminalCursor();
