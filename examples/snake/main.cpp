@@ -221,11 +221,11 @@ void RenderSnake()
     {
         Vec2I p1 = anchorPoints[ i ].location;
         Vec2I p2 = anchorPoints[ i + 1 ].location;
-        DrawUtils::DrawLineOnFrame( p1, p2, frame, snakeChar, gameSection );
+        DrawUtils::DrawLine( p1, p2, frame, snakeChar, gameSection );
     }
 
     static const wchar_t foodChar = STIPPLE_HEAVY;
-    DrawUtils::DrawPixelOnFrame( nextSnakeFoodLocation, frame, foodChar, gameSection );
+    DrawUtils::DrawPixel( nextSnakeFoodLocation, frame, foodChar, gameSection );
 }
 
 void RenderLoop()
@@ -233,8 +233,8 @@ void RenderLoop()
     DrawUtils::ResetTerminalCursor();
     RenderScore();
     RenderSnake();
-    DrawUtils::DrawBorderOnFrame( frame, gameSection );
-    DrawUtils::DrawFrame( frame );
+    DrawUtils::DrawBorder( frame, gameSection );
+    DrawUtils::RenderFrame( frame );
 }
 int main()
 {

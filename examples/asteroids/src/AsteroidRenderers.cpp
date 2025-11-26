@@ -4,19 +4,19 @@
 void RenderBullets( GameWorld& gameWorld, Frame& screen )
 {
     for ( Bullet& bullet : gameWorld.bullets )
-        DrawUtils::DrawSpriteOnFrame( bullet.GetSprite(), screen, SHADE_4, bullet.GetPosition() );
+        DrawUtils::DrawSprite( bullet.GetSprite(), screen, SHADE_4, bullet.GetPosition() );
 }
 
 void RenderAsteroids( GameWorld& gameWorld, Frame& screen )
 {
     for ( Asteroid& asteroid : gameWorld.asteroids )
     {
-        DrawUtils::DrawSpriteOnFrame( asteroid.GetSprite(), screen, SHADE_4, asteroid.GetPosition() );
-        DrawUtils::DrawPixelOnFrame( asteroid.GetPosition(), screen, 'x' );
+        DrawUtils::DrawSprite( asteroid.GetSprite(), screen, SHADE_4, asteroid.GetPosition() );
+        DrawUtils::DrawPixel( asteroid.GetPosition(), screen, 'x' );
     }
 }
 
 void RenderShip( GameWorld& gameWorld, Frame& screen )
 {
-    DrawUtils::DrawSpriteOnFrame( gameWorld.ship.GetSprite(), screen, SHADE_4, gameWorld.ship.GetPosition() );
+    DrawUtils::DrawSprite( gameWorld.ship.GetSprite(), screen, SHADE_4, gameWorld.ship.GetPosition() );
 }

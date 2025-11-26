@@ -46,8 +46,8 @@ int main()
 
         DrawUtils::ResetTerminalCursor();
         DrawUtils::ClearFrame( frame, '.' );
-        DrawUtils::DrawPixelOnFrame( ballPos, frame, 'x' );
-        DrawUtils::DrawFrame( frame );
+        DrawUtils::DrawPixel( ballPos, frame, 'x' );
+        DrawUtils::RenderFrame( frame );
 
     }
 }

@@ -15,8 +15,8 @@ LineI::LineI( Vec2I p1, Vec2I p2 )
     this->p2 = p1.x > p2.x ? p1 : p2;
     this->p1 = p1.x < p2.x ? p1 : p2;
 
-    this->dy = this->p2.y - this->p1.y;
-    this->dx = this->p2.x - this->p1.x;
+    dy = this->p2.y - this->p1.y;
+    dx = this->p2.x - this->p1.x;
 
     if ( p1.x == p2.x )
     {
@@ -36,7 +36,14 @@ LineI::LineI( Vec2I p1, Vec2I p2 )
     // y = ((y2 - y1) / (x2 - x1)) * x + c
     // y - ((y2 - y1) / (x2 - x1)) * x = c
     // y - dy/dx * x = c where dy/dx = the slope
-    this->slope = static_cast< float >( dy ) / static_cast< float >( dx );
+    slope = static_cast< float >( dy ) / static_cast< float >( dx );
     orientation = slope < 0 ? Orientation::SLOPED_NEGATIVE : Orientation::SLOPED_POSITIVE;
-    this->yIntercept = static_cast< float >( p1.y ) - slope * p2.x;
+    yIntercept = static_cast< float >( p1.y ) - slope * p2.x;
+}
+
+void LineI::Move( Vec2I offset )
+{
+    p1 = p1 + offset;
+    p2 = p2 + offset;
+    yIntercept = static_cast< float >( p1.y ) - slope * p2.x;
 }

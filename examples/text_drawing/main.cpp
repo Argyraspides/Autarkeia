@@ -21,7 +21,7 @@ int main()
     {
         int randomDim = std::clamp( rand() % 21, 5, 20) ;
         DrawUtils::DrawText( std::to_string( i ), { randomDim, randomDim}, f, 'x' );
-        DrawUtils::DrawFrame( f );
+        DrawUtils::RenderFrame( f );
         std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
         DrawUtils::ClearFrame( f, '.' );
         DrawUtils::ResetTerminalCursor();

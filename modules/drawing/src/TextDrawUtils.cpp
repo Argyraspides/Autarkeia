@@ -33,7 +33,7 @@ void DrawCharacter( std::span< const std::pair< CharBoxPosition, CharBoxPosition
         const Vec2I p1 = realPositions[ static_cast< size_t >( line.first ) ] + offset;
         const Vec2I p2 = realPositions[ static_cast< size_t >( line.second ) ] + offset;
 
-        DrawUtils::DrawLineOnFrame( p1, p2, frame, drawChar, section );
+        DrawUtils::DrawLine( p1, p2, frame, drawChar, section );
     }
 }
 

@@ -30,7 +30,10 @@ struct GameSettings
     long frameTimeMs = 16; // Approx 60fps
 
     int shipRotSpeed = 10;
+    int shipHealth = 100;
+
     long asteroidGenerationPeriodMs = 5000;
+    int asteroidDamage = 5;
 };
 
 struct Game
@@ -64,13 +67,13 @@ struct Game
                 updateFunc( gameWorld, gameSettings, screen );
 
             DrawUtils::ClearFrame( screen, SHADE_0 );
-            DrawUtils::DrawBorderOnFrame( screen );
+            DrawUtils::DrawBorder( screen );
 
             for ( auto& renderFunc : renderTable )
                 renderFunc( gameWorld, screen );
 
             DrawUtils::ResetTerminalCursor();
-            DrawUtils::DrawFrame( screen );
+            DrawUtils::RenderFrame( screen );
         }
     }
 

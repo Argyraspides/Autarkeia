@@ -44,3 +44,9 @@ void UpdateBullets( GameWorld& gameWorld, GameSettings& gameSettings, Frame& scr
             ++it;
     }
 }
+
+void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen )
+{
+    // Check if there is a collision between the ship and any of the asteroids.
+    // If there is, asteroid disappears and ship loses health
+}

@@ -18,70 +18,6 @@ static const inline std::string ANSI_RED = "\033[31m";
 namespace DrawUtils
 {
 
-void DrawLine( Vec2I p1, // Starting point
-               Vec2I p2, // Ending point
-               Frame& frameBuffer,
-               wchar_t drawChar,
-               Frame::Section section )
-{
-    if ( frameBuffer.Empty() )
-        return;
-
-    if ( p1.x == p2.x )
-    {
-        DrawLineVertical( p1.y, p2.y, p1.x, frameBuffer, drawChar );
-        return;
-    }
-
-    if ( p1.y == p2.y )
-    {
-        DrawLineHorizontal( p1.x, p2.x, p1.y, frameBuffer, drawChar );
-        return;
-    }
-
-    int dx = p2.x - p1.x;
-    int dy = p2.y - p1.y;
-    // dx*y - dx*b - dy*x = 0
-    // or f(x,y) = dx*y - dx*b - dy*x
-    // let c = dx*b (constant)
-    int c = ( dx * p1.y ) - ( dy * p1.x );
-
-    const int dirX = dx > 0 ? 1 : ( dx == 0 ? 0 : -1 );
-    const int dirY = dy > 0 ? 1 : ( dy == 0 ? 0 : -1 );
-
-    const auto fxy = [ dx, dy, c ]( Vec2I p ) -> int { return ( dx * p.y ) - c - ( dy * p.x ); };
-
-    Vec2I currPoint = p1;
-
-    int it = ( dx > dy ) ? abs( dx ) : abs( dy );
-    for ( int i = 0; i <= it; i++ )
-    {
-
-        if ( !frameBuffer.Write( currPoint.x, currPoint.y, drawChar, section ) )
-            break;
-
-        Vec2I nextPoint{};
-        // Move in direction with larger delta
-        if ( it == abs( dx ) )
-        {
-            currPoint.x += dirX;
-            nextPoint = { currPoint.x, currPoint.y + dirY };
-        }
-        else
-        {
-            currPoint.y += dirY;
-            nextPoint = { currPoint.x + dirX, currPoint.y };
-        }
-
-        int currDist = abs( fxy( currPoint ) );
-        int nextDist = abs( fxy( nextPoint ) );
-
-        // nextPoint is closer to line
-        if ( nextDist - currDist < 0 )
-            currPoint = nextPoint;
-    }
-}
-
 void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, Frame::Section section )
 {
     if ( y1 > y2 )
@@ -101,11 +37,11 @@ void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, wchar_t drawChar, 
         ;
 }
 
-void DrawLineOnFrame( Vec2I p1, // Starting point
-                      Vec2I p2, // Ending point
-                      Frame& frame,
-                      wchar_t drawChar,
-                      Frame::Section section )
+void DrawLine( Vec2I p1, // Starting point
+               Vec2I p2, // Ending point
+               Frame& frame,
+               wchar_t drawChar,
+               Frame::Section section )
 {
 
     if ( p1.x == p2.x )
@@ -168,14 +104,7 @@ void DrawLineOnFrame( Vec2I p1, // Starting point
     }
 }
 
-void DrawTriangleOnFrame( Vec2I p1, Vec2I p2, Vec2I p3, Frame& frame, wchar_t drawChar, Frame::Section section )
-{
-    DrawLineOnFrame( p1, p2, frame, drawChar, section );
-    DrawLineOnFrame( p2, p3, frame, drawChar, section );
-    DrawLineOnFrame( p3, p1, frame, drawChar, section );
-}
-
-void DrawPixelOnFrame( Vec2I p, Frame& frame, wchar_t drawChar, Frame::Section section )
+void DrawPixel( Vec2I p, Frame& frame, wchar_t drawChar, Frame::Section section )
 {
     frame.Write( p.x, p.y, drawChar, section );
 }
@@ -198,7 +127,7 @@ void SetToSystemLocale()
     std::wcout.imbue( std::locale() );
 }
 
-void DrawFrame( Frame& frame )
+void RenderFrame( Frame& frame )
 {
     for ( int y = 0; y < frame.Height(); y++ )
     {
@@ -210,7 +139,7 @@ void DrawFrame( Frame& frame )
     }
 }
 
-void DrawBorderOnFrame( Frame& frame, Frame::Section section )
+void DrawBorder( Frame& frame, Frame::Section section )
 {
     Vec2I startIdx, dimension;
     if ( section == Frame::Section::NONE )
@@ -259,13 +188,13 @@ void DrawSetWhite()
     std::wcout << ANSI_WHITE.c_str();
 }
 
-void DrawSpriteOnFrame(
+void DrawSprite(
     const Sprite& sprite, Frame& frame, wchar_t drawChar, Vec2I offset, float rotation, Frame::Section section )
 {
-    const std::vector< Vec2I >& spritePoints = sprite.GetPointCloud();
-    for ( int i = 0; i < spritePoints.size(); i++ )
-        DrawLineOnFrame( spritePoints[ i ] + offset, spritePoints[ ( i + 1 ) % spritePoints.size() ] + offset, frame,
-                         drawChar, section );
+    const std::vector< Vec2I >& points = sprite.GetPointCloud();
+    for ( int i = 0; i < points.size() - 1; i++ )
+        DrawLine( points[ i ] + offset, points[ i + 1 ] + offset, frame, drawChar, section );
+    DrawLine( points.front() + offset, points.back() + offset, frame, drawChar, section );
 }
 
 // I don't really like this coz it assumes the characters are gonna be like the shading ones

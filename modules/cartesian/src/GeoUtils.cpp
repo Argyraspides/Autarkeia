@@ -1,6 +1,7 @@
 #include "GeoUtils.hpp"
 #include "Vec2F.hpp"
 #include "Vec2I.hpp"
+#include "Polygon.hpp"
 #include <cmath>
 
 namespace GeoUtils
@@ -26,6 +27,7 @@ bool Intersects( LineI l1, LineI l2 )
 Vec2F Intersection( LineI l1, LineI l2 )
 {
     // ARGYRASPIDES::TODO() { Surely there's a more efficient way? }
+    // ARGYRASPIDES::TODO() { Handle cases where lines are horizontal/parallel/vertical/etcetc }
     float dc = l2.yIntercept - l1.yIntercept;
     float dm = l1.slope - l2.slope;
 
@@ -35,8 +37,9 @@ Vec2F Intersection( LineI l1, LineI l2 )
     return { x, y };
 }
 
-bool PointInPolygon( Vec2I pt, const std::vector< Vec2I >& polygonPts )
+bool PointInPolygon( Vec2I pt, const Polygon& polygon )
 {
+    return false;
 }
 
 } // namespace GeoUtils

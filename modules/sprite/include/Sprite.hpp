@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vec2I.hpp"
 #include <vector>
+#include "Polygon.hpp"
 
 struct Sprite
 {
@@ -20,6 +20,9 @@ struct Sprite
     // We always perform rotations based on the original points to prevent precision loss over time.
     // Thus we keep track of the original sprite and modified sprite separately. 
     std::vector< Vec2I > m_originalPoints;
-    std::vector< Vec2I > m_modifiedPoints; 
+    std::vector< Vec2I > m_modifiedPoints;
+   
+
+
     Vec2I m_centroid;
 };
