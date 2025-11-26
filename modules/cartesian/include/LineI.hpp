@@ -7,7 +7,7 @@ struct LineI
     LineI( Vec2I p1, Vec2I p2 );
     void Move( Vec2I offset );
 
-    // p2.x is guaranteed to be in front of p1.x
+    // p2.x is guaranteed to be in front of p1.x (+ve x direction)
     Vec2I p1, p2;
 
     int dx; // dist from p1.x to p2.x

@@ -7,6 +7,7 @@ class Polygon
     Polygon( const std::vector< Vec2I >& points );
     const std::vector< LineI >& GetLines() const;
 
+    // Moves polygon such that its centroid is (0,0)
     void Center();
 
   private:
