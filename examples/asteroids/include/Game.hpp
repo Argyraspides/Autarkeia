@@ -20,6 +20,8 @@ struct GameWorld
     std::list< Asteroid > asteroids;
 
     Ship ship;
+
+    int collisions = 0;
 };
 
 struct GameSettings

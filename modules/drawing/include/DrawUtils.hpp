@@ -41,6 +41,7 @@ void DrawBorder( Frame& frame, Frame::Section section = Frame::Section::NONE );
 
 void DrawSetGreen();
 void DrawSetWhite();
+void DrawSetRed();
 
 void DrawSprite( const Sprite& sprite,
                   Frame& frame,

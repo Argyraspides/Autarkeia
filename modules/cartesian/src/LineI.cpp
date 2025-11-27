@@ -22,6 +22,7 @@ LineI::LineI( Vec2I p1, Vec2I p2 )
     {
         orientation = Orientation::VERTICAL;
         yIntercept = std::numeric_limits< float >::quiet_NaN();
+        slope = std::numeric_limits< float >::infinity();
         return;
     }
 
@@ -29,6 +30,7 @@ LineI::LineI( Vec2I p1, Vec2I p2 )
     {
         orientation = Orientation::HORIZONTAL;
         yIntercept = p1.y;
+        slope = 0.0F;
         return;
     }
 

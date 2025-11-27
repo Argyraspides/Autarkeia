@@ -21,8 +21,6 @@ struct Sprite
     // Thus we keep track of the original sprite and modified sprite separately. 
     std::vector< Vec2I > m_originalPoints;
     std::vector< Vec2I > m_modifiedPoints;
-   
-
 
     Vec2I m_centroid;
 };

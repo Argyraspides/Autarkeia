@@ -1,5 +1,7 @@
 #include "AsteroidUtils.hpp"
+#include "DrawUtils.hpp"
 #include "Game.hpp"
+#include "GeoUtils.hpp"
 #include <chrono>
 #include <cmath>
 
@@ -49,4 +51,24 @@ void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& 
 {
     // Check if there is a collision between the ship and any of the asteroids.
     // If there is, asteroid disappears and ship loses health
+    static int collisionCount = 0;
+    for ( Asteroid& asteroid : gameWorld.asteroids )
+    {
+        const Sprite& ship = gameWorld.ship.GetSprite();
+        const std::vector< Vec2I >& shipVertices = ship.GetPointCloud();
+        const Vec2I shipPos = gameWorld.ship.GetPosition();
+
+        for ( Vec2I shipVertex : shipVertices )
+        {
+            std::vector< Vec2I > asteroidVertices = asteroid.GetSprite().GetPointCloud();
+            Vec2I asteroidPos = asteroid.GetPosition();
+            for ( Vec2I& v : asteroidVertices )
+                v = v + asteroidPos;
+
+            if ( GeoUtils::PointInPolygon( shipVertex + shipPos, asteroidVertices ) )
+            {
+                gameWorld.collisions++;
+            }
+        }
+    }
 }

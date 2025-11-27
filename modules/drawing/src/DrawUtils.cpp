@@ -13,7 +13,6 @@
 #include <string>
 #include <unistd.h>
 
-static const inline std::string ANSI_RED = "\033[31m";
 
 namespace DrawUtils
 {
@@ -186,6 +185,12 @@ void DrawSetWhite()
 {
     const std::string ANSI_WHITE = "\033[37m";
     std::wcout << ANSI_WHITE.c_str();
+}
+
+void DrawSetRed()
+{
+    static std::string ANSI_RED = "\033[31m";
+    std::wcout << ANSI_RED .c_str();
 }
 
 void DrawSprite(
