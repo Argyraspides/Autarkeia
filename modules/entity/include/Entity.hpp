@@ -10,7 +10,7 @@ class Entity
 
     void SetSprite( Sprite&& sprite );
     void SetSprite( const Sprite& sprite );
-    const Sprite& GetSprite() const;
+    Sprite& GetSprite();
 
     void SetPosition( Vec2F position );
     Vec2F GetPosition() const;

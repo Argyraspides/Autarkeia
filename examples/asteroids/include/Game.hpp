@@ -10,9 +10,9 @@
 #include "Ship.hpp"
 
 #include "AsteroidInit.hpp"
+#include "AsteroidInputs.hpp"
 #include "AsteroidRenderers.hpp"
 #include "AsteroidUpdates.hpp"
-#include "AsteroidInputs.hpp"
 
 struct GameWorld
 {
@@ -28,6 +28,7 @@ struct GameSettings
 {
     bool gameRunning = true;
     bool gamePaused = false;
+    bool tickForward = true;
 
     long frameTimeMs = 16; // Approx 60fps
 
@@ -52,6 +53,8 @@ struct Game
     void Start()
     {
         DrawUtils::SetToSystemLocale();
+        DrawUtils::DisableEcho();
+        DrawUtils::HideCursor();
         kbd.Start();
 
         InitializeGame( gameWorld, screen );
@@ -59,11 +62,20 @@ struct Game
         {
             std::this_thread::sleep_for( std::chrono::milliseconds( gameSettings.frameTimeMs ) );
 
-            if ( gameSettings.gamePaused )
-                continue;
-
             for ( auto& inputHandlerFunc : inputTable )
                 inputHandlerFunc( gameWorld, gameSettings, kbd );
+
+            if ( gameSettings.gamePaused )
+            {
+                if( gameSettings.tickForward )
+                {
+                    gameSettings.tickForward = false;
+                }
+                else
+                {
+                    continue;
+                } 
+            }
 
             for ( auto& updateFunc : updateTable )
                 updateFunc( gameWorld, gameSettings, screen );
@@ -77,6 +89,9 @@ struct Game
             DrawUtils::ResetTerminalCursor();
             DrawUtils::RenderFrame( screen );
         }
+
+        DrawUtils::EnableEcho();
+        DrawUtils::ShowCursor();
     }
 
     void Stop()

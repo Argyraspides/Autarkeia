@@ -47,5 +47,7 @@ void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon:
     case KEY_SPACE:
         SpawnBullet();
         break;
+    case KEY_GRAVE:
+        gameSettings.tickForward = true;
     }
 }

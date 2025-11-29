@@ -23,7 +23,7 @@ void Entity::SetSprite( const Sprite& sprite )
     m_sprite = sprite;
 }
 
-const Sprite& Entity::GetSprite() const
+Sprite& Entity::GetSprite()
 {
     return m_sprite;
 }

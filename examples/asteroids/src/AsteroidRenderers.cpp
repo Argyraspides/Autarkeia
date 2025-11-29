@@ -1,26 +1,33 @@
 #include "Characters.hpp"
+#include "DrawUtils.hpp"
 #include "Game.hpp"
+#include "Ship.hpp"
 #include "TextDrawUtils.hpp"
 
 void RenderBullets( GameWorld& gameWorld, Frame& screen )
 {
     for ( Bullet& bullet : gameWorld.bullets )
-        DrawUtils::DrawSprite( bullet.GetSprite(), screen, SHADE_4, bullet.GetPosition(), 0.0f, Frame::Section::TWO );
+    {
+        Color spriteColor = bullet.GetSprite().spriteColor;
+        DrawUtils::DrawSprite( bullet.GetSprite(), screen, { SHADE_4, spriteColor }, bullet.GetPosition(),
+                               Frame::Section::TWO );
+    }
 }
 
 void RenderAsteroids( GameWorld& gameWorld, Frame& screen )
 {
     for ( Asteroid& asteroid : gameWorld.asteroids )
     {
-        DrawUtils::DrawSprite( asteroid.GetSprite(), screen, SHADE_4, asteroid.GetPosition(), 0.0f,
+        Color spriteColor = asteroid.GetSprite().spriteColor;
+        DrawUtils::DrawSprite( asteroid.GetSprite(), screen, { SHADE_4, spriteColor }, asteroid.GetPosition(),
                                Frame::Section::TWO );
-        DrawUtils::DrawPixel( asteroid.GetPosition(), screen, 'x', Frame::Section::TWO );
     }
 }
 
 void RenderShip( GameWorld& gameWorld, Frame& screen )
 {
-    DrawUtils::DrawSprite( gameWorld.ship.GetSprite(), screen, SHADE_4, gameWorld.ship.GetPosition(), 0.0f,
+    Color spriteColor = gameWorld.ship.GetSprite().spriteColor;
+    DrawUtils::DrawSprite( gameWorld.ship.GetSprite(), screen, { SHADE_4, spriteColor }, gameWorld.ship.GetPosition(),
                            Frame::Section::TWO );
 }
 

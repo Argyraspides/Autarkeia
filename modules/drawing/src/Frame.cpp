@@ -18,17 +18,16 @@ Frame::Frame( size_t width, size_t height )
       m_frameHeight( height )
 {
 
-    m_buffer = std::make_unique< std::vector< std::vector< wchar_t > > >( height, std::vector< wchar_t >( width ) );
+    m_buffer = std::vector< std::vector< DrawChar > >( height, std::vector< DrawChar >( width ) );
 
-    const Vec2I INVALID_POINT = { std::numeric_limits< int >::quiet_NaN(),
-                                         std::numeric_limits< int >::quiet_NaN() };
+    const Vec2I INVALID_POINT = { std::numeric_limits< int >::quiet_NaN(), std::numeric_limits< int >::quiet_NaN() };
 
-    m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >();
-    for ( Vec2I& v : *m_frameSectionOffsets )
+    m_frameSectionOffsets = std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) >();
+    for ( Vec2I& v : m_frameSectionOffsets )
         v = INVALID_POINT;
 
-    m_frameSectionDimensions = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >();
-    for ( Vec2I& v : *m_frameSectionDimensions )
+    m_frameSectionDimensions = std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) >();
+    for ( Vec2I& v : m_frameSectionDimensions )
         v = INVALID_POINT;
 }
 
@@ -48,21 +47,23 @@ Frame::Frame( const Frame& otherFrame )
     m_frameWidth = otherFrame.m_frameWidth;
     m_frameHeight = otherFrame.m_frameHeight;
 
-    m_buffer = std::make_unique< std::vector< std::vector< wchar_t > > >( *otherFrame.m_buffer );
+    m_buffer = std::vector< std::vector< DrawChar > >( otherFrame.m_buffer );
 
-    m_frameSectionDimensions = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >(
-        *otherFrame.m_frameSectionDimensions );
+    m_frameSectionDimensions =
+        std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) >( otherFrame.m_frameSectionDimensions );
 
-    m_frameSectionOffsets = std::make_unique< std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) > >(
-        *otherFrame.m_frameSectionOffsets );
+    m_frameSectionOffsets =
+        std::array< Vec2I, static_cast< size_t >( Frame::Section::MAX ) >( otherFrame.m_frameSectionOffsets );
 }
 
 Frame::~Frame()
 {
 }
 
-bool Frame::Write( int x, int y, wchar_t dat, Frame::Section section )
+bool Frame::Write( int x, int y, DrawChar  dat, Frame::Section section )
 {
+    // TODO::THINKABOUT::ARGYRASPIDES() { Why do you have an assertion for checking valid sections, but then suddenly
+    // you just return false if the pixel itself is out of bounds? }
     ValidateSection( section );
 
     if ( Empty() )
@@ -72,36 +73,49 @@ bool Frame::Write( int x, int y, wchar_t dat, Frame::Section section )
 
     if ( section == Frame::Section::NONE )
     {
-        ( *m_buffer )[ y ][ x ] = dat;
+        m_buffer[ y ][ x ] = dat;
         return true;
     }
 
-    x += ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ].x;
-    y += ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ].y;
+    x += ( m_frameSectionOffsets )[ static_cast< size_t >( section ) ].x;
+    y += ( m_frameSectionOffsets )[ static_cast< size_t >( section ) ].y;
 
-    Vec2I maxFrameDim = Vec2I{ x, y } + ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
+    Vec2I maxFrameDim = Vec2I{ x, y } + ( m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
     if ( !InFrame( { x, y } ) )
         return false;
 
-    ( *m_buffer )[ y ][ x ] = dat;
+    m_buffer[ y ][ x ] = dat;
     return true;
 }
 
-bool Frame::Write( Vec2I point, wchar_t dat, Frame::Section section )
+bool Frame::Write( Vec2I point, DrawChar dat, Frame::Section section )
 {
     ValidateSection( section );
     return Write( point.x, point.y, dat, section );
 }
 
-wchar_t Frame::At( int x, int y ) const
+wchar_t Frame::CharAt( int x, int y ) const
 {
     if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
         return INVALID_CHAR;
 
-    return ( *m_buffer )[ y ][ x ];
+    return m_buffer[ y ][ x ].drawChar;
 }
 
-wchar_t Frame::At( Vec2I pos ) const
+wchar_t Frame::CharAt( Vec2I pos ) const
+{
+    return CharAt( pos.x, pos.y );
+}
+
+DrawChar Frame::At( int x, int y ) const
+{
+    if ( x < 0 || x >= m_frameWidth || y < 0 || y >= m_frameHeight )
+        return INVALID_CHAR;
+
+    return m_buffer[ y ][ x ];
+}
+
+DrawChar Frame::At( Vec2I pos ) const
 {
     return At( pos.x, pos.y );
 }
@@ -110,18 +124,18 @@ void Frame::SetSection( Frame::Section section, Vec2I offset, Vec2I dimension )
 {
     ValidateSection( section );
 
-    ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ] = dimension;
-    ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ] = offset;
+    m_frameSectionDimensions[ static_cast< size_t >( section ) ] = dimension;
+    m_frameSectionOffsets[ static_cast< size_t >( section ) ] = offset;
 }
 
 Vec2I Frame::GetSectionOffset( Frame::Section section )
 {
-    return ( *m_frameSectionOffsets )[ static_cast< size_t >( section ) ];
+    return m_frameSectionOffsets[ static_cast< size_t >( section ) ];
 }
 
 Vec2I Frame::GetSectionDimension( Frame::Section section )
 {
-    return ( *m_frameSectionDimensions )[ static_cast< size_t >( section ) ];
+    return m_frameSectionDimensions[ static_cast< size_t >( section ) ];
 }
 
 bool Frame::InFrame( Vec2I screenPos )
@@ -138,7 +152,7 @@ void Frame::ValidateSection( Frame::Section section )
 
 bool Frame::Empty() const
 {
-    return ( *m_buffer ).empty();
+    return m_buffer.empty();
 }
 
 int Frame::Width() const

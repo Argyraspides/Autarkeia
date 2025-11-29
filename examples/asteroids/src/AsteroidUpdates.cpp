@@ -1,3 +1,4 @@
+#include "AsteroidUpdates.hpp"
 #include "AsteroidUtils.hpp"
 #include "DrawUtils.hpp"
 #include "Game.hpp"
@@ -51,10 +52,9 @@ void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& 
 {
     // Check if there is a collision between the ship and any of the asteroids.
     // If there is, asteroid disappears and ship loses health
-    static int collisionCount = 0;
     for ( Asteroid& asteroid : gameWorld.asteroids )
     {
-        const Sprite& ship = gameWorld.ship.GetSprite();
+        Sprite& ship = gameWorld.ship.GetSprite();
         const std::vector< Vec2I >& shipVertices = ship.GetPointCloud();
         const Vec2I shipPos = gameWorld.ship.GetPosition();
 
@@ -67,8 +67,28 @@ void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& 
 
             if ( GeoUtils::PointInPolygon( shipVertex + shipPos, asteroidVertices ) )
             {
-                gameWorld.collisions++;
+                DebugCollisionColors( ship.spriteColor, true );
+            }
+            else
+            {
+                DebugCollisionColors( ship.spriteColor, false );
             }
         }
     }
 }
+
+#ifdef AUTARKEIA_DEBUG_ENABLED
+
+void DebugCollisionColors( Color& color, bool collisionOccurred )
+{
+    if ( collisionOccurred )
+    {
+        color = Color::RED;
+    }
+    else
+    {
+        color = Color::WHITE;
+    }
+}
+
+#endif

@@ -8,16 +8,45 @@
 #include "Vec2I.hpp"
 #include <cassert>
 #include <cmath>
+#include <cstdio>
 #include <iostream>
 #include <locale>
 #include <string>
+#include <termios.h>
 #include <unistd.h>
-
 
 namespace DrawUtils
 {
 
-void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, Frame::Section section )
+void EnableEcho()
+{
+    termios t;
+    tcgetattr( STDOUT_FILENO, &t );
+    constexpr auto echoEnabledMask = ECHO;
+    t.c_lflag &= echoEnabledMask;
+    tcsetattr( STDOUT_FILENO, TCSANOW, &t );
+}
+
+void DisableEcho()
+{
+    termios t;
+    tcgetattr( STDOUT_FILENO, &t );
+    constexpr auto echoDisabledMask = ~ECHO;
+    t.c_lflag &= echoDisabledMask;
+    tcsetattr( STDOUT_FILENO, TCSANOW, &t );
+}
+
+void HideCursor()
+{
+    std::wcout << ANSI_HIDE_CURSOR.c_str();
+}
+
+void ShowCursor()
+{
+    std::wcout << ANSI_SHOW_CURSOR.c_str();
+}
+
+void DrawLineVertical( int y1, int y2, int x, Frame& frame, DrawChar drawChar, Frame::Section section )
 {
     if ( y1 > y2 )
         std::swap( y1, y2 );
@@ -26,7 +55,7 @@ void DrawLineVertical( int y1, int y2, int x, Frame& frame, wchar_t drawChar, Fr
         ;
 }
 
-void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, wchar_t drawChar, Frame::Section section )
+void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, DrawChar drawChar, Frame::Section section )
 {
 
     if ( x1 > x2 )
@@ -39,7 +68,7 @@ void DrawLineHorizontal( int x1, int x2, int y, Frame& frame, wchar_t drawChar, 
 void DrawLine( Vec2I p1, // Starting point
                Vec2I p2, // Ending point
                Frame& frame,
-               wchar_t drawChar,
+               DrawChar drawChar,
                Frame::Section section )
 {
 
@@ -75,7 +104,7 @@ void DrawLine( Vec2I p1, // Starting point
                 dist += dx * dxPolarity;
             }
 
-            if ( !frame.Write( currPt.x, currPt.y, drawChar ) )
+            if ( !frame.Write( currPt.x, currPt.y, drawChar, section ) )
                 break;
 
             currPt.x += dxPolarity;
@@ -94,7 +123,7 @@ void DrawLine( Vec2I p1, // Starting point
                 dist += -dy * dyPolarity;
             }
 
-            if ( !frame.Write( currPt.x, currPt.y, drawChar ) )
+            if ( !frame.Write( currPt.x, currPt.y, drawChar, section ) )
                 break;
 
             currPt.y += dyPolarity;
@@ -103,12 +132,12 @@ void DrawLine( Vec2I p1, // Starting point
     }
 }
 
-void DrawPixel( Vec2I p, Frame& frame, wchar_t drawChar, Frame::Section section )
+void DrawPixel( Vec2I p, Frame& frame, DrawChar drawChar, Frame::Section section )
 {
     frame.Write( p.x, p.y, drawChar, section );
 }
 
-void ClearFrame( Frame& frame, wchar_t clearChar, Frame::Section section )
+void ClearFrame( Frame& frame, DrawChar clearChar, Frame::Section section )
 {
     for ( int y = 0; y < frame.Height(); y++ )
         for ( int x = 0; x < frame.Width(); x++ )
@@ -132,7 +161,9 @@ void RenderFrame( Frame& frame )
     {
         for ( int x = 0; x < frame.Width(); x++ )
         {
-            std::wcout << frame.At( x, y );
+            DrawChar c = frame.At( x, y );
+            DrawSetColor( c.color );
+            std::wcout << frame.At( x, y ).drawChar;
         }
         std::wcout << "\n";
     }
@@ -175,26 +206,46 @@ void DrawBorder( Frame& frame, Frame::Section section )
     frame.Write( endIdx.x - 1, endIdx.y - 1, BOTTOM_RIGHT_CORNER );
 }
 
+void DrawSetColor( Color color )
+{
+    switch ( color )
+    {
+    case Color::GREEN:
+        DrawSetGreen();
+        break;
+    case Color::RED:
+        DrawSetRed();
+        break;
+    case Color::WHITE:
+        DrawSetWhite();
+        break;
+    default:
+        assert( false && "DrawUtils::DrawSetColor: You tried to draw a color that doesn't exist you stupid" );
+        break;
+    }
+}
+
+void DrawResetColor()
+{
+    DrawSetWhite();
+}
+
 void DrawSetGreen()
 {
-    const std::string ANSI_GREEN = "\033[32m";
     std::wcout << ANSI_GREEN.c_str();
 }
 
 void DrawSetWhite()
 {
-    const std::string ANSI_WHITE = "\033[37m";
     std::wcout << ANSI_WHITE.c_str();
 }
 
 void DrawSetRed()
 {
-    static std::string ANSI_RED = "\033[31m";
-    std::wcout << ANSI_RED .c_str();
+    std::wcout << ANSI_RED.c_str();
 }
 
-void DrawSprite(
-    const Sprite& sprite, Frame& frame, wchar_t drawChar, Vec2I offset, float rotation, Frame::Section section )
+void DrawSprite( const Sprite& sprite, Frame& frame, DrawChar drawChar, Vec2I offset, Frame::Section section )
 {
     const std::vector< Vec2I >& points = sprite.GetPointCloud();
     for ( int i = 0; i < points.size() - 1; i++ )
@@ -217,7 +268,7 @@ wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
         case INVALID_CHAR:
             break;
         case SHADE_0:
-            avg++;
+            avg += 1;
             break;
         case SHADE_1:
             avg += 2;
@@ -239,7 +290,7 @@ wchar_t GetAverageShade( wchar_t s1, wchar_t s2, wchar_t s3, wchar_t s4 )
     avg /= 5;
 
     return shadeMap[ avg ];
-}
+} // namespace DrawUtils
 
 void RotateSprite( Sprite& sprite, int rotation )
 {

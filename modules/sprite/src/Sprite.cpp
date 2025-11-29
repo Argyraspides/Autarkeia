@@ -3,7 +3,8 @@
 #include <numeric>
 
 Sprite::Sprite( const std::vector< Vec2I >& points )
-    : m_originalPoints( points ),
+    : spriteColor( Color::WHITE ),
+      m_originalPoints( points ),
       m_modifiedPoints( points )
 {
     Vec2I centroid =

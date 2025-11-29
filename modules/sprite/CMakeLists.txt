@@ -15,4 +15,5 @@ target_include_directories( Sprite PUBLIC
 
 target_link_libraries( Sprite PUBLIC 
     Cartesian 
+    Drawing
 )

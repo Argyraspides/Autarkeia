@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
+#include "Color.hpp"
 #include "Polygon.hpp"
+#include <vector>
 
 struct Sprite
 {
@@ -16,9 +17,12 @@ struct Sprite
 
     void ChangePoint( size_t idx, Vec2I newPt );
 
+  public:
+    Color spriteColor;
+
   private:
     // We always perform rotations based on the original points to prevent precision loss over time.
-    // Thus we keep track of the original sprite and modified sprite separately. 
+    // Thus we keep track of the original sprite and modified sprite separately.
     std::vector< Vec2I > m_originalPoints;
     std::vector< Vec2I > m_modifiedPoints;
 

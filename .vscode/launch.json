@@ -21,6 +21,8 @@
       "name": "gdb Attach",
       "type": "gdb",
       "request": "attach",
+      // If ptrace is giving issues:
+      //         echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
       // Somehow, this goes to the "inputs" array and then checks for the instructions under "processId" ... understand 
       // how this works, please
       "target": "${input:processId}",

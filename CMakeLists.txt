@@ -10,8 +10,14 @@ option( BUILD_EXAMPLE_TEXT_DRAWING "Builds text drawing example" ON )
 option( BUILD_EXAMPLE_ASTEROIDS "Builds asteroids example" ON )
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
-set( CMAKE_BUILD_TYPE Debug )
 set( CMAKE_CXX_STANDARD 20 )
+
+if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+    add_compile_definitions( AUTARKEIA_DEBUG_ENABLED )
+    message("DEBUG BUILDS HAVE BEEN ENABLED FOR AUTARKEIA")
+elseif( CMAKE_BUILD_TYPE STREQUAL "Release" )
+    message("RELEASE BUILDS HAVE BEEN ENABLED FOR AUTARKEIA")
+endif()
 
 add_subdirectory( modules/input )
 add_subdirectory( modules/math )
