@@ -1,9 +1,8 @@
 //
 // Created by gaugamela on 9/11/25.
 //
+#pragma once
 
-#ifndef AUTARKEIA_PeripheralInfo_HPP
-#define AUTARKEIA_PeripheralInfo_HPP
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -42,5 +41,3 @@ struct PeripheralInfoEqualFunc
 using PeripheralHashSet = std::unordered_set< PeripheralInfo, PeripheralInfoHashFunc, PeripheralInfoEqualFunc >;
 
 } // namespace InputCommon
-
-#endif // AUTARKEIA_PeripheralInfo_HPP

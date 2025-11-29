@@ -1,10 +1,9 @@
 //
 // Created by gaugamela on 9/11/25.
 //
+#pragma once
 
-#ifndef AUTARKEIA_PeripheralInputHandler_HPP
-#define AUTARKEIA_PeripheralInputHandler_HPP
-
+#include "Events.hpp"
 #include "PeripheralInfo.hpp"
 #include <atomic>
 #include <condition_variable>
@@ -53,7 +52,7 @@ class PeripheralInputHandler
      * which key was pressed (prefixed with "KEY_").
      * @returns std::nullopt if no key has been pressed, otherwise KeyInputCode
      */
-    std::optional< KeyInputCode > GetNextEvent() noexcept;
+    Event GetNextEvent() noexcept;
 
     /**
      * @brief Blocks the calling thread until a key press is available to take from the buffer
@@ -85,11 +84,9 @@ class PeripheralInputHandler
 
     InputCommon::PeripheralHashSet m_connectedPeripherals;
 
-    std::queue< KeyInputCode > m_lastObservedInputs;
+    std::queue< Event > m_lastObservedInputs;
     std::mutex m_lastObservedInputsMutex;
     std::condition_variable m_eventsAvailableCv;
 };
 
 } // namespace InputCommon
-
-#endif // AUTARKEIA_PeripheralInputHandler_HPP

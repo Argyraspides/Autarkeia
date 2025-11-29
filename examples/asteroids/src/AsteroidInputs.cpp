@@ -1,11 +1,12 @@
 #include "Game.hpp"
+#include "PeripheralInputHandler.hpp"
 #include <cmath>
 #include <linux/input-event-codes.h>
 
 void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::PeripheralInputHandler& kbd )
 {
-    std::optional< InputCommon::KeyInputCode > userInput = kbd.GetNextEvent();
-    if ( !userInput )
+    Event userInput = kbd.GetNextEvent();
+    if ( userInput.eventType != EventType::KEYBOARD_PRESS )
         return;
 
     auto RotateShip = [ &gameWorld, &gameSettings ]( int direction ) {
@@ -29,7 +30,7 @@ void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon:
         gameWorld.ship.Move( shipDir );
     };
 
-    switch ( userInput.value() )
+    switch ( userInput.eventCode )
     {
     case KEY_LEFT:
         RotateShip( 1 );

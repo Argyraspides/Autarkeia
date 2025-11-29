@@ -161,12 +161,12 @@ void UpdateSpeed()
 
 void HandleUserInput()
 {
-    std::optional< InputCommon::KeyInputCode > keyPress = kbd.GetNextKeyPress();
+    Event event = kbd.GetNextEvent();
 
-    if ( !keyPress )
+    if ( event.eventType != EventType::KEYBOARD_PRESS )
         return;
 
-    switch ( keyPress.value() )
+    switch ( event.eventCode )
     {
     case KEY_W:
     case KEY_UP: {

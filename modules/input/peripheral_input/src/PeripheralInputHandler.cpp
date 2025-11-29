@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>
+#include <optional>
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -16,9 +17,9 @@
 static constexpr int POLL_NEW_KEYBOARD_INTERVAL_MS = 3000;
 static constexpr size_t MAX_KEY_PRESSED_BUF_SIZE = 128;
 
-static constexpr uint16_t KEY_HELD = 2;
-static constexpr uint16_t KEY_RELEASED = 0;
-static constexpr uint16_t KEY_PRESSED = 1;
+static constexpr uint16_t LINUX_INPUT_KEY_HELD = 2;
+static constexpr uint16_t LINUX_INPUT_KEY_RELEASED = 0;
+static constexpr uint16_t LINUX_INPUT_KEY_PRESSED = 1;
 
 static constexpr int PIPE_READ_IDX = 0;
 static constexpr int PIPE_WRITE_IDX = 1;
@@ -41,28 +42,26 @@ PeripheralInputHandler::~PeripheralInputHandler() noexcept
     Stop();
 }
 
-std::optional< KeyInputCode > PeripheralInputHandler::GetNextEvent() noexcept
+Event PeripheralInputHandler::GetNextEvent() noexcept
 {
-    std::optional< KeyInputCode > keyPressed = std::nullopt;
-
+    Event e;
     {
         std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastObservedInputsMutex );
 
         if ( m_lastObservedInputs.empty() )
-            return std::nullopt;
+            return e;
 
-        keyPressed = m_lastObservedInputs.front();
+        e = m_lastObservedInputs.front();
         m_lastObservedInputs.pop();
     }
-
-    return keyPressed;
+    return e;
 }
 
 void PeripheralInputHandler::WaitForEvent() noexcept
 {
     std::unique_lock< std::mutex > lastPressedKeysQueueLock( m_lastObservedInputsMutex );
     m_eventsAvailableCv.wait( lastPressedKeysQueueLock,
-                            [ this ]() -> bool { return !m_lastObservedInputs.empty() || !m_running; } );
+                              [ this ]() -> bool { return !m_lastObservedInputs.empty() || !m_running; } );
 }
 
 void PeripheralInputHandler::Start() noexcept
@@ -119,25 +118,27 @@ void PeripheralInputHandler::ListenToPeripheral( InputCommon::PeripheralInfo Per
         return;
     }
 
-    int keyboardFd = open( PeripheralInfo.eventDevicePath.c_str(), O_RDONLY );
+    int peripheralFd = open( PeripheralInfo.eventDevicePath.c_str(), O_RDONLY );
 
-    if ( keyboardFd < 0 )
+    if ( peripheralFd < 0 )
     {
-        close( keyboardFd );
+        close( peripheralFd );
         // TODO::LATER::ARGYRASPIDES() { Replace with error logging class later }
         std::cout << "Unable to open device file " + PeripheralInfo.eventDevicePath + " ... cause unknown" << std::endl;
         return;
     }
 
     // nfds -> check man pages for select() syscall
-    int nfds = std::max( { keyboardFd, s_terminationPipeFds[ PIPE_READ_IDX ] } ) + 1;
+    int nfds = std::max( { peripheralFd, s_terminationPipeFds[ PIPE_READ_IDX ] } ) + 1;
 
     fd_set fdSet;
     FD_ZERO( &fdSet );
     FD_SET( s_terminationPipeFds[ PIPE_READ_IDX ], &fdSet );
-    FD_SET( keyboardFd, &fdSet );
+    FD_SET( peripheralFd, &fdSet );
 
-    struct input_event keyboardInputEvent{};
+    struct input_event peripheralInputEvent
+    {
+    };
     while ( m_running )
     {
         // To prevent being blocked on read syscall forever, we will wait for both the keyboard and also the
@@ -149,8 +150,8 @@ void PeripheralInputHandler::ListenToPeripheral( InputCommon::PeripheralInfo Per
             break;
 
         ssize_t bytesRead = -1;
-        if ( FD_ISSET( keyboardFd, &fdSet ) )
-            bytesRead = read( keyboardFd, reinterpret_cast< void* >( &keyboardInputEvent ), sizeof( input_event ) );
+        if ( FD_ISSET( peripheralFd, &fdSet ) )
+            bytesRead = read( peripheralFd, reinterpret_cast< void* >( &peripheralInputEvent ), sizeof( input_event ) );
         else if ( FD_ISSET( s_terminationPipeFds[ PIPE_READ_IDX ], &fdSet ) )
             break;
 
@@ -160,26 +161,45 @@ void PeripheralInputHandler::ListenToPeripheral( InputCommon::PeripheralInfo Per
         if ( bytesRead != sizeof( input_event ) )
             continue;
 
-        if ( keyboardInputEvent.type != EV_KEY )
+        if ( peripheralInputEvent.type != EV_KEY )
             continue;
 
-        // BEWARE::ARGYRASPIDES() { BEHAVIOR TO ONLY LISTEN TO KEY PRESSES/HOLDS, NOT RELEASES }
-        if ( keyboardInputEvent.value == KEY_RELEASED )
-            continue;
+        Event event;
+        if ( peripheralInputEvent.type == EV_KEY )
+        {
+            if ( peripheralInputEvent.code == LINUX_INPUT_KEY_RELEASED )
+                event.eventType = EventType::KEYBOARD_RELEASE;
+            else if ( peripheralInputEvent.code == LINUX_INPUT_KEY_RELEASED )
+                event.eventType = EventType::KEYBOARD_RELEASE;
+            else if ( peripheralInputEvent.code == LINUX_INPUT_KEY_HELD )
+                event.eventType = EventType::KEYBOARD_HELD;
+        }
+        //  Relative mouse movement, basically
+        else if ( peripheralInputEvent.type == EV_REL )
+        {
+        }
+        // Seems like trackpads use this ... probs coz their surface is something you can draw absolute coordinates on,
+        // whereas a mouse is always relative
+        else if ( peripheralInputEvent.type == EV_ABS )
+        {
 
+        }
+
+        event.eventCode = peripheralInputEvent.code;
+        event.eventValue = peripheralInputEvent.value;
         {
             std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastObservedInputsMutex );
 
             if ( m_lastObservedInputs.size() == MAX_KEY_PRESSED_BUF_SIZE )
                 m_lastObservedInputs.pop();
 
-            m_lastObservedInputs.push( keyboardInputEvent.code );
+            m_lastObservedInputs.push( event );
         }
 
         m_eventsAvailableCv.notify_all();
     }
 
-    close( keyboardFd );
+    close( peripheralFd );
 }
 
 void PeripheralInputHandler::StopListeningThreads() noexcept

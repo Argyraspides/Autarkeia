@@ -1,9 +1,7 @@
 //
 // Created by gaugamela on 9/14/25.
 //
-
-#ifndef AUTARKEIA_KEYBOARDEXCEPTION_HPP
-#define AUTARKEIA_KEYBOARDEXCEPTION_HPP
+#pragma once
 
 #include <exception>
 #include <string>
@@ -37,5 +35,3 @@ class PeripheralInputException : public std::exception
 };
 
 } // namespace InputCommon
-
-#endif // AUTARKEIA_KEYBOARDEXCEPTION_HPP

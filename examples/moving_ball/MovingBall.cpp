@@ -10,24 +10,24 @@
 
 int main()
 {
-    InputCommon::PeripheralInputHandler kbd;
+    InputCommon::PeripheralInputHandler pih;
 
     constexpr size_t frameSize = 20;
     Frame frame( frameSize, frameSize );
-    kbd.Start();
+    pih.Start();
 
     Vec2I ballPos = { frameSize / 2, frameSize / 2 };
 
     while ( true )
     {
 
-        kbd.WaitForKeyPress();
-        std::optional< InputCommon::KeyInputCode > key = kbd.GetNextKeyPress();
+        pih.WaitForEvent();
+        Event event = pih.GetNextEvent();
 
-        if ( !key )
+        if( event.eventType != EventType::KEYBOARD_PRESS )
             continue;
 
-        switch ( key.value() )
+        switch ( event.eventCode )
         {
         case KEY_UP:
             ballPos.y = (ballPos.y - 1 < 0) ? (frameSize - 1) : (ballPos.y - 1);

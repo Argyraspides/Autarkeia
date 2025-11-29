@@ -24,6 +24,9 @@ target_include_directories( InputCommon PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries( InputCommon PRIVATE
+target_link_libraries( InputCommon
+    PRIVATE
     PeripheralDetector
+    PUBLIC
+    Events
 )
