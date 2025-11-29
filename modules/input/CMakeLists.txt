@@ -5,3 +5,4 @@ message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory( common )
 add_subdirectory( peripheral_detection )
+add_subdirectory( events )

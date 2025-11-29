@@ -6,13 +6,12 @@ message("Adding ${CMAKE_CURRENT_SOURCE_DIR}")
 project( InputCommon )
 
 set( INPUT_COMMON_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardInputHandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/PeripheralInputHandler.cpp
 )
 
 set( INPUT_COMMON_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/KeyboardInfo.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/KeyboardInputHandler.hpp
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/PeripheralInfo.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/PeripheralInputHandler.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/PeripheralInputException.hpp
 )
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
-#include "KeyboardInputHandler.hpp"
+#include "PeripheralInputHandler.hpp"
 #include <list>
 
 #include "Asteroid.hpp"
@@ -47,7 +47,7 @@ struct Game
 
     Frame screen = Frame{ 500, 200 };
 
-    InputCommon::KeyboardInputHandler kbd;
+    InputCommon::PeripheralInputHandler kbd;
 
   public:
     void Start()

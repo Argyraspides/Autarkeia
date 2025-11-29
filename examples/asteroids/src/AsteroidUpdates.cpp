@@ -65,14 +65,13 @@ void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& 
             for ( Vec2I& v : asteroidVertices )
                 v = v + asteroidPos;
 
+            // TODO::THINKABOUT::ARGYRASPIDES() { Might be worth making some event system? That way I can put all the
+            // debug visualization logic there ... so idk dispatch an event or something with some callback or whatever or push to some event queue 
+            // that is constantly being processed by another thread in the game }
             if ( GeoUtils::PointInPolygon( shipVertex + shipPos, asteroidVertices ) )
-            {
                 DebugCollisionColors( ship.spriteColor, true );
-            }
             else
-            {
                 DebugCollisionColors( ship.spriteColor, false );
-            }
         }
     }
 }

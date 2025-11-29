@@ -1,7 +1,7 @@
 #include "Characters.hpp"
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
-#include "KeyboardInputHandler.hpp"
+#include "PeripheralInputHandler.hpp"
 #include "TextDrawUtils.hpp"
 #include "Vec2I.hpp"
 #include <chrono>
@@ -45,7 +45,7 @@ Vec2I scoreSectionDimension = { boardSize.x, 10 };
 Vec2I gameSectionOffset = { 0, scoreSectionDimension.y };
 Vec2I gameSectionDimension = { boardSize.x, boardSize.y - scoreSectionDimension.y };
 
-InputCommon::KeyboardInputHandler kbd;
+InputCommon::PeripheralInputHandler kbd;
 
 bool pauseGame = false;
 bool gameRunning = true;

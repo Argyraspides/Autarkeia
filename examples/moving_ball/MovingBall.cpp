@@ -2,7 +2,7 @@
 // Created by gaugamela on 9/13/25.
 //
 
-#include "KeyboardInputHandler.hpp"
+#include "PeripheralInputHandler.hpp"
 #include "DrawUtils.hpp"
 #include "Frame.hpp"
 #include "Vec2I.hpp"
@@ -10,7 +10,7 @@
 
 int main()
 {
-    InputCommon::KeyboardInputHandler kbd;
+    InputCommon::PeripheralInputHandler kbd;
 
     constexpr size_t frameSize = 20;
     Frame frame( frameSize, frameSize );

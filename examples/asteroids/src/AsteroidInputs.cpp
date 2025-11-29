@@ -2,9 +2,9 @@
 #include <cmath>
 #include <linux/input-event-codes.h>
 
-void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::KeyboardInputHandler& kbd )
+void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::PeripheralInputHandler& kbd )
 {
-    std::optional< InputCommon::KeyInputCode > userInput = kbd.GetNextKeyPress();
+    std::optional< InputCommon::KeyInputCode > userInput = kbd.GetNextEvent();
     if ( !userInput )
         return;
 

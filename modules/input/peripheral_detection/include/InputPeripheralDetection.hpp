@@ -5,7 +5,7 @@
 #ifndef AUTARKEIA_PERIPHERALDETECTOR_HPP
 #define AUTARKEIA_PERIPHERALDETECTOR_HPP
 
-#include "KeyboardInfo.hpp"
+#include "PeripheralInfo.hpp"
 #include <fstream>
 #include <optional>
 #include <string>
@@ -22,7 +22,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
 
 std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEntry ) noexcept;
 
-InputCommon::KeyboardHashSet GetConnectedKeyboards();
+InputCommon::PeripheralHashSet GetConnectedKeyboards();
 
 } // namespace InputPeripheralDetection
 

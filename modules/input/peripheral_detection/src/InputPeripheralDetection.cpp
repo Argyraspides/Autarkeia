@@ -40,7 +40,7 @@ bool IsKeyboard( const std::string& deviceFileEntry ) noexcept
     catch ( const std::out_of_range& e )
     {
         // TODO::ARGYRASPIDES() { Must replace with logging class in future }
-        std::cerr << "KeyboardInfo::IsKeyboard() - " << e.what();
+        std::cerr << "PeripheralInfo::IsKeyboard() - " << e.what();
         return false;
     }
 
@@ -82,7 +82,7 @@ std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry )
     catch ( const std::out_of_range& e )
     {
         // TODO::ARGYRASPIDES() { Must replace with logging class in future }
-        std::cerr << "KeyboardInfo::GetDeviceName() - " << e.what();
+        std::cerr << "PeripheralInfo::GetDeviceName() - " << e.what();
         return std::nullopt;
     }
 
@@ -108,7 +108,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     catch ( const std::out_of_range& e )
     {
         // TODO::ARGYRASPIDES() { Must replace with logging class in future }
-        std::cerr << "KeyboardInfo::GetHandlerNames() - " << e.what();
+        std::cerr << "PeripheralInfo::GetHandlerNames() - " << e.what();
         return std::nullopt;
     }
 
@@ -128,7 +128,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-InputCommon::KeyboardHashSet GetConnectedKeyboards()
+InputCommon::PeripheralHashSet GetConnectedKeyboards()
 {
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
         throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " + DEVICE_FILE_INFO_PATH +
@@ -145,7 +145,7 @@ InputCommon::KeyboardHashSet GetConnectedKeyboards()
             "Cannot open " + DEVICE_FILE_INFO_PATH +
             " to check for keyboards for an unknown reason! Something is very wrong!" );
 
-    InputCommon::KeyboardHashSet connectedKeyboards;
+    InputCommon::PeripheralHashSet connectedKeyboards;
 
     std::string currLine;
     std::stringstream ss;
@@ -172,7 +172,7 @@ InputCommon::KeyboardHashSet GetConnectedKeyboards()
             continue;
         }
 
-        InputCommon::KeyboardInfo kbInfo{ deviceName.value(), eventDeviceName.value() };
+        InputCommon::PeripheralInfo kbInfo{ deviceName.value(), eventDeviceName.value() };
         connectedKeyboards.insert( kbInfo );
 
         ss.str( "" );

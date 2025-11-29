@@ -5,15 +5,15 @@ struct GameSettings;
 
 namespace InputCommon
 {
-class KeyboardInputHandler;
+class PeripheralInputHandler;
 }
 
-void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::KeyboardInputHandler& kbd );
+void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::PeripheralInputHandler& kbd );
 
 inline std::array< void ( * )( 
 GameWorld& gameWorld, 
 GameSettings& gameSettings, 
-InputCommon::KeyboardInputHandler& kbd ), 1 >
+InputCommon::PeripheralInputHandler& kbd ), 1 >
 inputTable = 
 { 
     HandleInput 
