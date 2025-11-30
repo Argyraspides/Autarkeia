@@ -161,7 +161,7 @@ void PeripheralInputHandler::ListenToPeripheral( InputCommon::PeripheralInfo Per
 
         Event event = GetEvent( peripheralInputEvent );
 
-        if(event.eventType == EventType::INVALID || event.eventValue == INVALID_EVENT_VALUE )
+        if ( event.eventType == EventType::INVALID || event.eventValue == INVALID_EVENT_VALUE )
             continue;
 
         {

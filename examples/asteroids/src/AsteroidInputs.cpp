@@ -8,18 +8,23 @@ void HandleInputs( GameWorld& gameWorld, GameState& gameSettings, InputCommon::P
 {
     Event userInput = pih.GetNextEvent();
 
-    switch ( userInput.eventType )
+    while ( userInput.eventType != EventType::INVALID )
     {
-    case EventType::KEYBOARD_PRESS:
-    case EventType::KEYBOARD_HELD:
-        HandleKeyboardInputs( gameWorld, gameSettings, userInput );
-        break;
-    case EventType::TOUCHPAD_MOVEMENT:
-    case EventType::TOUCHPAD_ABSOLUTE_X_POS:
-    case EventType::TOUCHPAD_ABSOLUTE_Y_POS:
-        HandleMouseInputs( gameWorld, gameSettings, userInput );
-        break;
-    default:;
+        switch ( userInput.eventType )
+        {
+        case EventType::KEYBOARD_PRESS:
+        case EventType::KEYBOARD_HELD:
+            HandleKeyboardInputs( gameWorld, gameSettings, userInput );
+            break;
+        case EventType::TOUCHPAD_MOVEMENT:
+        case EventType::TOUCHPAD_ABSOLUTE_X_POS:
+        case EventType::TOUCHPAD_ABSOLUTE_Y_POS:
+            HandleMouseInputs( gameWorld, gameSettings, userInput );
+            break;
+        default:;
+        }
+
+        userInput = pih.GetNextEvent();
     }
 }
 
@@ -75,8 +80,10 @@ void HandleMouseInputs( GameWorld& gameWorld, GameState& gameSettings, Event use
     {
     case EventType::TOUCHPAD_ABSOLUTE_X_POS:
         gameSettings.mousePos.x = userInput.eventValue;
+        break;
     case EventType::TOUCHPAD_ABSOLUTE_Y_POS:
         gameSettings.mousePos.y = userInput.eventValue;
+        break;
     default:;
     }
 }

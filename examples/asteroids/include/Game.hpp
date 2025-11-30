@@ -67,13 +67,8 @@ struct Game
             for ( auto& inputHandlerFunc : inputTable )
                 inputHandlerFunc( gameWorld, gameState, kbd );
 
-            if ( gameState.gamePaused )
-            {
-                if( gameState.tickForward )
-                {
-                    gameState.tickForward = false;
-                }
-            }
+            if ( gameState.gamePaused && gameState.tickForward )
+                gameState.tickForward = false;
 
             for ( auto& updateFunc : updateTable )
                 updateFunc( gameWorld, gameState, screen );
