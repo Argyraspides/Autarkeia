@@ -15,12 +15,12 @@ enum class EventType
 
 typedef int32_t EventCode;
 typedef int32_t EventValue;
-constexpr typeof(EventValue) INVALID_EVENT_VALUE = std::numeric_limits< typeof(EventValue) >::min();
+static constexpr typeof( EventValue ) INVALID_EVENT_VALUE = std::numeric_limits< typeof( EventValue ) >::min();
 struct Event
 {
     Event()
-          : eventType( EventType::INVALID ),
-            eventValue( INVALID_EVENT_VALUE )
+        : eventType( EventType::INVALID ),
+          eventValue( INVALID_EVENT_VALUE )
     {
     }
 

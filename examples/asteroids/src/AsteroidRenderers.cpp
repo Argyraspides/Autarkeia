@@ -36,5 +36,5 @@ void RenderDebug( GameWorld& gameWorld, GameState& gameState, Frame& screen )
     DrawUtils::DrawText( std::to_string( gameWorld.collisions ), { 50, 25 }, screen, SHADE_4, 0.0f,
                          Frame::Section::ONE );
 
-    DrawUtils::DrawPixel(gameState.mousePos, screen, SHADE_4);
+    DrawUtils::DrawPixel(gameState.mousePos / 5, screen, SHADE_4, Frame::Section::TWO );
 }

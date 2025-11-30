@@ -160,6 +160,10 @@ void PeripheralInputHandler::ListenToPeripheral( InputCommon::PeripheralInfo Per
             continue;
 
         Event event = GetEvent( peripheralInputEvent );
+
+        if(event.eventType == EventType::INVALID || event.eventValue == INVALID_EVENT_VALUE )
+            continue;
+
         {
             std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastObservedInputsMutex );
 
