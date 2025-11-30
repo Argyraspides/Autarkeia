@@ -4,14 +4,14 @@
 #include "Color.hpp"
 
 struct GameWorld;
-struct GameSettings;
+struct GameState;
 
-void UpdateAsteroids( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen );
-void UpdateBullets( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen );
-void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen );
+void UpdateAsteroids( GameWorld& gameWorld, GameState& gameSettings, Frame& screen );
+void UpdateBullets( GameWorld& gameWorld, GameState& gameSettings, Frame& screen );
+void UpdateCollisions( GameWorld& gameWorld, GameState& gameSettings, Frame& screen );
 
 
-inline std::array< void ( * )( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen ), 3 > 
+inline std::array< void ( * )( GameWorld& gameWorld, GameState& gameSettings, Frame& screen ), 3 > 
 updateTable = 
 {
     UpdateAsteroids, 

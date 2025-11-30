@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <fcntl.h>
 #include <iostream>
-#include <linux/input.h>
-#include <optional>
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -161,32 +159,7 @@ void PeripheralInputHandler::ListenToPeripheral( InputCommon::PeripheralInfo Per
         if ( bytesRead != sizeof( input_event ) )
             continue;
 
-        if ( peripheralInputEvent.type != EV_KEY )
-            continue;
-
-        Event event;
-        if ( peripheralInputEvent.type == EV_KEY )
-        {
-            if ( peripheralInputEvent.code == LINUX_INPUT_KEY_RELEASED )
-                event.eventType = EventType::KEYBOARD_RELEASE;
-            else if ( peripheralInputEvent.code == LINUX_INPUT_KEY_RELEASED )
-                event.eventType = EventType::KEYBOARD_RELEASE;
-            else if ( peripheralInputEvent.code == LINUX_INPUT_KEY_HELD )
-                event.eventType = EventType::KEYBOARD_HELD;
-        }
-        //  Relative mouse movement, basically
-        else if ( peripheralInputEvent.type == EV_REL )
-        {
-        }
-        // Seems like trackpads use this ... probs coz their surface is something you can draw absolute coordinates on,
-        // whereas a mouse is always relative
-        else if ( peripheralInputEvent.type == EV_ABS )
-        {
-
-        }
-
-        event.eventCode = peripheralInputEvent.code;
-        event.eventValue = peripheralInputEvent.value;
+        Event event = GetEvent( peripheralInputEvent );
         {
             std::lock_guard< std::mutex > lastPressedKeysQueueLock( m_lastObservedInputsMutex );
 
@@ -215,10 +188,10 @@ void PeripheralInputHandler::DetectPeripherals() noexcept
 {
     while ( m_running )
     {
-        InputCommon::PeripheralHashSet connectedKeyboards;
+        InputCommon::PeripheralHashSet connectedPeripherals;
         try
         {
-            connectedKeyboards = InputPeripheralDetection::GetConnectedKeyboards();
+            connectedPeripherals = InputPeripheralDetection::GetConnectedPeripherals();
         }
         catch ( InputCommon::PeripheralInputException& pie )
         {
@@ -226,7 +199,7 @@ void PeripheralInputHandler::DetectPeripherals() noexcept
             std::cout << pie.what() << "\n";
         }
 
-        for ( const InputCommon::PeripheralInfo& PeripheralInfo : connectedKeyboards )
+        for ( const InputCommon::PeripheralInfo& PeripheralInfo : connectedPeripherals )
         {
             if ( m_connectedPeripherals.find( PeripheralInfo ) != m_connectedPeripherals.end() )
                 continue;
@@ -245,6 +218,53 @@ void PeripheralInputHandler::DetectPeripherals() noexcept
 
         std::this_thread::sleep_for( std::chrono::milliseconds( POLL_NEW_KEYBOARD_INTERVAL_MS ) );
     }
+}
+
+Event PeripheralInputHandler::GetEvent( const input_event& peripheralInputEvent ) noexcept
+{
+    Event event;
+    if ( peripheralInputEvent.type == EV_KEY )
+    {
+        event.eventValue = peripheralInputEvent.code;
+
+        if ( peripheralInputEvent.value == LINUX_INPUT_KEY_RELEASED )
+            event.eventType = EventType::KEYBOARD_RELEASE;
+        else if ( peripheralInputEvent.value == LINUX_INPUT_KEY_PRESSED )
+            event.eventType = EventType::KEYBOARD_PRESS;
+        else if ( peripheralInputEvent.value == LINUX_INPUT_KEY_HELD )
+            event.eventType = EventType::KEYBOARD_HELD;
+        else
+            return event;
+
+        // The code tells us which key is pressed for the EV_KEY event type ....
+        // TODO::THINKABOUT::ARGYRASPIDES()
+        // {
+        //       Might want to handle different event tyeps separately in different funcs? Seems different peripherals
+        //       encode "values" differently. For a keyboard, we are concerned with whether the key was released, held,
+        //       or pressed, and the actual key you pressed. Which one is assigned to which variable (input_event::code
+        //       or input_event::value) is a bit arbitrary. Just gets a bit confusing as in this case it feels more
+        //       intuitive for the 'value' variable to be assigned to the actual key being pressed, and 'code' to denote
+        //       whether the key was pressed, held, or released, but it's backwards here.
+        // }
+    }
+    //  Relative mouse movement, basically
+    else if ( peripheralInputEvent.type == EV_REL )
+    {
+        // TODO::ARGYRASPIDES() { Implement this for mouses (mice?) }
+    }
+    // Seems like trackpads use this ... probs coz their surface is something you can draw absolute coordinates on,
+    // whereas a mouse is always relative
+    else if ( peripheralInputEvent.type == EV_ABS )
+    {
+        event.eventValue = peripheralInputEvent.value;
+
+        if ( peripheralInputEvent.code == ABS_MT_POSITION_X )
+            event.eventType = EventType::TOUCHPAD_ABSOLUTE_X_POS;
+        if ( peripheralInputEvent.code == ABS_MT_POSITION_Y )
+            event.eventType = EventType::TOUCHPAD_ABSOLUTE_Y_POS;
+    }
+
+    return event;
 }
 
 } // namespace InputCommon

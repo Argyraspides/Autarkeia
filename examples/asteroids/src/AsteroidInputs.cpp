@@ -1,14 +1,30 @@
+#include "AsteroidInputs.hpp"
 #include "Game.hpp"
 #include "PeripheralInputHandler.hpp"
 #include <cmath>
 #include <linux/input-event-codes.h>
 
-void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::PeripheralInputHandler& kbd )
+void HandleInputs( GameWorld& gameWorld, GameState& gameSettings, InputCommon::PeripheralInputHandler& pih )
 {
-    Event userInput = kbd.GetNextEvent();
-    if ( userInput.eventType != EventType::KEYBOARD_PRESS )
-        return;
+    Event userInput = pih.GetNextEvent();
 
+    switch ( userInput.eventType )
+    {
+    case EventType::KEYBOARD_PRESS:
+    case EventType::KEYBOARD_HELD:
+        HandleKeyboardInputs( gameWorld, gameSettings, userInput );
+        break;
+    case EventType::TOUCHPAD_MOVEMENT:
+    case EventType::TOUCHPAD_ABSOLUTE_X_POS:
+    case EventType::TOUCHPAD_ABSOLUTE_Y_POS:
+        HandleMouseInputs( gameWorld, gameSettings, userInput );
+        break;
+    default:;
+    }
+}
+
+void HandleKeyboardInputs( GameWorld& gameWorld, GameState& gameSettings, Event userInput )
+{
     auto RotateShip = [ &gameWorld, &gameSettings ]( int direction ) {
         int newRotation = ( gameWorld.ship.GetRotation() + ( gameSettings.shipRotSpeed * direction ) ) % 360;
         gameWorld.ship.Rotate( newRotation );
@@ -30,7 +46,7 @@ void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon:
         gameWorld.ship.Move( shipDir );
     };
 
-    switch ( userInput.eventCode )
+    switch ( userInput.eventValue )
     {
     case KEY_LEFT:
         RotateShip( 1 );
@@ -50,5 +66,17 @@ void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon:
         break;
     case KEY_GRAVE:
         gameSettings.tickForward = true;
+    }
+}
+
+void HandleMouseInputs( GameWorld& gameWorld, GameState& gameSettings, Event userInput )
+{
+    switch ( userInput.eventType )
+    {
+    case EventType::TOUCHPAD_ABSOLUTE_X_POS:
+        gameSettings.mousePos.x = userInput.eventValue;
+    case EventType::TOUCHPAD_ABSOLUTE_Y_POS:
+        gameSettings.mousePos.y = userInput.eventValue;
+    default:;
     }
 }

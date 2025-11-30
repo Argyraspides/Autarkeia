@@ -27,7 +27,7 @@ int main()
         if( event.eventType != EventType::KEYBOARD_PRESS )
             continue;
 
-        switch ( event.eventCode )
+        switch ( event.eventValue )
         {
         case KEY_UP:
             ballPos.y = (ballPos.y - 1 < 0) ? (frameSize - 1) : (ballPos.y - 1);

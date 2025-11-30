@@ -1,5 +1,5 @@
-#include <limits>
 #include <cstdint>
+#include <limits>
 enum class EventType
 {
     KEYBOARD_PRESS,
@@ -7,21 +7,23 @@ enum class EventType
     KEYBOARD_HELD,
     MOUSE_MOVEMENT,
     TOUCHPAD_MOVEMENT,
+    TOUCHPAD_ABSOLUTE_X_POS,
+    TOUCHPAD_ABSOLUTE_Y_POS,
     MAX,
     INVALID
 };
 
+typedef int32_t EventCode;
+typedef int32_t EventValue;
+constexpr typeof(EventValue) INVALID_EVENT_VALUE = std::numeric_limits< typeof(EventValue) >::min();
 struct Event
 {
     Event()
-        : eventCode( INVALID_EVENT_CODE ),
-          eventType( EventType::INVALID )
+          : eventType( EventType::INVALID ),
+            eventValue( INVALID_EVENT_VALUE )
     {
     }
 
-    int32_t eventCode;
-    int32_t eventValue;
     EventType eventType;
-
-    static constexpr int INVALID_EVENT_CODE = std::numeric_limits< int >::min();
+    EventValue eventValue; // Trackpad X/Y pos, joystick X/Y pos, mouse relative X/Y movement ...
 };

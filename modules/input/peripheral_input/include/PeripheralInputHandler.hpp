@@ -6,9 +6,9 @@
 #include "Events.hpp"
 #include "PeripheralInfo.hpp"
 #include <atomic>
+#include <linux/input.h>
 #include <condition_variable>
 #include <mutex>
-#include <optional>
 #include <queue>
 #include <semaphore>
 #include <thread>
@@ -72,6 +72,7 @@ class PeripheralInputHandler
     void ListenToPeripheral( InputCommon::PeripheralInfo ) noexcept;
     void StopListeningThreads() noexcept;
     void DetectPeripherals() noexcept;
+    Event GetEvent( const input_event& ) noexcept;
 
   private:
     std::atomic_bool m_running;

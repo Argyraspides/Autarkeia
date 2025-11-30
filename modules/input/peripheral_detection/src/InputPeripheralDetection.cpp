@@ -5,14 +5,48 @@
 #include "PeripheralInputException.hpp"
 #include <cstdint>
 #include <iostream>
+#include <fstream>
 #include <linux/input-event-codes.h>
 #include <sstream>
 #include <unistd.h>
+
+/*
+                Example of an entry for a Logitech mouse under /proc/bus/input/devices:
+
+I: Bus=0003 Vendor=046d Product=c077 Version=0111
+N: Name="Logitech USB Optical Mouse"
+P: Phys=usb-0000:05:00.4-2/input0
+S: Sysfs=/devices/pci0000:00/0000:00:08.1/0000:05:00.4/usb3/3-2/3-2:1.0/0003:046D:C077.0005/input/input21
+U: Uniq=
+H: Handlers=mouse2 event17
+B: PROP=0
+B: EV=17
+B: KEY=70000 0 0 0 0
+B: REL=903
+B: MSC=10
+
+
+                Example of an entry for a keyboard under /proc/bus/input/devices:
+
+I: Bus=0003 Vendor=048d Product=c965 Version=0110
+N: Name="ITE Tech. Inc. ITE Device(8295) Keyboard"
+P: Phys=usb-0000:05:00.4-3/input0
+S: Sysfs=/devices/pci0000:00/0000:00:08.1/0000:05:00.4/usb3/3-3/3-3:1.0/0003:048D:C965.0002/input/input11
+U: Uniq=
+H: Handlers=sysrq kbd event7 leds
+B: PROP=0
+B: EV=120013
+B: KEY=1000000000007 ff9f207ac14057ff febeffdfffefffff fffffffffffffffe
+B: MSC=10
+B: LED=1f
+
+*/
 
 static const inline std::string EV_START_LINE = "B: EV=";
 static const inline std::string KEY_START_LINE = "B: KEY=";
 static const inline std::string NAME_START_LINE = "N: Name=";
 static const inline std::string HANDLERS_START_LINE = "H: Handlers=";
+static const inline std::string MOUSE_HANDLERS_ENTRY = "mouse";
 
 static const inline std::string DEVICE_FILE_INFO_PATH = "/proc/bus/input/devices";
 static const inline std::string DEVICE_FILE_INTERFACE_PREFIX_PATH = "/dev/input";
@@ -59,6 +93,39 @@ bool IsKeyboard( const std::string& deviceFileEntry ) noexcept
     }
 
     return keyThreshold <= 0;
+}
+
+bool IsMouse( const std::string& deviceFileEntry ) noexcept
+{
+    if ( deviceFileEntry.empty() )
+        return false;
+
+    std::string handlersEntryValues;
+    try
+    {
+        size_t handlersEntryStart = deviceFileEntry.find( HANDLERS_START_LINE ) + HANDLERS_START_LINE.size();
+        size_t handlersEntryEnd = deviceFileEntry.find( '\n', handlersEntryStart );
+
+        if ( handlersEntryStart == std::string::npos || handlersEntryEnd == std::string::npos )
+            return false;
+
+        handlersEntryValues = deviceFileEntry.substr( handlersEntryStart, handlersEntryEnd - handlersEntryStart );
+
+        // E.g., H: Handlers=mouse2 event17 (we want to extract the event*, but make sure its a mouse by checking mouse
+        // string before)
+        size_t mouseEntryStartPos = handlersEntryValues.find( MOUSE_HANDLERS_ENTRY );
+
+        if ( mouseEntryStartPos == std::string::npos )
+            return false;
+
+        return true;
+    }
+    catch ( const std::out_of_range& e )
+    {
+        // TODO::ARGYRASPIDES() { Must replace with logging class in future }
+        std::cerr << "PeripheralInfo::IsKeyboard() - " << e.what();
+        return false;
+    }
 }
 
 std::optional< std::string > GetDeviceName( const std::string& deviceFileEntry ) noexcept
@@ -128,7 +195,7 @@ std::optional< std::string > GetEventDeviceName( const std::string& deviceFileEn
     return std::optional< std::string >{ handlerDeviceNames };
 }
 
-InputCommon::PeripheralHashSet GetConnectedKeyboards()
+InputCommon::PeripheralHashSet GetConnectedPeripherals()
 {
     if ( access( DEVICE_FILE_INFO_PATH.c_str(), F_OK ) != 0 )
         throw InputCommon::PeripheralInputException( "Something is seriously wrong! The file " + DEVICE_FILE_INFO_PATH +
@@ -157,7 +224,8 @@ InputCommon::PeripheralHashSet GetConnectedKeyboards()
             continue;
 
         std::string completeDeviceEntry = ss.str();
-        if ( !IsKeyboard( completeDeviceEntry ) )
+
+        if ( !IsKeyboard( completeDeviceEntry ) && !IsMouse( completeDeviceEntry ) )
         {
             ss.str( "" );
             continue;

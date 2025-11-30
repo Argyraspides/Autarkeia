@@ -6,7 +6,7 @@
 #include <chrono>
 #include <cmath>
 
-void UpdateAsteroids( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen )
+void UpdateAsteroids( GameWorld& gameWorld, GameState& gameSettings, Frame& screen )
 {
     static auto anchorTime = std::chrono::system_clock::now();
     auto now = std::chrono::system_clock::now();
@@ -32,7 +32,7 @@ void UpdateAsteroids( GameWorld& gameWorld, GameSettings& gameSettings, Frame& s
     }
 }
 
-void UpdateBullets( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen )
+void UpdateBullets( GameWorld& gameWorld, GameState& gameSettings, Frame& screen )
 {
     for ( auto it = gameWorld.bullets.begin(); it != gameWorld.bullets.end(); )
     {
@@ -48,7 +48,7 @@ void UpdateBullets( GameWorld& gameWorld, GameSettings& gameSettings, Frame& scr
     }
 }
 
-void UpdateCollisions( GameWorld& gameWorld, GameSettings& gameSettings, Frame& screen )
+void UpdateCollisions( GameWorld& gameWorld, GameState& gameSettings, Frame& screen )
 {
     // Check if there is a collision between the ship and any of the asteroids.
     // If there is, asteroid disappears and ship loses health

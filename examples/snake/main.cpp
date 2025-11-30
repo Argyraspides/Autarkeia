@@ -166,7 +166,7 @@ void HandleUserInput()
     if ( event.eventType != EventType::KEYBOARD_PRESS )
         return;
 
-    switch ( event.eventCode )
+    switch ( event.eventValue )
     {
     case KEY_W:
     case KEY_UP: {

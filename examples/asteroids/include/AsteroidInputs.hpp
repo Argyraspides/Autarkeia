@@ -1,20 +1,23 @@
 #pragma once
 #include <array>
 struct GameWorld;
-struct GameSettings;
+struct GameState;
+struct Event;
 
 namespace InputCommon
 {
 class PeripheralInputHandler;
 }
 
-void HandleInput( GameWorld& gameWorld, GameSettings& gameSettings, InputCommon::PeripheralInputHandler& kbd );
+void HandleInputs( GameWorld& , GameState& , InputCommon::PeripheralInputHandler& );
+void HandleKeyboardInputs( GameWorld&, GameState&, Event );
+void HandleMouseInputs( GameWorld&, GameState&, Event );
 
 inline std::array< void ( * )( 
 GameWorld& gameWorld, 
-GameSettings& gameSettings, 
+GameState& gameSettings, 
 InputCommon::PeripheralInputHandler& kbd ), 1 >
 inputTable = 
 { 
-    HandleInput 
+   HandleInputs
 };

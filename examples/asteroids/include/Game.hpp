@@ -24,7 +24,7 @@ struct GameWorld
     int collisions = 0;
 };
 
-struct GameSettings
+struct GameState
 {
     bool gameRunning = true;
     bool gamePaused = false;
@@ -37,13 +37,15 @@ struct GameSettings
 
     long asteroidGenerationPeriodMs = 5000;
     int asteroidDamage = 5;
+
+    Vec2I mousePos;
 };
 
 struct Game
 {
   private:
     GameWorld gameWorld;
-    GameSettings gameSettings;
+    GameState gameState;
 
     Frame screen = Frame{ 500, 200 };
 
@@ -58,33 +60,29 @@ struct Game
         kbd.Start();
 
         InitializeGame( gameWorld, screen );
-        while ( gameSettings.gameRunning )
+        while ( gameState.gameRunning )
         {
-            std::this_thread::sleep_for( std::chrono::milliseconds( gameSettings.frameTimeMs ) );
+            std::this_thread::sleep_for( std::chrono::milliseconds( gameState.frameTimeMs ) );
 
             for ( auto& inputHandlerFunc : inputTable )
-                inputHandlerFunc( gameWorld, gameSettings, kbd );
+                inputHandlerFunc( gameWorld, gameState, kbd );
 
-            if ( gameSettings.gamePaused )
+            if ( gameState.gamePaused )
             {
-                if( gameSettings.tickForward )
+                if( gameState.tickForward )
                 {
-                    gameSettings.tickForward = false;
+                    gameState.tickForward = false;
                 }
-                else
-                {
-                    continue;
-                } 
             }
 
             for ( auto& updateFunc : updateTable )
-                updateFunc( gameWorld, gameSettings, screen );
+                updateFunc( gameWorld, gameState, screen );
 
             DrawUtils::ClearFrame( screen, SHADE_0 );
             DrawUtils::DrawBorder( screen );
 
             for ( auto& renderFunc : renderTable )
-                renderFunc( gameWorld, screen );
+                renderFunc( gameWorld, gameState, screen );
 
             DrawUtils::ResetTerminalCursor();
             DrawUtils::RenderFrame( screen );
@@ -96,6 +94,6 @@ struct Game
 
     void Stop()
     {
-        gameSettings.gameRunning = false;
+        gameState.gameRunning = false;
     }
 } inline game;
